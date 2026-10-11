@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penjana Nombor 2D & 3D Rawak</title>
+    <style>
+        :root {
+            --primary: #f5b041;
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .result-box {
+            background-color: #000;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+        }
+
+        #number-display {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: var(--primary);
+            margin: 0;
+            font-family: monospace;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        button:hover {
+            background-color: var(--text-color);
+            color: var(--card-bg);
+        }
+
+        button.btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+        }
+
+        button.btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Penjana Angka Rawak</h1>
+        
+        <div class="result-box">
+            <p id="number-display">000</p>
+        </div>
+
+        <div class="button-group">
+            <button onclick="generateNumber(2)">Jana 2D</button>
+            <button class="btn-primary" onclick="generateNumber(3)">Jana 3D</button>
+        </div>
+    </div>
+
+    <script>
+        function generateNumber(digits) {
+            const displayElement = document.getElementById('number-display');
+            
+            let interval = setInterval(() => {
+                displayElement.innerText = Math.floor(Math.random() * Math.pow(10, digits))
+                    .toString()
+                    .padStart(digits, '0');
+            }, 50);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                
+                let maxNumber = Math.pow(10, digits);
+                let randomNumber = Math.floor(Math.random() * maxNumber);
+                let finalResult = String(randomNumber).padStart(digits, '0');
+                
+                displayElement.innerText = finalResult;
+                
+            }, 500);
+        }
+    </script>
+
+</body>
+</html>
