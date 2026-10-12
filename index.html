@@ -19,31 +19,66 @@
             max-width: 400px;
             margin: auto;
         }
-        input, select, button {
+        input[type="number"], input[type="date"], select, button {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border-radius: 5px;
             border: 1px solid #ccc;
             font-size: 16px;
-            box-sizing: border-box; /* Memastikan kotak tidak terkeluar dari sempadan */
+            box-sizing: border-box;
         }
-        button {
+        .checkbox-group {
+            text-align: left;
+            margin: 5px 0 15px 0;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .checkbox-group label {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        .btn-jana {
             background-color: #28a745;
             color: white;
             border: none;
             cursor: pointer;
             font-weight: bold;
         }
-        button:hover {
+        .btn-jana:hover {
             background-color: #218838;
         }
+        .btn-reset {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .btn-reset:hover {
+            background-color: #c82333;
+        }
         .result {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: bold;
             color: #d9534f;
             margin-top: 15px;
-            min-height: 40px; /* Supaya kotak tak melompat masa nombor ditukar */
+            min-height: 40px;
+            letter-spacing: 3px;
         }
         .kaunter-teks {
             margin-top: 15px; 
@@ -51,8 +86,36 @@
             font-weight: bold; 
             color: #555;
             padding: 5px;
-            background-color: #e9ecef;
+            background-color: #f8f9fa;
             border-radius: 5px;
+        }
+        .statistik {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+        .statistik h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .statistik ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .statistik li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #ccc;
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
@@ -61,33 +124,55 @@
     <div class="container">
         <h2>Penjana Nombor 2D/3D</h2>
         
-        <label for="inputNumbers">Masukkan 2 atau 3 nombor:</label>
-        <input type="number" id="inputNumbers" placeholder="Contoh: 45 atau 123" min="0" max="999">
+        <!-- Pilihan Nombor Asas (Boleh masukkan apa-apa panjang) -->
+        <label for="inputNumbers">Masukkan Nombor Asas (Cth: 4D, 5D, 6D):</label>
+        <input type="number" id="inputNumbers" placeholder="Cth: 1234 atau 556677" min="0">
 
-        <label for="inputDate">Pilih Tarikh (Pilihan):</label>
+        <!-- Pilihan Formula Cermin -->
+        <div class="checkbox-group">
+            <label>
+                <input type="checkbox" id="gunaCermin" checked>
+                Guna Formula Cermin (0=5, 1=6...)
+            </label>
+        </div>
+
+        <label for="inputDate">Masukkan Tarikh (Pilihan):</label>
         <input type="date" id="inputDate">
 
-        <label for="digitType">Pilih Jenis Janaan:</label>
+        <!-- Pilihan Hasil (Dikembalikan kepada 2D/3D sahaja) -->
+        <label for="digitType">Pilih Format Hasil Dijana:</label>
         <select id="digitType">
             <option value="2">2D (Dua Digit)</option>
             <option value="3">3D (Tiga Digit)</option>
         </select>
         
-        <button onclick="generateRandom()">Jana Nombor!</button>
+        <button class="btn-jana" onclick="generateRandom()">Jana Nombor!</button>
         
-        <!-- Bahagian Kaunter -->
+        <!-- Bahagian Kaunter & Butang Reset -->
         <p class="kaunter-teks">
-            Jumlah Janaan Anda: <span id="kaunterPaparan" style="color: #007bff;">0</span> kali
+            Jumlah Anda Menjana: <span id="kaunterPaparan" style="color: #007bff;">0</span> kali
         </p>
+        <button class="btn-reset" onclick="resetData()">Kosongkan Semua Rekod (Reset)</button>
 
-        <p>Nombor Bertuah Anda:</p>
+        <p style="margin-top:20px; margin-bottom:5px;">Nombor Bertuah Anda:</p>
         <div class="result" id="resultDisplay">-</div>
+
+        <!-- Bahagian Rekod/Statistik Nombor -->
+        <div class="statistik">
+            <h4>Rekod Kekerapan Nombor:</h4>
+            <ul id="senaraiStatistik">
+                <!-- Senarai nombor akan muncul di sini -->
+            </ul>
+        </div>
     </div>
 
     <script>
-        // Memuatkan nilai kaunter dari localStorage (memori telefon) apabila web dibuka
-        let jumlahKiraan = localStorage.getItem("jumlahJanaanTerkumpul") || 0;
+        // Ambil data dari local storage memori telefon
+        let jumlahKiraan = parseInt(localStorage.getItem("jumlahJanaanTerkumpul")) || 0;
+        let rekodNombor = JSON.parse(localStorage.getItem("rekodNomborTerkumpul")) || {};
+
         document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
+        kemaskiniPaparanStatistik();
 
         function getMirror(digit) {
             const mirrors = {
@@ -97,41 +182,75 @@
             return mirrors[digit] || digit;
         }
 
+        function kemaskiniPaparanStatistik() {
+            let senarai = document.getElementById("senaraiStatistik");
+            senarai.innerHTML = ""; 
+            
+            let adaRekod = false;
+            // Loop untuk senaraikan nombor dari storage
+            for (let nombor in rekodNombor) {
+                adaRekod = true;
+                let li = document.createElement("li");
+                li.innerHTML = `<span style="font-size:16px; font-weight:bold; color:#d9534f;">${nombor}</span> <span>${rekodNombor[nombor]} kali</span>`;
+                senarai.appendChild(li);
+            }
+
+            if (!adaRekod) {
+                senarai.innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada nombor dijana.</li>";
+            }
+        }
+
+        function resetData() {
+            let pengesahan = confirm("Padam semula jumlah janaan dan senarai rekod nombor?");
+            if (pengesahan) {
+                jumlahKiraan = 0;
+                rekodNombor = {};
+                
+                localStorage.removeItem("jumlahJanaanTerkumpul");
+                localStorage.removeItem("rekodNomborTerkumpul");
+                
+                document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
+                document.getElementById("resultDisplay").innerText = "-";
+                kemaskiniPaparanStatistik();
+            }
+        }
+
         function generateRandom() {
             let userInputs = document.getElementById('inputNumbers').value;
             let dateInput = document.getElementById('inputDate').value;
             let digitType = document.getElementById('digitType').value;
+            let gunaCermin = document.getElementById('gunaCermin').checked;
             let display = document.getElementById('resultDisplay');
 
-            // Kumpulkan semua nombor yang berpotensi
             let pool = "";
 
             if (userInputs) {
-                pool += userInputs; // Nombor asal
-                // Masukkan nombor cermin
-                for (let i = 0; i < userInputs.length; i++) {
-                    pool += getMirror(userInputs[i]); 
+                pool += userInputs; // Masukkan nombor ditaip (4D, 5D, dsb.)
+                
+                // Tambah nombor cermin hanya jika checkbox ditanda
+                if (gunaCermin) {
+                    for (let i = 0; i < userInputs.length; i++) {
+                        pool += getMirror(userInputs[i]); 
+                    }
                 }
             }
 
             if (dateInput) {
-                // Buang tanda sengkang (-) dan ambil angka sahaja (contoh: 20261012)
-                let cleanDate = dateInput.replace(/-/g, "");
+                let cleanDate = dateInput.replace(/-/g, ""); // Buang sengkang dari tarikh
                 pool += cleanDate;
             }
 
-            // Jika pengguna tidak masukkan apa-apa nombor atau tarikh
+            // Jika kosong, guna 0-9
             if (!pool) {
-                pool = "0123456789"; // Gunakan nombor rawak sepenuhnya
+                pool = "0123456789";
             }
 
-            let length = parseInt(digitType);
-            
-            // Animasi kocokan nombor (Shuffle Effect)
+            let length = parseInt(digitType); // Hanya akan jadi 2 atau 3
             let duration = 1000; 
             let intervalTime = 50; 
             let passedTime = 0;
 
+            // Animasi kocok nombor
             let interval = setInterval(() => {
                 let tempNum = "";
                 for(let i = 0; i < length; i++) {
@@ -143,22 +262,30 @@
                 if (passedTime >= duration) {
                     clearInterval(interval);
                     
-                    // Janaan nombor akhir dari 'pool'
                     let finalNum = "";
                     let poolArray = pool.split('');
                     
+                    // Janaan keputusan akhir berdasarkan pool input
                     for(let i = 0; i < length; i++) {
-                        // Pilih aksara rawak dari kumpulan nombor (pool)
                         let randomIndex = Math.floor(Math.random() * poolArray.length);
                         finalNum += poolArray[randomIndex];
                     }
                     display.innerText = finalNum;
 
-                    // Mengemaskini Kaunter selepas janaan selesai
+                    // Mengemaskini Kaunter Klik
                     jumlahKiraan++;
                     document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
-                    // Simpan nilai baru ke dalam memori peranti
                     localStorage.setItem("jumlahJanaanTerkumpul", jumlahKiraan);
+
+                    // Menyimpan nombor ke dalam Statistik
+                    if (rekodNombor[finalNum]) {
+                        rekodNombor[finalNum]++;
+                    } else {
+                        rekodNombor[finalNum] = 1;
+                    }
+                    localStorage.setItem("rekodNomborTerkumpul", JSON.stringify(rekodNombor));
+                    
+                    kemaskiniPaparanStatistik();
                 }
             }, intervalTime);
         }
