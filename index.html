@@ -3,233 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Kombinasi Nombor & Tarikh</title>
+    <title>Penjana Nombor 2D/3D</title>
     <style>
-        :root {
-            --primary: #f5b041;
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-color: #ffffff;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
             padding: 20px;
         }
-
         .container {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        h1 {
-            margin-top: 0;
-            font-size: 1.3rem;
-            color: var(--primary);
-        }
-
-        input[type="number"], input[type="date"] {
-            width: 80%;
-            padding: 12px;
-            font-size: 1.4rem;
-            text-align: center;
-            border-radius: 8px;
-            border: 2px solid var(--primary);
-            background-color: #1a1a1a;
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        input[type="number"]:focus, input[type="date"]:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(245, 176, 65, 0.5);
-        }
-
-        /* Ubah warna ikon kalendar supaya nampak jelas di latar gelap */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(70%) sepia(40%) saturate(1500%) hue-rotate(340deg) brightness(100%) contrast(100%);
-            cursor: pointer;
-        }
-
-        .instruction {
-            font-size: 0.85rem;
-            color: #aaaaaa;
-            margin-bottom: 15px;
-        }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-            cursor: pointer;
-            background-color: #1a1a1a;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .toggle-container input {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-        }
-
-        .result-box {
-            background-color: #000;
-            margin: 10px 0 20px 0;
-            padding: 15px;
+            background: white;
+            padding: 20px;
             border-radius: 10px;
-            border: 2px solid var(--text-color);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
         }
-
-        #number-display {
-            font-size: 3rem;
-            font-weight: bold;
-            letter-spacing: 5px;
-            color: var(--primary);
-            margin: 0;
-            font-family: monospace;
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box; /* Memastikan kotak tidak terkeluar dari sempadan */
         }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
         button {
-            background-color: transparent;
-            color: var(--text-color);
-            border: 2px solid var(--text-color);
-            padding: 12px 15px;
-            font-size: 1rem;
-            border-radius: 8px;
+            background-color: #28a745;
+            color: white;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: bold;
-            flex: 1;
         }
-
         button:hover {
-            background-color: var(--text-color);
-            color: var(--card-bg);
+            background-color: #218838;
         }
-
-        button.btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: #000;
+        .result {
+            font-size: 32px;
+            font-weight: bold;
+            color: #d9534f;
+            margin-top: 15px;
+            min-height: 40px; /* Supaya kotak tak melompat masa nombor ditukar */
         }
-
-        button.btn-primary:hover {
-            background-color: transparent;
-            color: var(--primary);
+        .kaunter-teks {
+            margin-top: 15px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #555;
+            padding: 5px;
+            background-color: #e9ecef;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Jana Dari Nombor & Tarikh</h1>
+        <h2>Penjana Nombor 2D/3D</h2>
         
-        <!-- Kotak Input Nombor Asal -->
-        <input type="number" id="user-input" placeholder="Cth: 5317" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);" />
-        
-        <!-- Kotak Input Tarikh Baharu -->
-        <input type="date" id="date-input" />
-        
-        <div class="instruction">Masukkan nombor ATAU pilih tarikh (boleh guna dua-dua)</div>
+        <label for="inputNumbers">Masukkan 2 atau 3 nombor:</label>
+        <input type="number" id="inputNumbers" placeholder="Contoh: 45 atau 123" min="0" max="999">
 
-        <label class="toggle-container">
-            <input type="checkbox" id="use-mirror" checked>
-            Gunakan Formula Cermin
-        </label>
-        
-        <div class="result-box">
-            <p id="number-display">000</p>
-        </div>
+        <label for="inputDate">Pilih Tarikh (Pilihan):</label>
+        <input type="date" id="inputDate">
 
-        <div class="button-group">
-            <button onclick="generateFromInput(2)">Jana 2D</button>
-            <button class="btn-primary" onclick="generateFromInput(3)">Jana 3D</button>
-        </div>
+        <label for="digitType">Pilih Jenis Janaan:</label>
+        <select id="digitType">
+            <option value="2">2D (Dua Digit)</option>
+            <option value="3">3D (Tiga Digit)</option>
+        </select>
+        
+        <button onclick="generateRandom()">Jana Nombor!</button>
+        
+        <!-- Bahagian Kaunter -->
+        <p class="kaunter-teks">
+            Jumlah Janaan Anda: <span id="kaunterPaparan" style="color: #007bff;">0</span> kali
+        </p>
+
+        <p>Nombor Bertuah Anda:</p>
+        <div class="result" id="resultDisplay">-</div>
     </div>
 
     <script>
-        function generateFromInput(digits) {
-            const inputElement = document.getElementById('user-input');
-            const dateElement = document.getElementById('date-input');
-            const useMirror = document.getElementById('use-mirror').checked;
-            
-            // Ekstrak digit dari input nombor
-            let userNumbers = inputElement.value.replace(/\D/g, ''); 
-            
-            // Ekstrak digit dari tarikh (buang sengkang)
-            let dateValue = dateElement.value.replace(/\D/g, ''); 
-            
-            // Gabungkan kedua-dua sumber nombor
-            let basePool = userNumbers + dateValue;
-            
-            // Jika kedua-dua kotak kosong
-            if (basePool.length === 0) {
-                alert('Sila masukkan nombor rujukan atau pilih tarikh dahulu.');
-                return;
-            }
+        // Memuatkan nilai kaunter dari localStorage (memori telefon) apabila web dibuka
+        let jumlahKiraan = localStorage.getItem("jumlahJanaanTerkumpul") || 0;
+        document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
 
-            let pool = basePool;
-            
-            // Tambah cermin jika diaktifkan
-            if (useMirror) {
-                let mirrorNumbers = '';
-                for (let i = 0; i < basePool.length; i++) {
-                    let digit = parseInt(basePool[i]);
-                    mirrorNumbers += ((digit + 5) % 10).toString();
+        function getMirror(digit) {
+            const mirrors = {
+                '0': '5', '1': '6', '2': '7', '3': '8', '4': '9',
+                '5': '0', '6': '1', '7': '2', '8': '3', '9': '4'
+            };
+            return mirrors[digit] || digit;
+        }
+
+        function generateRandom() {
+            let userInputs = document.getElementById('inputNumbers').value;
+            let dateInput = document.getElementById('inputDate').value;
+            let digitType = document.getElementById('digitType').value;
+            let display = document.getElementById('resultDisplay');
+
+            // Kumpulkan semua nombor yang berpotensi
+            let pool = "";
+
+            if (userInputs) {
+                pool += userInputs; // Nombor asal
+                // Masukkan nombor cermin
+                for (let i = 0; i < userInputs.length; i++) {
+                    pool += getMirror(userInputs[i]); 
                 }
-                pool += mirrorNumbers;
             }
 
-            const displayElement = document.getElementById('number-display');
+            if (dateInput) {
+                // Buang tanda sengkang (-) dan ambil angka sahaja (contoh: 20261012)
+                let cleanDate = dateInput.replace(/-/g, "");
+                pool += cleanDate;
+            }
+
+            // Jika pengguna tidak masukkan apa-apa nombor atau tarikh
+            if (!pool) {
+                pool = "0123456789"; // Gunakan nombor rawak sepenuhnya
+            }
+
+            let length = parseInt(digitType);
             
+            // Animasi kocokan nombor (Shuffle Effect)
+            let duration = 1000; 
+            let intervalTime = 50; 
+            let passedTime = 0;
+
             let interval = setInterval(() => {
-                let randomAnim = '';
-                for(let i = 0; i < digits; i++) {
-                    randomAnim += pool[Math.floor(Math.random() * pool.length)];
+                let tempNum = "";
+                for(let i = 0; i < length; i++) {
+                    tempNum += Math.floor(Math.random() * 10);
                 }
-                displayElement.innerText = randomAnim;
-            }, 50);
+                display.innerText = tempNum;
+                passedTime += intervalTime;
 
-            setTimeout(() => {
-                clearInterval(interval);
-                
-                let shuffled = pool.split('').sort(() => 0.5 - Math.random());
-                let finalResult = '';
-                
-                for(let i = 0; i < digits; i++) {
-                    finalResult += shuffled[i % shuffled.length]; 
+                if (passedTime >= duration) {
+                    clearInterval(interval);
+                    
+                    // Janaan nombor akhir dari 'pool'
+                    let finalNum = "";
+                    let poolArray = pool.split('');
+                    
+                    for(let i = 0; i < length; i++) {
+                        // Pilih aksara rawak dari kumpulan nombor (pool)
+                        let randomIndex = Math.floor(Math.random() * poolArray.length);
+                        finalNum += poolArray[randomIndex];
+                    }
+                    display.innerText = finalNum;
+
+                    // Mengemaskini Kaunter selepas janaan selesai
+                    jumlahKiraan++;
+                    document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
+                    // Simpan nilai baru ke dalam memori peranti
+                    localStorage.setItem("jumlahJanaanTerkumpul", jumlahKiraan);
                 }
-                
-                displayElement.innerText = finalResult;
-                
-            }, 500);
+            }, intervalTime);
         }
     </script>
+
+    <!-- Kod Iklan Adsterra (Social Bar) -->
+    <script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
 
 </body>
 </html>
