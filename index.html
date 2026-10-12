@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Kombinasi Nombor & Cermin</title>
+    <title>Penjana Kombinasi Nombor & Tarikh</title>
     <style>
         :root {
             --primary: #f5b041;
@@ -19,30 +19,31 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
 
         .container {
             background-color: var(--card-bg);
-            padding: 30px;
+            padding: 25px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             text-align: center;
-            width: 90%;
+            width: 100%;
             max-width: 400px;
         }
 
         h1 {
             margin-top: 0;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: var(--primary);
         }
 
-        input[type="number"] {
+        input[type="number"], input[type="date"] {
             width: 80%;
             padding: 12px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             text-align: center;
             border-radius: 8px;
             border: 2px solid var(--primary);
@@ -50,12 +51,18 @@
             color: var(--primary);
             margin-bottom: 10px;
             font-weight: bold;
-            letter-spacing: 5px;
+            letter-spacing: 2px;
         }
-        
-        input[type="number"]:focus {
+
+        input[type="number"]:focus, input[type="date"]:focus {
             outline: none;
             box-shadow: 0 0 10px rgba(245, 176, 65, 0.5);
+        }
+
+        /* Ubah warna ikon kalendar supaya nampak jelas di latar gelap */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(70%) sepia(40%) saturate(1500%) hue-rotate(340deg) brightness(100%) contrast(100%);
+            cursor: pointer;
         }
 
         .instruction {
@@ -64,7 +71,6 @@
             margin-bottom: 15px;
         }
 
-        /* Rekaan kotak semak (checkbox) baharu */
         .toggle-container {
             display: flex;
             align-items: center;
@@ -88,13 +94,13 @@
         .result-box {
             background-color: #000;
             margin: 10px 0 20px 0;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border: 2px solid var(--text-color);
         }
 
         #number-display {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: bold;
             letter-spacing: 5px;
             color: var(--primary);
@@ -141,12 +147,16 @@
 <body>
 
     <div class="container">
-        <h1>Jana Dari Nombor Pilihan</h1>
+        <h1>Jana Dari Nombor & Tarikh</h1>
         
+        <!-- Kotak Input Nombor Asal -->
         <input type="number" id="user-input" placeholder="Cth: 5317" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);" />
-        <div class="instruction">Masukkan nombor rujukan anda</div>
+        
+        <!-- Kotak Input Tarikh Baharu -->
+        <input type="date" id="date-input" />
+        
+        <div class="instruction">Masukkan nombor ATAU pilih tarikh (boleh guna dua-dua)</div>
 
-        <!-- Butang pilihan Formula Cermin -->
         <label class="toggle-container">
             <input type="checkbox" id="use-mirror" checked>
             Gunakan Formula Cermin
@@ -165,23 +175,31 @@
     <script>
         function generateFromInput(digits) {
             const inputElement = document.getElementById('user-input');
+            const dateElement = document.getElementById('date-input');
             const useMirror = document.getElementById('use-mirror').checked;
             
+            // Ekstrak digit dari input nombor
             let userNumbers = inputElement.value.replace(/\D/g, ''); 
             
-            if (userNumbers.length === 0) {
-                alert('Sila masukkan nombor rujukan anda dahulu.');
+            // Ekstrak digit dari tarikh (buang sengkang)
+            let dateValue = dateElement.value.replace(/\D/g, ''); 
+            
+            // Gabungkan kedua-dua sumber nombor
+            let basePool = userNumbers + dateValue;
+            
+            // Jika kedua-dua kotak kosong
+            if (basePool.length === 0) {
+                alert('Sila masukkan nombor rujukan atau pilih tarikh dahulu.');
                 return;
             }
 
-            // Kolam nombor asas
-            let pool = userNumbers;
+            let pool = basePool;
             
-            // Tambah nombor cermin ke dalam kolam jika diaktifkan (0=5, 1=6, 2=7, 3=8, 4=9)
+            // Tambah cermin jika diaktifkan
             if (useMirror) {
                 let mirrorNumbers = '';
-                for (let i = 0; i < userNumbers.length; i++) {
-                    let digit = parseInt(userNumbers[i]);
+                for (let i = 0; i < basePool.length; i++) {
+                    let digit = parseInt(basePool[i]);
                     mirrorNumbers += ((digit + 5) % 10).toString();
                 }
                 pool += mirrorNumbers;
@@ -189,7 +207,6 @@
 
             const displayElement = document.getElementById('number-display');
             
-            // Animasi putaran
             let interval = setInterval(() => {
                 let randomAnim = '';
                 for(let i = 0; i < digits; i++) {
@@ -198,16 +215,13 @@
                 displayElement.innerText = randomAnim;
             }, 50);
 
-            // Berhenti animasi dan paparkan nombor muktamad
             setTimeout(() => {
                 clearInterval(interval);
                 
-                // Sistem mengocok (shuffle) kesemua nombor di dalam kolam
                 let shuffled = pool.split('').sort(() => 0.5 - Math.random());
                 let finalResult = '';
                 
                 for(let i = 0; i < digits; i++) {
-                    // Tarik nombor yang telah dikocok untuk membentuk 2D atau 3D
                     finalResult += shuffled[i % shuffled.length]; 
                 }
                 
