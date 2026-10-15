@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Formula Silang (Utama & Alternatif)</title>
+    <title>Penjana Formula Silang 3D (Utama & Alternatif)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -142,17 +142,17 @@
 <body>
 
     <div class="container">
-        <h2>Penjana Formula Silang Terarah</h2>
+        <h2>Penjana Formula Silang 3D</h2>
         
         <!-- Kotak Input Utama -->
         <label for="inputAsas">Masukkan Asas (4D/5D/Carta/Pod123):</label>
-        <input type="text" id="inputAsas" placeholder="Cth: 619872095087" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <input type="text" id="inputAsas" placeholder="Cth: 6198" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         <!-- Kotak Tarikh Cabutan -->
         <label for="inputDate">Masukkan Tarikh Cabutan (Pilihan):</label>
         <input type="date" id="inputDate">
         
-        <button class="btn-jana" onclick="janaFormulaTepat()">Jana Analisis & Formula!</button>
+        <button class="btn-jana" onclick="janaFormulaStruktur()">Jana Analisis & Formula!</button>
         
         <!-- Paparan Analisis Digit Hit & Hilang -->
         <div class="analysis-box">
@@ -160,14 +160,13 @@
             <p>❌ Digit Hilang: <br><span class="digit-hilang" id="paparHilang">-</span></p>
         </div>
 
-        <!-- Paparan Keputusan Terarah 3D (Utama) -->
+        <!-- Paparan Keputusan Terarah 3D Utama & Alternatif -->
         <div class="result-box">
             <h4>Pecahan 3D (Utama):</h4>
             <div class="result-item" id="result3D_utama">-</div>
             <div style="font-size: 12px; color: #666;" id="mirror3D_utama">Cermin: -</div>
         </div>
 
-        <!-- Paparan Keputusan Terarah 3D (Alternatif) -->
         <div class="result-box">
             <h4>Pecahan 3D (Alternatif):</h4>
             <div class="result-item" id="result3D_alternatif">-</div>
@@ -213,7 +212,7 @@
             document.getElementById("senaraiStatistik").innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>";
         }
 
-        function janaFormulaTepat() {
+        function janaFormulaStruktur() {
             let val = document.getElementById('inputAsas').value.trim();
             let dateInput = document.getElementById('inputDate').value;
 
@@ -233,44 +232,37 @@
             document.getElementById('paparHit').innerText = digitHit.length > 0 ? digitHit.join(' ') : "-";
             document.getElementById('paparHilang').innerText = digitHilang.length > 0 ? digitHilang.join(' ') : "Tiada";
 
-            // --- 2. Formula 3D Utama & 3D Alternatif ---
+            // --- 2. Formula Bermatematik Silang Berstruktur ---
             let val3D_utama = "";
-            let base2D = "";
-            
-            // Digit Hit paling kecil untuk dinaik taraf (Penguat)
-            let penguat = digitHit.length > 0 ? digitHit[0] : "0";
+            let val2D_asas = "";
 
             if (digitHilang.length >= 2 && arrayInput.length >= 3) {
-                // Pecahan 3D (Utama) -> Cth: 693
+                // 3D Utama: Sama seperti kod asal anda
                 val3D_utama = arrayInput[0] + arrayInput[2] + digitHilang[0];
-                
-                // Asas 2D Lama -> Cth: 14
-                base2D = arrayInput[1] + digitHilang[1];
+                // 2D Asas: Sama seperti kod asal anda
+                val2D_asas = arrayInput[1] + digitHilang[1];
             } else {
-                // Fallback
+                // Formula sandaran jika digit hilang terlalu sedikit
                 val3D_utama = arrayInput[0] + arrayInput[1] + (digitHilang[0] || arrayInput[2]);
-                base2D = arrayInput[arrayInput.length - 1] + (digitHilang[1] || arrayInput[0]);
+                val2D_asas = arrayInput[arrayInput.length - 1] + (digitHilang[1] || arrayInput[0]);
             }
 
-            // Pecahan 3D (Alternatif): Gabung digit penguat dengan Asas 2D -> Cth: 0 + 14 = 014
-            let val3D_alternatif = penguat + base2D;
+            // PENAMBAHBAIKAN: Tukar 2D menjadi 3D Alternatif dengan digit Hit paling kecil
+            let penguat = digitHit.length > 0 ? digitHit[0] : "0";
+            let val3D_alternatif = penguat + val2D_asas;
 
-            // Jana Cermin
             let cermin3D_utama = getMirror(val3D_utama);
-            let cermin2D_asas = getMirror(base2D); // Cth: 69
-            let cermin3D_alternatif = penguat + cermin2D_asas; // Cth: 0 + 69 = 069
+            let cermin3D_alternatif = getMirror(val3D_alternatif);
 
-            // Papar Keputusan Utama
+            // Papar Keputusan
             document.getElementById('result3D_utama').innerText = val3D_utama;
             document.getElementById('mirror3D_utama').innerText = "Cermin: " + cermin3D_utama;
-            
-            // Papar Keputusan Alternatif
             document.getElementById('result3D_alternatif').innerText = val3D_alternatif;
             document.getElementById('mirror3D_alternatif').innerText = "Cermin: " + cermin3D_alternatif;
 
             // --- 3. Kemaskini Statistik ---
             let infoTarikh = dateInput ? ` (T: ${dateInput})` : "";
-            kemaskiniStatistikGabung("Utama: " + val3D_utama + " | Alt: " + val3D_alternatif + infoTarikh);
+            kemaskiniStatistikGabung("3D Utama: " + val3D_utama + " | 3D Alt: " + val3D_alternatif + infoTarikh);
 
             jumlahKiraan++;
             document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
@@ -293,7 +285,7 @@
         }
     </script>
 
-    <!-- Kod Iklan Adsterra (Social Bar) - Dikekalkan -->
+    <!-- Kod Iklan Adsterra (Social Bar) -->
     <script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
 
 </body>
