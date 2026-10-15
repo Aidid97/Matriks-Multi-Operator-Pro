@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Formula Terarah 2D & 3D</title>
+    <title>Penjana Formula Silang 2D & 3D</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +27,7 @@
             font-size: 14px;
             color: #333;
         }
-        input[type="number"], input[type="date"], button {
+        input[type="text"], input[type="date"], button {
             width: 100%;
             padding: 10px;
             margin: 5px 0 15px 0;
@@ -61,6 +61,23 @@
         .btn-reset:hover {
             background-color: #c82333;
         }
+        .analysis-box {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .analysis-box p {
+            margin: 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .digit-hit { color: #28a745; font-size: 16px; letter-spacing: 2px;}
+        .digit-hilang { color: #dc3545; font-size: 16px; letter-spacing: 2px;}
+        
         .result-box {
             background-color: #f8f9fa;
             border: 1px solid #ddd;
@@ -125,31 +142,33 @@
 <body>
 
     <div class="container">
-        <h2>Penjana Formula Terarah 2D & 3D</h2>
+        <h2>Penjana Formula Silang & Analisis</h2>
         
-        <!-- Kotak Input Asas 3D -->
-        <label for="inputAsas3D">Masukkan Asas 3D (Cth: 615):</label>
-        <input type="number" id="inputAsas3D" placeholder="Cth: 615" min="0">
-
-        <!-- Kotak Input Asas 2D -->
-        <label for="inputAsas2D">Masukkan Asas 2D (Cth: 68):</label>
-        <input type="number" id="inputAsas2D" placeholder="Cth: 68" min="0">
+        <!-- Kotak Input Utama -->
+        <label for="inputAsas">Masukkan Asas (4D/5D/Carta/Pod123):</label>
+        <input type="text" id="inputAsas" placeholder="Cth: 6198" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         <!-- Kotak Tarikh Cabutan -->
         <label for="inputDate">Masukkan Tarikh Cabutan (Pilihan):</label>
         <input type="date" id="inputDate">
         
-        <button class="btn-jana" onclick="janaFormulaTepat()">Jana Keputusan Formula!</button>
+        <button class="btn-jana" onclick="janaFormulaStruktur()">Jana Analisis & Formula!</button>
         
-        <!-- Paparan Keputusan Terarah -->
+        <!-- Paparan Analisis Digit Hit & Hilang -->
+        <div class="analysis-box">
+            <p>✅ Digit Hit (Dalam Asas): <br><span class="digit-hit" id="paparHit">-</span></p>
+            <p>❌ Digit Hilang: <br><span class="digit-hilang" id="paparHilang">-</span></p>
+        </div>
+
+        <!-- Paparan Keputusan Terarah 3D & 2D -->
         <div class="result-box">
-            <h4>Hasil Formula 3D:</h4>
+            <h4>Pecahan 3D (Silang Hit + Hilang):</h4>
             <div class="result-item" id="result3D">-</div>
             <div style="font-size: 12px; color: #666;" id="mirror3D">Cermin: -</div>
         </div>
 
         <div class="result-box">
-            <h4>Hasil Formula 2D:</h4>
+            <h4>Pecahan 2D (Silang Hit + Hilang):</h4>
             <div class="result-item" id="result2D">-</div>
             <div style="font-size: 12px; color: #666;" id="mirror2D">Cermin: -</div>
         </div>
@@ -172,7 +191,6 @@
         let jumlahKiraan = 0;
         let rekodNombor = {};
 
-        // Formula cermin rasmi (0=5, 1=6, 2=7, 3=8, 4=9)
         function getMirror(str) {
             const mirrors = {
                 '0': '5', '1': '6', '2': '7', '3': '8', '4': '9',
@@ -185,6 +203,8 @@
             jumlahKiraan = 0;
             rekodNombor = {};
             document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
+            document.getElementById("paparHit").innerText = "-";
+            document.getElementById("paparHilang").innerText = "-";
             document.getElementById("result3D").innerText = "-";
             document.getElementById("mirror3D").innerText = "Cermin: -";
             document.getElementById("result2D").innerText = "-";
@@ -192,38 +212,57 @@
             document.getElementById("senaraiStatistik").innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>";
         }
 
-        function janaFormulaTepat() {
-            let val3D = document.getElementById('inputAsas3D').value.trim();
-            let val2D = document.getElementById('inputAsas2D').value.trim();
+        function janaFormulaStruktur() {
+            let val = document.getElementById('inputAsas').value.trim();
             let dateInput = document.getElementById('inputDate').value;
 
-            if (!val3D && !val2D) {
-                alert("Sila masukkan sekurang-kurangnya Asas 3D atau Asas 2D!");
+            if (val.length < 3) {
+                alert("Sila masukkan nombor asas sekurang-kurangnya 3 digit!");
                 return;
             }
 
-            let infoTarikh = dateInput ? ` (Tarikh: ${dateInput})` : "";
+            // --- 1. Analisis Hit & Hilang ---
+            let semuaDigit = ['0','1','2','3','4','5','6','7','8','9'];
+            let arrayInput = val.split('');
+            
+            // Susun digit unik secara berurutan
+            let digitHit = [...new Set(arrayInput)].sort();
+            let digitHilang = semuaDigit.filter(d => !digitHit.includes(d));
 
-            // Pemprosesan terarah mengikut formula kotak asas (bukan rawak)
-            if (val3D) {
-                let cermin3D = getMirror(val3D);
-                document.getElementById('result3D').innerText = val3D;
-                document.getElementById('mirror3D').innerText = "Cermin: " + cermin3D;
-                kemaskiniStatistikGabung("3D: " + val3D + " | C: " + cermin3D + infoTarikh);
+            document.getElementById('paparHit').innerText = digitHit.length > 0 ? digitHit.join(' ') : "-";
+            document.getElementById('paparHilang').innerText = digitHilang.length > 0 ? digitHilang.join(' ') : "Tiada";
+
+            // --- 2. Formula Bermatematik Silang Berstruktur (Tanpa Rawak) ---
+            // Logik: Gabungkan urutan digit Hit utama dengan digit Hilang terawal 
+            // (Meniru corak 6901 yang mengambil 6,9 dari Hit dan 0 dari Hilang)
+            
+            let val3D = "";
+            let val2D = "";
+
+            if (digitHilang.length >= 2 && arrayInput.length >= 3) {
+                // 3D: Digit pertama input + Digit ketiga input + Digit hilang pertama
+                val3D = arrayInput[0] + arrayInput[2] + digitHilang[0];
+                
+                // 2D: Digit kedua input + Digit hilang kedua
+                val2D = arrayInput[1] + digitHilang[1];
             } else {
-                document.getElementById('result3D').innerText = "-";
-                document.getElementById('mirror3D').innerText = "Cermin: -";
+                // Formula sandaran jika digit hilang terlalu sedikit
+                val3D = arrayInput[0] + arrayInput[1] + (digitHilang[0] || arrayInput[2]);
+                val2D = arrayInput[arrayInput.length - 1] + (digitHilang[1] || arrayInput[0]);
             }
 
-            if (val2D) {
-                let cermin2D = getMirror(val2D);
-                document.getElementById('result2D').innerText = val2D;
-                document.getElementById('mirror2D').innerText = "Cermin: " + cermin2D;
-                kemaskiniStatistikGabung("2D: " + val2D + " | C: " + cermin2D + infoTarikh);
-            } else {
-                document.getElementById('result2D').innerText = "-";
-                document.getElementById('mirror2D').innerText = "Cermin: -";
-            }
+            let cermin3D = getMirror(val3D);
+            let cermin2D = getMirror(val2D);
+
+            // Papar Keputusan
+            document.getElementById('result3D').innerText = val3D;
+            document.getElementById('mirror3D').innerText = "Cermin: " + cermin3D;
+            document.getElementById('result2D').innerText = val2D;
+            document.getElementById('mirror2D').innerText = "Cermin: " + cermin2D;
+
+            // --- 3. Kemaskini Statistik ---
+            let infoTarikh = dateInput ? ` (T: ${dateInput})` : "";
+            kemaskiniStatistikGabung("3D: " + val3D + " | 2D: " + val2D + infoTarikh);
 
             jumlahKiraan++;
             document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
@@ -240,7 +279,7 @@
             senarai.innerHTML = "";
             for (let item in rekodNombor) {
                 let li = document.createElement("li");
-                li.innerHTML = `<span style="font-weight:bold; color:#d9534f;">${item}</span> <span>${rekodNombor[item]} kali</span>`;
+                li.innerHTML = `<span style="font-weight:bold; color:#d9534f; font-size:12px;">${item}</span> <span>${rekodNombor[item]}x</span>`;
                 senarai.appendChild(li);
             }
         }
