@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Formula Silang 2D & 3D</title>
+    <title>Penjana Formula Silang (Utama & Alternatif)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -142,17 +142,17 @@
 <body>
 
     <div class="container">
-        <h2>Penjana Formula Silang & Analisis</h2>
+        <h2>Penjana Formula Silang Terarah</h2>
         
         <!-- Kotak Input Utama -->
         <label for="inputAsas">Masukkan Asas (4D/5D/Carta/Pod123):</label>
-        <input type="text" id="inputAsas" placeholder="Cth: 6198" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <input type="text" id="inputAsas" placeholder="Cth: 619872095087" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         <!-- Kotak Tarikh Cabutan -->
         <label for="inputDate">Masukkan Tarikh Cabutan (Pilihan):</label>
         <input type="date" id="inputDate">
         
-        <button class="btn-jana" onclick="janaFormulaStruktur()">Jana Analisis & Formula!</button>
+        <button class="btn-jana" onclick="janaFormulaTepat()">Jana Analisis & Formula!</button>
         
         <!-- Paparan Analisis Digit Hit & Hilang -->
         <div class="analysis-box">
@@ -160,17 +160,18 @@
             <p>❌ Digit Hilang: <br><span class="digit-hilang" id="paparHilang">-</span></p>
         </div>
 
-        <!-- Paparan Keputusan Terarah 3D & 2D -->
+        <!-- Paparan Keputusan Terarah 3D (Utama) -->
         <div class="result-box">
-            <h4>Pecahan 3D (Silang Hit + Hilang):</h4>
-            <div class="result-item" id="result3D">-</div>
-            <div style="font-size: 12px; color: #666;" id="mirror3D">Cermin: -</div>
+            <h4>Pecahan 3D (Utama):</h4>
+            <div class="result-item" id="result3D_utama">-</div>
+            <div style="font-size: 12px; color: #666;" id="mirror3D_utama">Cermin: -</div>
         </div>
 
+        <!-- Paparan Keputusan Terarah 3D (Alternatif) -->
         <div class="result-box">
-            <h4>Pecahan 2D (Silang Hit + Hilang):</h4>
-            <div class="result-item" id="result2D">-</div>
-            <div style="font-size: 12px; color: #666;" id="mirror2D">Cermin: -</div>
+            <h4>Pecahan 3D (Alternatif):</h4>
+            <div class="result-item" id="result3D_alternatif">-</div>
+            <div style="font-size: 12px; color: #666;" id="mirror3D_alternatif">Cermin: -</div>
         </div>
         
         <p class="kaunter-teks">
@@ -205,14 +206,14 @@
             document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
             document.getElementById("paparHit").innerText = "-";
             document.getElementById("paparHilang").innerText = "-";
-            document.getElementById("result3D").innerText = "-";
-            document.getElementById("mirror3D").innerText = "Cermin: -";
-            document.getElementById("result2D").innerText = "-";
-            document.getElementById("mirror2D").innerText = "Cermin: -";
+            document.getElementById("result3D_utama").innerText = "-";
+            document.getElementById("mirror3D_utama").innerText = "Cermin: -";
+            document.getElementById("result3D_alternatif").innerText = "-";
+            document.getElementById("mirror3D_alternatif").innerText = "Cermin: -";
             document.getElementById("senaraiStatistik").innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>";
         }
 
-        function janaFormulaStruktur() {
+        function janaFormulaTepat() {
             let val = document.getElementById('inputAsas').value.trim();
             let dateInput = document.getElementById('inputDate').value;
 
@@ -232,37 +233,44 @@
             document.getElementById('paparHit').innerText = digitHit.length > 0 ? digitHit.join(' ') : "-";
             document.getElementById('paparHilang').innerText = digitHilang.length > 0 ? digitHilang.join(' ') : "Tiada";
 
-            // --- 2. Formula Bermatematik Silang Berstruktur (Tanpa Rawak) ---
-            // Logik: Gabungkan urutan digit Hit utama dengan digit Hilang terawal 
-            // (Meniru corak 6901 yang mengambil 6,9 dari Hit dan 0 dari Hilang)
+            // --- 2. Formula 3D Utama & 3D Alternatif ---
+            let val3D_utama = "";
+            let base2D = "";
             
-            let val3D = "";
-            let val2D = "";
+            // Digit Hit paling kecil untuk dinaik taraf (Penguat)
+            let penguat = digitHit.length > 0 ? digitHit[0] : "0";
 
             if (digitHilang.length >= 2 && arrayInput.length >= 3) {
-                // 3D: Digit pertama input + Digit ketiga input + Digit hilang pertama
-                val3D = arrayInput[0] + arrayInput[2] + digitHilang[0];
+                // Pecahan 3D (Utama) -> Cth: 693
+                val3D_utama = arrayInput[0] + arrayInput[2] + digitHilang[0];
                 
-                // 2D: Digit kedua input + Digit hilang kedua
-                val2D = arrayInput[1] + digitHilang[1];
+                // Asas 2D Lama -> Cth: 14
+                base2D = arrayInput[1] + digitHilang[1];
             } else {
-                // Formula sandaran jika digit hilang terlalu sedikit
-                val3D = arrayInput[0] + arrayInput[1] + (digitHilang[0] || arrayInput[2]);
-                val2D = arrayInput[arrayInput.length - 1] + (digitHilang[1] || arrayInput[0]);
+                // Fallback
+                val3D_utama = arrayInput[0] + arrayInput[1] + (digitHilang[0] || arrayInput[2]);
+                base2D = arrayInput[arrayInput.length - 1] + (digitHilang[1] || arrayInput[0]);
             }
 
-            let cermin3D = getMirror(val3D);
-            let cermin2D = getMirror(val2D);
+            // Pecahan 3D (Alternatif): Gabung digit penguat dengan Asas 2D -> Cth: 0 + 14 = 014
+            let val3D_alternatif = penguat + base2D;
 
-            // Papar Keputusan
-            document.getElementById('result3D').innerText = val3D;
-            document.getElementById('mirror3D').innerText = "Cermin: " + cermin3D;
-            document.getElementById('result2D').innerText = val2D;
-            document.getElementById('mirror2D').innerText = "Cermin: " + cermin2D;
+            // Jana Cermin
+            let cermin3D_utama = getMirror(val3D_utama);
+            let cermin2D_asas = getMirror(base2D); // Cth: 69
+            let cermin3D_alternatif = penguat + cermin2D_asas; // Cth: 0 + 69 = 069
+
+            // Papar Keputusan Utama
+            document.getElementById('result3D_utama').innerText = val3D_utama;
+            document.getElementById('mirror3D_utama').innerText = "Cermin: " + cermin3D_utama;
+            
+            // Papar Keputusan Alternatif
+            document.getElementById('result3D_alternatif').innerText = val3D_alternatif;
+            document.getElementById('mirror3D_alternatif').innerText = "Cermin: " + cermin3D_alternatif;
 
             // --- 3. Kemaskini Statistik ---
             let infoTarikh = dateInput ? ` (T: ${dateInput})` : "";
-            kemaskiniStatistikGabung("3D: " + val3D + " | 2D: " + val2D + infoTarikh);
+            kemaskiniStatistikGabung("Utama: " + val3D_utama + " | Alt: " + val3D_alternatif + infoTarikh);
 
             jumlahKiraan++;
             document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
