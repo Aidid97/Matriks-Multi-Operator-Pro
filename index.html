@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Nombor 2D/3D</title>
+    <title>Penjana Formula Terarah 2D & 3D</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,38 +16,25 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            max-width: 420px;
             margin: auto;
         }
-        input[type="number"], input[type="date"], select, button {
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+        input[type="number"], input[type="date"], button {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
+            margin: 5px 0 15px 0;
             border-radius: 5px;
             border: 1px solid #ccc;
             font-size: 16px;
             box-sizing: border-box;
-        }
-        .checkbox-group {
-            text-align: left;
-            margin: 5px 0 15px 0;
-            background-color: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        .checkbox-group label {
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-            display: flex;
-            align-items: center;
-        }
-        .checkbox-group input {
-            width: auto;
-            margin-right: 10px;
-            transform: scale(1.2);
         }
         .btn-jana {
             background-color: #28a745;
@@ -55,6 +42,8 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
+            font-size: 16px;
+            padding: 12px;
         }
         .btn-jana:hover {
             background-color: #218838;
@@ -72,13 +61,27 @@
         .btn-reset:hover {
             background-color: #c82333;
         }
-        .result {
-            font-size: 36px;
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .result-box h4 {
+            margin: 0 0 8px 0;
+            color: #007bff;
+            font-size: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+        }
+        .result-item {
+            font-size: 24px;
             font-weight: bold;
             color: #d9534f;
-            margin-top: 15px;
-            min-height: 40px;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
         }
         .kaunter-teks {
             margin-top: 15px; 
@@ -96,15 +99,15 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             text-align: left;
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
-            font-size: 14px;
+            font-size: 13px;
         }
         .statistik h4 {
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
         .statistik ul {
             list-style-type: none;
@@ -112,7 +115,7 @@
             margin: 0;
         }
         .statistik li {
-            padding: 5px 0;
+            padding: 4px 0;
             border-bottom: 1px dashed #ccc;
             display: flex;
             justify-content: space-between;
@@ -122,176 +125,128 @@
 <body>
 
     <div class="container">
-        <h2>Penjana Nombor 2D/3D</h2>
+        <h2>Penjana Formula Terarah 2D & 3D</h2>
         
-        <!-- Pilihan Nombor Asas (Boleh masukkan apa-apa panjang) -->
-        <label for="inputNumbers">Masukkan Nombor Asas (Cth: 4D, 5D, 6D):</label>
-        <input type="number" id="inputNumbers" placeholder="Cth: 1234 atau 556677" min="0">
+        <!-- Kotak Input Asas 3D -->
+        <label for="inputAsas3D">Masukkan Asas 3D (Cth: 615):</label>
+        <input type="number" id="inputAsas3D" placeholder="Cth: 615" min="0">
 
-        <!-- Pilihan Formula Cermin -->
-        <div class="checkbox-group">
-            <label>
-                <input type="checkbox" id="gunaCermin" checked>
-                Guna Formula Cermin (0=5, 1=6...)
-            </label>
+        <!-- Kotak Input Asas 2D -->
+        <label for="inputAsas2D">Masukkan Asas 2D (Cth: 68):</label>
+        <input type="number" id="inputAsas2D" placeholder="Cth: 68" min="0">
+
+        <!-- Kotak Tarikh Cabutan -->
+        <label for="inputDate">Masukkan Tarikh Cabutan (Pilihan):</label>
+        <input type="date" id="inputDate">
+        
+        <button class="btn-jana" onclick="janaFormulaTepat()">Jana Keputusan Formula!</button>
+        
+        <!-- Paparan Keputusan Terarah -->
+        <div class="result-box">
+            <h4>Hasil Formula 3D:</h4>
+            <div class="result-item" id="result3D">-</div>
+            <div style="font-size: 12px; color: #666;" id="mirror3D">Cermin: -</div>
         </div>
 
-        <label for="inputDate">Masukkan Tarikh (Pilihan):</label>
-        <input type="date" id="inputDate">
-
-        <!-- Pilihan Hasil (Dikembalikan kepada 2D/3D sahaja) -->
-        <label for="digitType">Pilih Format Hasil Dijana:</label>
-        <select id="digitType">
-            <option value="2">2D (Dua Digit)</option>
-            <option value="3">3D (Tiga Digit)</option>
-        </select>
+        <div class="result-box">
+            <h4>Hasil Formula 2D:</h4>
+            <div class="result-item" id="result2D">-</div>
+            <div style="font-size: 12px; color: #666;" id="mirror2D">Cermin: -</div>
+        </div>
         
-        <button class="btn-jana" onclick="generateRandom()">Jana Nombor!</button>
-        
-        <!-- Bahagian Kaunter & Butang Reset -->
         <p class="kaunter-teks">
-            Jumlah Anda Menjana: <span id="kaunterPaparan" style="color: #007bff;">0</span> kali
+            Jumlah Jana: <span id="kaunterPaparan" style="color: #007bff;">0</span> kali
         </p>
-        <button class="btn-reset" onclick="resetData()">Kosongkan Semua Rekod (Reset)</button>
+        <button class="btn-reset" onclick="resetData()">Kosongkan Rekod</button>
 
-        <p style="margin-top:20px; margin-bottom:5px;">Nombor Bertuah Anda:</p>
-        <div class="result" id="resultDisplay">-</div>
-
-        <!-- Bahagian Rekod/Statistik Nombor -->
+        <!-- Bahagian Rekod Statistik -->
         <div class="statistik">
-            <h4>Rekod Kekerapan Nombor:</h4>
+            <h4>Rekod Kekerapan Keputusan:</h4>
             <ul id="senaraiStatistik">
-                <!-- Senarai nombor akan muncul di sini -->
+                <li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>
             </ul>
         </div>
     </div>
 
     <script>
-        // Ambil data dari local storage memori telefon
-        let jumlahKiraan = parseInt(localStorage.getItem("jumlahJanaanTerkumpul")) || 0;
-        let rekodNombor = JSON.parse(localStorage.getItem("rekodNomborTerkumpul")) || {};
+        let jumlahKiraan = 0;
+        let rekodNombor = {};
 
-        document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
-        kemaskiniPaparanStatistik();
-
-        function getMirror(digit) {
+        // Formula cermin rasmi (0=5, 1=6, 2=7, 3=8, 4=9)
+        function getMirror(str) {
             const mirrors = {
                 '0': '5', '1': '6', '2': '7', '3': '8', '4': '9',
                 '5': '0', '6': '1', '7': '2', '8': '3', '9': '4'
             };
-            return mirrors[digit] || digit;
-        }
-
-        function kemaskiniPaparanStatistik() {
-            let senarai = document.getElementById("senaraiStatistik");
-            senarai.innerHTML = ""; 
-            
-            let adaRekod = false;
-            // Loop untuk senaraikan nombor dari storage
-            for (let nombor in rekodNombor) {
-                adaRekod = true;
-                let li = document.createElement("li");
-                li.innerHTML = `<span style="font-size:16px; font-weight:bold; color:#d9534f;">${nombor}</span> <span>${rekodNombor[nombor]} kali</span>`;
-                senarai.appendChild(li);
-            }
-
-            if (!adaRekod) {
-                senarai.innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada nombor dijana.</li>";
-            }
+            return str.split('').map(digit => mirrors[digit] || digit).join('');
         }
 
         function resetData() {
-            let pengesahan = confirm("Padam semula jumlah janaan dan senarai rekod nombor?");
-            if (pengesahan) {
-                jumlahKiraan = 0;
-                rekodNombor = {};
-                
-                localStorage.removeItem("jumlahJanaanTerkumpul");
-                localStorage.removeItem("rekodNomborTerkumpul");
-                
-                document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
-                document.getElementById("resultDisplay").innerText = "-";
-                kemaskiniPaparanStatistik();
-            }
+            jumlahKiraan = 0;
+            rekodNombor = {};
+            document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
+            document.getElementById("result3D").innerText = "-";
+            document.getElementById("mirror3D").innerText = "Cermin: -";
+            document.getElementById("result2D").innerText = "-";
+            document.getElementById("mirror2D").innerText = "Cermin: -";
+            document.getElementById("senaraiStatistik").innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>";
         }
 
-        function generateRandom() {
-            let userInputs = document.getElementById('inputNumbers').value;
+        function janaFormulaTepat() {
+            let val3D = document.getElementById('inputAsas3D').value.trim();
+            let val2D = document.getElementById('inputAsas2D').value.trim();
             let dateInput = document.getElementById('inputDate').value;
-            let digitType = document.getElementById('digitType').value;
-            let gunaCermin = document.getElementById('gunaCermin').checked;
-            let display = document.getElementById('resultDisplay');
 
-            let pool = "";
-
-            if (userInputs) {
-                pool += userInputs; // Masukkan nombor ditaip (4D, 5D, dsb.)
-                
-                // Tambah nombor cermin hanya jika checkbox ditanda
-                if (gunaCermin) {
-                    for (let i = 0; i < userInputs.length; i++) {
-                        pool += getMirror(userInputs[i]); 
-                    }
-                }
+            if (!val3D && !val2D) {
+                alert("Sila masukkan sekurang-kurangnya Asas 3D atau Asas 2D!");
+                return;
             }
 
-            if (dateInput) {
-                let cleanDate = dateInput.replace(/-/g, ""); // Buang sengkang dari tarikh
-                pool += cleanDate;
+            let infoTarikh = dateInput ? ` (Tarikh: ${dateInput})` : "";
+
+            // Pemprosesan terarah mengikut formula kotak asas (bukan rawak)
+            if (val3D) {
+                let cermin3D = getMirror(val3D);
+                document.getElementById('result3D').innerText = val3D;
+                document.getElementById('mirror3D').innerText = "Cermin: " + cermin3D;
+                kemaskiniStatistikGabung("3D: " + val3D + " | C: " + cermin3D + infoTarikh);
+            } else {
+                document.getElementById('result3D').innerText = "-";
+                document.getElementById('mirror3D').innerText = "Cermin: -";
             }
 
-            // Jika kosong, guna 0-9
-            if (!pool) {
-                pool = "0123456789";
+            if (val2D) {
+                let cermin2D = getMirror(val2D);
+                document.getElementById('result2D').innerText = val2D;
+                document.getElementById('mirror2D').innerText = "Cermin: " + cermin2D;
+                kemaskiniStatistikGabung("2D: " + val2D + " | C: " + cermin2D + infoTarikh);
+            } else {
+                document.getElementById('result2D').innerText = "-";
+                document.getElementById('mirror2D').innerText = "Cermin: -";
             }
 
-            let length = parseInt(digitType); // Hanya akan jadi 2 atau 3
-            let duration = 1000; 
-            let intervalTime = 50; 
-            let passedTime = 0;
+            jumlahKiraan++;
+            document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
+        }
 
-            // Animasi kocok nombor
-            let interval = setInterval(() => {
-                let tempNum = "";
-                for(let i = 0; i < length; i++) {
-                    tempNum += Math.floor(Math.random() * 10);
-                }
-                display.innerText = tempNum;
-                passedTime += intervalTime;
+        function kemaskiniStatistikGabung(teks) {
+            let senarai = document.getElementById("senaraiStatistik");
+            if (rekodNombor[teks]) {
+                rekodNombor[teks]++;
+            } else {
+                rekodNombor[teks] = 1;
+            }
 
-                if (passedTime >= duration) {
-                    clearInterval(interval);
-                    
-                    let finalNum = "";
-                    let poolArray = pool.split('');
-                    
-                    // Janaan keputusan akhir berdasarkan pool input
-                    for(let i = 0; i < length; i++) {
-                        let randomIndex = Math.floor(Math.random() * poolArray.length);
-                        finalNum += poolArray[randomIndex];
-                    }
-                    display.innerText = finalNum;
-
-                    // Mengemaskini Kaunter Klik
-                    jumlahKiraan++;
-                    document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
-                    localStorage.setItem("jumlahJanaanTerkumpul", jumlahKiraan);
-
-                    // Menyimpan nombor ke dalam Statistik
-                    if (rekodNombor[finalNum]) {
-                        rekodNombor[finalNum]++;
-                    } else {
-                        rekodNombor[finalNum] = 1;
-                    }
-                    localStorage.setItem("rekodNomborTerkumpul", JSON.stringify(rekodNombor));
-                    
-                    kemaskiniPaparanStatistik();
-                }
-            }, intervalTime);
+            senarai.innerHTML = "";
+            for (let item in rekodNombor) {
+                let li = document.createElement("li");
+                li.innerHTML = `<span style="font-weight:bold; color:#d9534f;">${item}</span> <span>${rekodNombor[item]} kali</span>`;
+                senarai.appendChild(li);
+            }
         }
     </script>
 
-    <!-- Kod Iklan Adsterra (Social Bar) -->
+    <!-- Kod Iklan Adsterra (Social Bar) - Dikekalkan -->
     <script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
 
 </body>
