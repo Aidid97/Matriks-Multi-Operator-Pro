@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Formula Silang 3D (Utama & Alternatif)</title>
+    <title>Penganalisis Pola Pukal & Penjana 3D</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +16,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 420px;
+            max-width: 450px;
             margin: auto;
         }
         label {
@@ -27,7 +27,7 @@
             font-size: 14px;
             color: #333;
         }
-        input[type="text"], input[type="date"], button {
+        textarea, input[type="date"], button {
             width: 100%;
             padding: 10px;
             margin: 5px 0 15px 0;
@@ -36,8 +36,13 @@
             font-size: 16px;
             box-sizing: border-box;
         }
+        textarea {
+            resize: vertical;
+            height: 120px;
+            font-family: monospace;
+        }
         .btn-jana {
-            background-color: #28a745;
+            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
@@ -46,7 +51,7 @@
             padding: 12px;
         }
         .btn-jana:hover {
-            background-color: #218838;
+            background-color: #0056b3;
         }
         .btn-reset {
             background-color: #dc3545;
@@ -65,7 +70,7 @@
             background-color: #e9ecef;
             border: 1px solid #ced4da;
             border-radius: 5px;
-            padding: 10px;
+            padding: 12px;
             margin-top: 15px;
             text-align: left;
         }
@@ -75,122 +80,89 @@
             font-weight: bold;
             color: #495057;
         }
-        .digit-hit { color: #28a745; font-size: 16px; letter-spacing: 2px;}
-        .digit-hilang { color: #dc3545; font-size: 16px; letter-spacing: 2px;}
+        .digit-hot { color: #d9534f; font-size: 18px; letter-spacing: 2px;}
+        .digit-cold { color: #6c757d; font-size: 16px; letter-spacing: 2px;}
         
         .result-box {
             background-color: #f8f9fa;
             border: 1px solid #ddd;
             border-radius: 5px;
-            padding: 10px;
+            padding: 15px;
             margin-top: 15px;
             text-align: left;
+            border-left: 5px solid #28a745;
         }
         .result-box h4 {
             margin: 0 0 8px 0;
-            color: #007bff;
+            color: #333;
             font-size: 15px;
             border-bottom: 1px solid #ccc;
             padding-bottom: 4px;
         }
         .result-item {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            color: #d9534f;
-            letter-spacing: 2px;
+            color: #28a745;
+            letter-spacing: 3px;
             margin-bottom: 5px;
         }
-        .kaunter-teks {
-            margin-top: 15px; 
-            font-size: 14px; 
-            font-weight: bold; 
-            color: #555;
-            padding: 5px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-        .statistik {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: left;
-            max-height: 180px;
-            overflow-y: auto;
+        .mirror-text {
             font-size: 13px;
+            color: #666;
+            background-color: #fff;
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            display: inline-block;
         }
-        .statistik h4 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 4px;
-        }
-        .statistik ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .statistik li {
-            padding: 4px 0;
-            border-bottom: 1px dashed #ccc;
-            display: flex;
-            justify-content: space-between;
+        .info-teks {
+            font-size: 12px;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Penjana Formula Silang 3D</h2>
+        <h2>Penganalisis Pola Pukal (Copy & Paste)</h2>
         
         <!-- Kotak Input Utama -->
-        <label for="inputAsas">Masukkan Asas (4D/5D/Carta/Pod123):</label>
-        <input type="text" id="inputAsas" placeholder="Cth: 6198" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <label for="inputResults">Tampal (Paste) Kesemua 23 Keputusan 4D:</label>
+        <p class="info-teks">*Anda boleh copy terus dari web. Sistem akan menapis teks secara automatik.</p>
+        <textarea id="inputResults" placeholder="Contoh Paste:&#10;1st Prize: 9332&#10;2nd Prize: 0305&#10;Consolation: 1480..."></textarea>
 
-        <!-- Kotak Tarikh Cabutan -->
-        <label for="inputDate">Masukkan Tarikh Cabutan (Pilihan):</label>
-        <input type="date" id="inputDate">
+        <button class="btn-jana" onclick="analisisKeputusan()">Kaji Pola & Jana 3D!</button>
         
-        <button class="btn-jana" onclick="janaFormulaStruktur()">Jana Analisis & Formula!</button>
-        
-        <!-- Paparan Analisis Digit Hit & Hilang -->
+        <!-- Paparan Analisis Kekerapan Digit -->
         <div class="analysis-box">
-            <p>✅ Digit Hit (Dalam Asas): <br><span class="digit-hit" id="paparHit">-</span></p>
-            <p>❌ Digit Hilang: <br><span class="digit-hilang" id="paparHilang">-</span></p>
+            <h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">📊 Analisis Algoritma (23 Nombor)</h4>
+            <p>🔥 Digit Paling Kerap (Hot): <br><span class="digit-hot" id="paparHot">-</span></p>
+            <p>❄️ Digit Jarang/Hilang (Cold): <br><span class="digit-cold" id="paparCold">-</span></p>
         </div>
 
-        <!-- Paparan Keputusan Terarah 3D Utama & Alternatif -->
+        <!-- Paparan Keputusan Terarah 3D (Hot) -->
         <div class="result-box">
-            <h4>Pecahan 3D (Utama):</h4>
-            <div class="result-item" id="result3D_utama">-</div>
-            <div style="font-size: 12px; color: #666;" id="mirror3D_utama">Cermin: -</div>
+            <h4>Pecahan 3D Berdasarkan Pola 'Hot':</h4>
+            <div class="result-item" id="result3D_hot">-</div>
+            <div class="mirror-text" id="mirror3D_hot">Cermin: -</div>
         </div>
 
-        <div class="result-box">
-            <h4>Pecahan 3D (Alternatif):</h4>
-            <div class="result-item" id="result3D_alternatif">-</div>
-            <div style="font-size: 12px; color: #666;" id="mirror3D_alternatif">Cermin: -</div>
+        <!-- Paparan Keputusan Terarah 3D (Silang) -->
+        <div class="result-box" style="border-left-color: #007bff;">
+            <h4>Pecahan 3D Silang (Hot + Cold):</h4>
+            <div class="result-item" style="color: #007bff;" id="result3D_silang">-</div>
+            <div class="mirror-text" id="mirror3D_silang">Cermin: -</div>
         </div>
         
-        <p class="kaunter-teks">
-            Jumlah Jana: <span id="kaunterPaparan" style="color: #007bff;">0</span> kali
-        </p>
-        <button class="btn-reset" onclick="resetData()">Kosongkan Rekod</button>
+        <button class="btn-reset" onclick="resetData()" style="margin-top: 20px;">Kosongkan Papan Analisis</button>
 
-        <!-- Bahagian Rekod Statistik -->
-        <div class="statistik">
-            <h4>Rekod Kekerapan Keputusan:</h4>
-            <ul id="senaraiStatistik">
-                <li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>
-            </ul>
-        </div>
     </div>
 
     <script>
-        let jumlahKiraan = 0;
-        let rekodNombor = {};
-
+        // Fungsi Penukaran Cermin
         function getMirror(str) {
             const mirrors = {
                 '0': '5', '1': '6', '2': '7', '3': '8', '4': '9',
@@ -200,88 +172,85 @@
         }
 
         function resetData() {
-            jumlahKiraan = 0;
-            rekodNombor = {};
-            document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
-            document.getElementById("paparHit").innerText = "-";
-            document.getElementById("paparHilang").innerText = "-";
-            document.getElementById("result3D_utama").innerText = "-";
-            document.getElementById("mirror3D_utama").innerText = "Cermin: -";
-            document.getElementById("result3D_alternatif").innerText = "-";
-            document.getElementById("mirror3D_alternatif").innerText = "Cermin: -";
-            document.getElementById("senaraiStatistik").innerHTML = "<li style='color:#777; justify-content:center; border:none;'>Belum ada rekod.</li>";
+            document.getElementById('inputResults').value = "";
+            document.getElementById("paparHot").innerText = "-";
+            document.getElementById("paparCold").innerText = "-";
+            document.getElementById("result3D_hot").innerText = "-";
+            document.getElementById("mirror3D_hot").innerText = "Cermin: -";
+            document.getElementById("result3D_silang").innerText = "-";
+            document.getElementById("mirror3D_silang").innerText = "Cermin: -";
         }
 
-        function janaFormulaStruktur() {
-            let val = document.getElementById('inputAsas').value.trim();
-            let dateInput = document.getElementById('inputDate').value;
+        function analisisKeputusan() {
+            let inputRaw = document.getElementById('inputResults').value;
+            
+            // Penapis Pintar: Mencari pola yang mempunyai tepat 4 digit nombor (mengabaikan teks lain)
+            let match4D = inputRaw.match(/\b\d{4}\b/g);
+            let digitsOnly = "";
 
-            if (val.length < 3) {
-                alert("Sila masukkan nombor asas sekurang-kurangnya 3 digit!");
+            if (match4D) {
+                // Gabungkan semua nombor 4D yang dijumpai
+                digitsOnly = match4D.join('');
+            } else {
+                // Fallback: Jika pengguna masukkan nombor bercantum tanpa jarak
+                digitsOnly = inputRaw.replace(/[^0-9]/g, '');
+            }
+
+            if (digitsOnly.length < 4) {
+                alert("Sila paste keputusan yang mengandungi nombor 4D!");
                 return;
             }
 
-            // --- 1. Analisis Hit & Hilang ---
-            let semuaDigit = ['0','1','2','3','4','5','6','7','8','9'];
-            let arrayInput = val.split('');
-            
-            // Susun digit unik secara berurutan
-            let digitHit = [...new Set(arrayInput)].sort();
-            let digitHilang = semuaDigit.filter(d => !digitHit.includes(d));
-
-            document.getElementById('paparHit').innerText = digitHit.length > 0 ? digitHit.join(' ') : "-";
-            document.getElementById('paparHilang').innerText = digitHilang.length > 0 ? digitHilang.join(' ') : "Tiada";
-
-            // --- 2. Formula Bermatematik Silang Berstruktur ---
-            let val3D_utama = "";
-            let val2D_asas = "";
-
-            if (digitHilang.length >= 2 && arrayInput.length >= 3) {
-                // 3D Utama: Sama seperti kod asal anda
-                val3D_utama = arrayInput[0] + arrayInput[2] + digitHilang[0];
-                // 2D Asas: Sama seperti kod asal anda
-                val2D_asas = arrayInput[1] + digitHilang[1];
-            } else {
-                // Formula sandaran jika digit hilang terlalu sedikit
-                val3D_utama = arrayInput[0] + arrayInput[1] + (digitHilang[0] || arrayInput[2]);
-                val2D_asas = arrayInput[arrayInput.length - 1] + (digitHilang[1] || arrayInput[0]);
+            // --- 1. Algoritma Kekerapan Digit ---
+            let counts = { '0':0, '1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0, '9':0 };
+            for (let char of digitsOnly) {
+                counts[char]++;
             }
 
-            // PENAMBAHBAIKAN: Tukar 2D menjadi 3D Alternatif dengan digit Hit paling kecil
-            let penguat = digitHit.length > 0 ? digitHit[0] : "0";
-            let val3D_alternatif = penguat + val2D_asas;
+            // Susun digit berdasarkan kekerapan (paling banyak ke paling sikit)
+            let sortedDigits = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+            
+            // Asingkan Hot (keluar > 0) dan Cold/Hilang (keluar 0)
+            let hotDigits = sortedDigits.filter(d => counts[d] > 0);
+            let missingDigits = sortedDigits.filter(d => counts[d] === 0);
 
-            let cermin3D_utama = getMirror(val3D_utama);
-            let cermin3D_alternatif = getMirror(val3D_alternatif);
+            // Jika semua nombor keluar, ambil 3 nombor yang paling sikit keluar sebagai Cold
+            let coldDigits = missingDigits.length > 0 ? missingDigits : sortedDigits.slice(-3);
+
+            // Paparkan Analisis
+            document.getElementById('paparHot').innerText = hotDigits.slice(0, 5).join(' ') + " (Sangat Kerap)";
+            document.getElementById('paparCold').innerText = coldDigits.slice(0, 5).join(' ');
+
+            // --- 2. Penjanaan 3D Berdasarkan Pola Data ---
+            let val3D_hot = "";
+            let val3D_silang = "";
+
+            if (hotDigits.length >= 3) {
+                // Pola Hot: Ambil top 3 digit paling kerap muncul
+                val3D_hot = hotDigits[0] + hotDigits[1] + hotDigits[2];
+            } else {
+                // Fallback
+                val3D_hot = hotDigits[0] + hotDigits[0] + hotDigits[0];
+            }
+
+            if (hotDigits.length >= 2) {
+                // Pola Silang: Gabung 2 digit Hot teratas dengan 1 digit Cold teratas
+                let coldDigitToUse = missingDigits.length > 0 ? missingDigits[0] : sortedDigits[sortedDigits.length - 1];
+                val3D_silang = hotDigits[0] + hotDigits[1] + coldDigitToUse;
+            } else {
+                val3D_silang = hotDigits[0] + "01";
+            }
+
+            // Dapatkan Nombor Cermin
+            let cermin3D_hot = getMirror(val3D_hot);
+            let cermin3D_silang = getMirror(val3D_silang);
 
             // Papar Keputusan
-            document.getElementById('result3D_utama').innerText = val3D_utama;
-            document.getElementById('mirror3D_utama').innerText = "Cermin: " + cermin3D_utama;
-            document.getElementById('result3D_alternatif').innerText = val3D_alternatif;
-            document.getElementById('mirror3D_alternatif').innerText = "Cermin: " + cermin3D_alternatif;
-
-            // --- 3. Kemaskini Statistik ---
-            let infoTarikh = dateInput ? ` (T: ${dateInput})` : "";
-            kemaskiniStatistikGabung("3D Utama: " + val3D_utama + " | 3D Alt: " + val3D_alternatif + infoTarikh);
-
-            jumlahKiraan++;
-            document.getElementById("kaunterPaparan").innerText = jumlahKiraan;
-        }
-
-        function kemaskiniStatistikGabung(teks) {
-            let senarai = document.getElementById("senaraiStatistik");
-            if (rekodNombor[teks]) {
-                rekodNombor[teks]++;
-            } else {
-                rekodNombor[teks] = 1;
-            }
-
-            senarai.innerHTML = "";
-            for (let item in rekodNombor) {
-                let li = document.createElement("li");
-                li.innerHTML = `<span style="font-weight:bold; color:#d9534f; font-size:12px;">${item}</span> <span>${rekodNombor[item]}x</span>`;
-                senarai.appendChild(li);
-            }
+            document.getElementById('result3D_hot').innerText = val3D_hot;
+            document.getElementById('mirror3D_hot').innerText = "Cermin: " + cermin3D_hot;
+            
+            document.getElementById('result3D_silang').innerText = val3D_silang;
+            document.getElementById('mirror3D_silang').innerText = "Cermin: " + cermin3D_silang;
         }
     </script>
 
