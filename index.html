@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penganalisis Pola & Pilihan 4D</title>
+    <title>Penganalisis Pola & Sistem Pusingan (Wheeling)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +16,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 450px;
+            max-width: 480px;
             margin: auto;
         }
         label {
@@ -88,6 +88,9 @@
             text-align: left;
             border-left: 5px solid #28a745;
         }
+        .result-box.wheeling {
+            border-left: 5px solid #9c27b0;
+        }
         .result-box h4 {
             margin: 0 0 8px 0;
             color: #333;
@@ -102,15 +105,32 @@
             letter-spacing: 2px;
         }
         .list-4d {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #333;
             letter-spacing: 3px;
-            margin: 8px 0;
+            margin: 6px 0;
             padding: 5px;
             background: #fff;
             border: 1px solid #eee;
             border-radius: 4px;
+        }
+        .wheel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .wheel-item {
+            background: #fff;
+            border: 1px solid #d4a5d8;
+            color: #9c27b0;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 4px;
+            letter-spacing: 1px;
         }
         .mirror-text {
             font-size: 12px;
@@ -124,37 +144,42 @@
 <body>
 
     <div class="container">
-        <h2>Pilihan 4D: Variasi 1D Pelengkap</h2>
+        <h2>Pilihan 4D & Sistem Pusingan (Wheeling)</h2>
         
         <label for="inputResults">Tampal (Paste) Kesemua Keputusan 4D:</label>
-        <p class="info-teks">*Sistem akan menjana variasi 4D menggunakan nombor statistik seterusnya.</p>
+        <p class="info-teks">*Sistem akan menjana variasi pusingan secara automatik.</p>
         <textarea id="inputResults" placeholder="Contoh Paste:&#10;1st Prize: 3872..."></textarea>
 
-        <button class="btn-jana" onclick="analisisKeputusan()">Kaji Statistik & Jana Pilihan 4D</button>
+        <button class="btn-jana" onclick="analisisKeputusan()">Kaji Statistik & Jana Kombinasi</button>
         
         <!-- Paparan Analisis Kekerapan Digit -->
         <div class="analysis-box">
             <h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">📊 Analisis Kekerapan Digit</h4>
-            <p>🔥 Ranking Kerap (Hot): <br><span class="digit-hot" id="paparHot">-</span></p>
+            <p>🔥 Top 6 (Hot): <br><span class="digit-hot" id="paparHot">-</span></p>
             <p>❄️ Jarang/Hilang (Cold): <br><span class="digit-cold" id="paparCold">-</span></p>
+        </div>
+
+        <!-- Sistem Pusingan Wheeling Top 6 -->
+        <div class="result-box wheeling">
+            <h4>Kombinasi Pusingan (Wheeling) Top 6:</h4>
+            <p style="font-size: 12px; color: #666; margin: 0 0 10px 0;">Menjana semua 15 kemungkinan gabungan 4D daripada 6 angka Hot teratas.</p>
+            <div id="wheeling_container" class="wheel-grid">
+                <!-- Kombinasi wheeling akan dipaparkan di sini -->
+            </div>
         </div>
 
         <!-- Paparan Keputusan Terarah 4D (Hot) -->
         <div class="result-box">
-            <h4>Variasi 4D Berdasarkan Pola 'Hot':</h4>
-            <div style="margin-bottom: 8px;">Asas 3D: <span class="result-item" id="result3D_hot">-</span></div>
-            <div id="senarai4D_hot" style="margin-top: 10px;">
-                <!-- Pilihan 4D akan dipaparkan di sini -->
-            </div>
+            <h4>Variasi 4D (Kunci Asas 3D Hot):</h4>
+            <div style="margin-bottom: 8px;">Asas 3D Terkunci: <span class="result-item" id="result3D_hot">-</span></div>
+            <div id="senarai4D_hot" style="margin-top: 10px;"></div>
         </div>
 
         <!-- Paparan Keputusan Terarah 4D (Silang) -->
         <div class="result-box" style="border-left-color: #007bff;">
             <h4>Variasi 4D Silang (Hot + Cold):</h4>
             <div style="margin-bottom: 8px;">Asas 3D Silang: <span class="result-item" style="color: #007bff;" id="result3D_silang">-</span></div>
-            <div id="senarai4D_silang" style="margin-top: 10px;">
-                <!-- Pilihan 4D akan dipaparkan di sini -->
-            </div>
+            <div id="senarai4D_silang" style="margin-top: 10px;"></div>
         </div>
         
         <button class="btn-reset" onclick="resetData()" style="margin-top: 20px;">Kosongkan Papan Analisis</button>
@@ -162,18 +187,38 @@
     </div>
 
     <script>
+        // Fungsi Penukaran Cermin
         function getMirror(str) {
-            const mirrors = {
-                '0': '5', '1': '6', '2': '7', '3': '8', '4': '9',
-                '5': '0', '6': '1', '7': '2', '8': '3', '9': '4'
-            };
-            return str.split('').map(digit => mirrors[digit] || digit).join('');
+            const mirrors = { '0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4' };
+            return str.split('').map(d => mirrors[d] || d).join('');
+        }
+
+        // Fungsi Kombinasi Matematik (Wheeling)
+        function getCombinations(arr, k) {
+            let i, j, combs, head, tailcombs;
+            if (k > arr.length || k <= 0) return [];
+            if (k == arr.length) return [arr];
+            if (k == 1) {
+                combs = [];
+                for (i = 0; i < arr.length; i++) combs.push([arr[i]]);
+                return combs;
+            }
+            combs = [];
+            for (i = 0; i < arr.length - k + 1; i++) {
+                head = arr.slice(i, i + 1);
+                tailcombs = getCombinations(arr.slice(i + 1), k - 1);
+                for (j = 0; j < tailcombs.length; j++) {
+                    combs.push(head.concat(tailcombs[j]));
+                }
+            }
+            return combs;
         }
 
         function resetData() {
             document.getElementById('inputResults').value = "";
             document.getElementById("paparHot").innerText = "-";
             document.getElementById("paparCold").innerText = "-";
+            document.getElementById("wheeling_container").innerHTML = "";
             document.getElementById("result3D_hot").innerText = "-";
             document.getElementById("senarai4D_hot").innerHTML = "";
             document.getElementById("result3D_silang").innerText = "-";
@@ -190,7 +235,7 @@
                 return;
             }
 
-            // 1. Kekerapan Digit
+            // 1. Kira Kekerapan
             let counts = { '0':0, '1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0, '9':0 };
             for (let char of digitsOnly) counts[char]++;
 
@@ -202,33 +247,38 @@
             document.getElementById('paparHot').innerText = hotDigits.slice(0, 6).join(' ');
             document.getElementById('paparCold').innerText = coldDigits.slice(0, 5).join(' ');
 
-            // 2. Asas 3D & Array Pilihan 1D Pelengkap
-            let val3D_hot = "";
-            let arr_pelengkap_hot = [];
-            
-            let val3D_silang = "";
-            let arr_pelengkap_silang = [];
+            // 2. Sistem Wheeling (Kombinasi 4 dari 6)
+            let top6 = hotDigits.slice(0, 6);
+            let htmlWheeling = "";
+            if (top6.length >= 4) {
+                let wheelingCombinations = getCombinations(top6, 4);
+                wheelingCombinations.forEach(comb => {
+                    htmlWheeling += `<div class="wheel-item">${comb.join('')}</div>`;
+                });
+            } else {
+                htmlWheeling = "<div style='grid-column: span 3;'>Data tidak mencukupi untuk wheeling.</div>";
+            }
+            document.getElementById('wheeling_container').innerHTML = htmlWheeling;
 
-            // --- POLA HOT ---
+            // 3. Asas 3D & Array Pilihan 1D Pelengkap (Kekal Sama)
+            let val3D_hot = ""; let arr_pelengkap_hot = [];
+            let val3D_silang = ""; let arr_pelengkap_silang = [];
+
             if (hotDigits.length >= 3) {
                 val3D_hot = hotDigits[0] + hotDigits[1] + hotDigits[2];
-                // Ambil 3 digit seterusnya sebagai pilihan pelengkap
                 if(hotDigits[3]) arr_pelengkap_hot.push(hotDigits[3]);
                 if(hotDigits[4]) arr_pelengkap_hot.push(hotDigits[4]);
                 if(hotDigits[5]) arr_pelengkap_hot.push(hotDigits[5]);
             }
-
-            // --- POLA SILANG ---
             if (hotDigits.length >= 2) {
                 let coldDigitToUse = coldDigits[0];
                 val3D_silang = hotDigits[0] + hotDigits[1] + coldDigitToUse;
-                // Ambil digit kekerapan di bawahnya sebagai pilihan
                 if(hotDigits[2]) arr_pelengkap_silang.push(hotDigits[2]);
                 if(hotDigits[3]) arr_pelengkap_silang.push(hotDigits[3]);
                 if(hotDigits[4]) arr_pelengkap_silang.push(hotDigits[4]);
             }
 
-            // 3. Papar Senarai 4D (Hot)
+            // Papar Senarai 4D Kunci Asas
             document.getElementById('result3D_hot').innerText = val3D_hot;
             let htmlHot = "";
             arr_pelengkap_hot.forEach(digit => {
@@ -237,7 +287,6 @@
             });
             document.getElementById('senarai4D_hot').innerHTML = htmlHot || "-";
 
-            // 4. Papar Senarai 4D (Silang)
             document.getElementById('result3D_silang').innerText = val3D_silang;
             let htmlSilang = "";
             arr_pelengkap_silang.forEach(digit => {
