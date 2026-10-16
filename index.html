@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penganalisis Pola Pukal & Penjana 3D</title>
+    <title>Penganalisis Pola Pukal & Sasaran 4D</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,11 +100,21 @@
             padding-bottom: 4px;
         }
         .result-item {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #28a745;
             letter-spacing: 3px;
-            margin-bottom: 5px;
+        }
+        .pelengkap-item {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+        .final-4d {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            letter-spacing: 4px;
         }
         .mirror-text {
             font-size: 13px;
@@ -127,34 +137,39 @@
 <body>
 
     <div class="container">
-        <h2>Penganalisis Pola Pukal (Copy & Paste)</h2>
+        <h2>Penganalisis & Sasaran 4D Penuh</h2>
         
-        <!-- Kotak Input Utama -->
-        <label for="inputResults">Tampal (Paste) Kesemua 23 Keputusan 4D:</label>
-        <p class="info-teks">*Anda boleh copy terus dari web. Sistem akan menapis teks secara automatik.</p>
-        <textarea id="inputResults" placeholder="Contoh Paste:&#10;1st Prize: 9332&#10;2nd Prize: 0305&#10;Consolation: 1480..."></textarea>
+        <label for="inputResults">Tampal (Paste) Kesemua Keputusan 4D:</label>
+        <p class="info-teks">*Sistem akan menapis angka secara automatik dari teks yang disalin.</p>
+        <textarea id="inputResults" placeholder="Contoh Paste:&#10;1st Prize: 3872&#10;2nd Prize: 3175&#10;Consolation: 4661..."></textarea>
 
-        <button class="btn-jana" onclick="analisisKeputusan()">Kaji Pola & Jana 3D!</button>
+        <button class="btn-jana" onclick="analisisKeputusan()">Kaji Statistik & Jana 4D!</button>
         
         <!-- Paparan Analisis Kekerapan Digit -->
         <div class="analysis-box">
-            <h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">📊 Analisis Algoritma (23 Nombor)</h4>
+            <h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">📊 Analisis Kekerapan Digit</h4>
             <p>🔥 Digit Paling Kerap (Hot): <br><span class="digit-hot" id="paparHot">-</span></p>
             <p>❄️ Digit Jarang/Hilang (Cold): <br><span class="digit-cold" id="paparCold">-</span></p>
         </div>
 
-        <!-- Paparan Keputusan Terarah 3D (Hot) -->
+        <!-- Paparan Keputusan Terarah 4D (Hot) -->
         <div class="result-box">
-            <h4>Pecahan 3D Berdasarkan Pola 'Hot':</h4>
-            <div class="result-item" id="result3D_hot">-</div>
-            <div class="mirror-text" id="mirror3D_hot">Cermin: -</div>
+            <h4>Sasaran 4D Berdasarkan Pola 'Hot':</h4>
+            <div style="margin-bottom: 5px;">Asas 3D: <span class="result-item" id="result3D_hot">-</span></div>
+            <div>➕ 1D Pelengkap: <span class="pelengkap-item" id="pelengkap_hot">-</span> <span style="font-size:11px; color:#666;">(Kekerapan Tinggi)</span></div>
+            <hr style="border: 0.5px dashed #ccc; margin: 12px 0;">
+            <div style="font-size: 14px; color: #333;">🎯 4D Penuh: <br><span class="final-4d" id="sasaran4D_hot">-</span></div>
+            <div class="mirror-text" id="mirror4D_hot" style="margin-top: 8px;">Cermin 4D: -</div>
         </div>
 
-        <!-- Paparan Keputusan Terarah 3D (Silang) -->
+        <!-- Paparan Keputusan Terarah 4D (Silang) -->
         <div class="result-box" style="border-left-color: #007bff;">
-            <h4>Pecahan 3D Silang (Hot + Cold):</h4>
-            <div class="result-item" style="color: #007bff;" id="result3D_silang">-</div>
-            <div class="mirror-text" id="mirror3D_silang">Cermin: -</div>
+            <h4>Sasaran 4D Silang (Hot + Cold):</h4>
+            <div style="margin-bottom: 5px;">Asas 3D Silang: <span class="result-item" style="color: #007bff;" id="result3D_silang">-</span></div>
+            <div>➕ 1D Pelengkap: <span class="pelengkap-item" id="pelengkap_silang">-</span> <span style="font-size:11px; color:#666;">(Kekerapan Tinggi)</span></div>
+            <hr style="border: 0.5px dashed #ccc; margin: 12px 0;">
+            <div style="font-size: 14px; color: #333;">🎯 4D Penuh: <br><span class="final-4d" style="color: #007bff;" id="sasaran4D_silang">-</span></div>
+            <div class="mirror-text" id="mirror4D_silang" style="margin-top: 8px;">Cermin 4D: -</div>
         </div>
         
         <button class="btn-reset" onclick="resetData()" style="margin-top: 20px;">Kosongkan Papan Analisis</button>
@@ -162,7 +177,6 @@
     </div>
 
     <script>
-        // Fungsi Penukaran Cermin
         function getMirror(str) {
             const mirrors = {
                 '0': '5', '1': '6', '2': '7', '3': '8', '4': '9',
@@ -175,26 +189,23 @@
             document.getElementById('inputResults').value = "";
             document.getElementById("paparHot").innerText = "-";
             document.getElementById("paparCold").innerText = "-";
+            
             document.getElementById("result3D_hot").innerText = "-";
-            document.getElementById("mirror3D_hot").innerText = "Cermin: -";
+            document.getElementById("pelengkap_hot").innerText = "-";
+            document.getElementById("sasaran4D_hot").innerText = "-";
+            document.getElementById("mirror4D_hot").innerText = "Cermin 4D: -";
+            
             document.getElementById("result3D_silang").innerText = "-";
-            document.getElementById("mirror3D_silang").innerText = "Cermin: -";
+            document.getElementById("pelengkap_silang").innerText = "-";
+            document.getElementById("sasaran4D_silang").innerText = "-";
+            document.getElementById("mirror4D_silang").innerText = "Cermin 4D: -";
         }
 
         function analisisKeputusan() {
             let inputRaw = document.getElementById('inputResults').value;
             
-            // Penapis Pintar: Mencari pola yang mempunyai tepat 4 digit nombor (mengabaikan teks lain)
             let match4D = inputRaw.match(/\b\d{4}\b/g);
-            let digitsOnly = "";
-
-            if (match4D) {
-                // Gabungkan semua nombor 4D yang dijumpai
-                digitsOnly = match4D.join('');
-            } else {
-                // Fallback: Jika pengguna masukkan nombor bercantum tanpa jarak
-                digitsOnly = inputRaw.replace(/[^0-9]/g, '');
-            }
+            let digitsOnly = match4D ? match4D.join('') : inputRaw.replace(/[^0-9]/g, '');
 
             if (digitsOnly.length < 4) {
                 alert("Sila paste keputusan yang mengandungi nombor 4D!");
@@ -207,50 +218,58 @@
                 counts[char]++;
             }
 
-            // Susun digit berdasarkan kekerapan (paling banyak ke paling sikit)
             let sortedDigits = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
             
-            // Asingkan Hot (keluar > 0) dan Cold/Hilang (keluar 0)
             let hotDigits = sortedDigits.filter(d => counts[d] > 0);
             let missingDigits = sortedDigits.filter(d => counts[d] === 0);
-
-            // Jika semua nombor keluar, ambil 3 nombor yang paling sikit keluar sebagai Cold
             let coldDigits = missingDigits.length > 0 ? missingDigits : sortedDigits.slice(-3);
 
-            // Paparkan Analisis
-            document.getElementById('paparHot').innerText = hotDigits.slice(0, 5).join(' ') + " (Sangat Kerap)";
+            document.getElementById('paparHot').innerText = hotDigits.slice(0, 5).join(' ') + " (Kerap Keluar)";
             document.getElementById('paparCold').innerText = coldDigits.slice(0, 5).join(' ');
 
-            // --- 2. Penjanaan 3D Berdasarkan Pola Data ---
+            // --- 2. Penjanaan 3D & 1D Pelengkap ---
             let val3D_hot = "";
+            let pelengkap_hot = "";
             let val3D_silang = "";
+            let pelengkap_silang = "";
 
-            if (hotDigits.length >= 3) {
-                // Pola Hot: Ambil top 3 digit paling kerap muncul
-                val3D_hot = hotDigits[0] + hotDigits[1] + hotDigits[2];
+            // --- POLA HOT ---
+            if (hotDigits.length >= 4) {
+                val3D_hot = hotDigits[0] + hotDigits[1] + hotDigits[2]; // 3 Digit Paling Kerap
+                pelengkap_hot = hotDigits[3]; // 1D Pelengkap: Digit Ke-4 Paling Kerap
             } else {
-                // Fallback
-                val3D_hot = hotDigits[0] + hotDigits[0] + hotDigits[0];
+                val3D_hot = hotDigits[0] + (hotDigits[1]||hotDigits[0]) + (hotDigits[2]||hotDigits[0]);
+                pelengkap_hot = hotDigits[0]; // Fallback
             }
 
-            if (hotDigits.length >= 2) {
-                // Pola Silang: Gabung 2 digit Hot teratas dengan 1 digit Cold teratas
+            // --- POLA SILANG ---
+            if (hotDigits.length >= 3) {
                 let coldDigitToUse = missingDigits.length > 0 ? missingDigits[0] : sortedDigits[sortedDigits.length - 1];
-                val3D_silang = hotDigits[0] + hotDigits[1] + coldDigitToUse;
+                val3D_silang = hotDigits[0] + hotDigits[1] + coldDigitToUse; // 2 Hot + 1 Cold
+                pelengkap_silang = hotDigits[2]; // 1D Pelengkap: Digit Ke-3 Paling Kerap
             } else {
                 val3D_silang = hotDigits[0] + "01";
+                pelengkap_silang = "2";
             }
 
-            // Dapatkan Nombor Cermin
-            let cermin3D_hot = getMirror(val3D_hot);
-            let cermin3D_silang = getMirror(val3D_silang);
+            // --- 3. Penggabungan 4D Penuh & Cermin ---
+            let sasaran4D_hot = val3D_hot + pelengkap_hot;
+            let cermin4D_hot = getMirror(sasaran4D_hot);
 
-            // Papar Keputusan
+            let sasaran4D_silang = val3D_silang + pelengkap_silang;
+            let cermin4D_silang = getMirror(sasaran4D_silang);
+
+            // Papar Keputusan Hot
             document.getElementById('result3D_hot').innerText = val3D_hot;
-            document.getElementById('mirror3D_hot').innerText = "Cermin: " + cermin3D_hot;
+            document.getElementById('pelengkap_hot').innerText = pelengkap_hot;
+            document.getElementById('sasaran4D_hot').innerText = sasaran4D_hot;
+            document.getElementById('mirror4D_hot').innerText = "Cermin 4D: " + cermin4D_hot;
             
+            // Papar Keputusan Silang
             document.getElementById('result3D_silang').innerText = val3D_silang;
-            document.getElementById('mirror3D_silang').innerText = "Cermin: " + cermin3D_silang;
+            document.getElementById('pelengkap_silang').innerText = pelengkap_silang;
+            document.getElementById('sasaran4D_silang').innerText = sasaran4D_silang;
+            document.getElementById('mirror4D_silang').innerText = "Cermin 4D: " + cermin4D_silang;
         }
     </script>
 
