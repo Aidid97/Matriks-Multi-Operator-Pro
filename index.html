@@ -3,302 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penganalisis Pola & Sistem Pusingan (Wheeling)</title>
+    <title>Penjana Matriks 2D & 3D</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
         .container {
-            background: white;
-            padding: 20px;
+            background: #fff;
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 480px;
-            margin: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .input-group {
+            margin-bottom: 15px;
         }
         label {
             display: block;
-            text-align: left;
-            margin-top: 10px;
+            margin-bottom: 5px;
             font-weight: bold;
-            font-size: 14px;
-            color: #333;
         }
-        textarea, button {
+        input {
             width: 100%;
             padding: 10px;
-            margin: 5px 0 15px 0;
-            border-radius: 5px;
             border: 1px solid #ccc;
-            font-size: 16px;
+            border-radius: 5px;
             box-sizing: border-box;
-        }
-        textarea {
-            resize: vertical;
-            height: 120px;
-            font-family: monospace;
-        }
-        .btn-jana {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
             font-size: 16px;
-            padding: 12px;
         }
-        .btn-jana:hover { background-color: #0056b3; }
-        .btn-reset {
-            background-color: #dc3545;
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2980b9;
             color: white;
             border: none;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            font-weight: bold;
-            margin-top: 5px;
-            padding: 8px;
-            font-size: 14px;
+            transition: background 0.3s;
         }
-        .btn-reset:hover { background-color: #c82333; }
-        .analysis-box {
-            background-color: #e9ecef;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            padding: 12px;
-            margin-top: 15px;
-            text-align: left;
+        button:hover {
+            background-color: #3498db;
         }
-        .analysis-box p {
-            margin: 5px 0;
-            font-size: 14px;
-            font-weight: bold;
-            color: #495057;
-        }
-        .digit-hot { color: #d9534f; font-size: 18px; letter-spacing: 2px;}
-        .digit-cold { color: #6c757d; font-size: 16px; letter-spacing: 2px;}
-        
         .result-box {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            margin-top: 20px;
             padding: 15px;
-            margin-top: 15px;
-            text-align: left;
-            border-left: 5px solid #28a745;
-        }
-        .result-box.wheeling {
-            border-left: 5px solid #9c27b0;
-        }
-        .result-box h4 {
-            margin: 0 0 8px 0;
-            color: #333;
-            font-size: 15px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 4px;
-        }
-        .result-item {
-            font-size: 20px;
-            font-weight: bold;
-            color: #28a745;
-            letter-spacing: 2px;
-        }
-        .list-4d {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            letter-spacing: 3px;
-            margin: 6px 0;
-            padding: 5px;
-            background: #fff;
-            border: 1px solid #eee;
+            background: #e8f4f8;
+            border-left: 4px solid #2980b9;
             border-radius: 4px;
         }
-        .wheel-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .wheel-item {
-            background: #fff;
-            border: 1px solid #d4a5d8;
-            color: #9c27b0;
-            font-weight: bold;
-            font-size: 18px;
-            text-align: center;
-            padding: 8px 0;
+        .number-tag {
+            display: inline-block;
+            background: #2c3e50;
+            color: #fff;
+            padding: 5px 10px;
+            margin: 3px;
             border-radius: 4px;
+            font-weight: bold;
             letter-spacing: 1px;
         }
-        .mirror-text {
-            font-size: 12px;
-            color: #777;
-            font-weight: normal;
-            letter-spacing: 0;
-        }
-        .info-teks { font-size: 12px; color: #666; margin-top: -10px; margin-bottom: 15px; text-align: left; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Pilihan 4D & Sistem Pusingan (Wheeling)</h2>
-        
-        <label for="inputResults">Tampal (Paste) Kesemua Keputusan 4D:</label>
-        <p class="info-teks">*Sistem akan menjana variasi pusingan secara automatik.</p>
-        <textarea id="inputResults" placeholder="Contoh Paste:&#10;1st Prize: 3872..."></textarea>
-
-        <button class="btn-jana" onclick="analisisKeputusan()">Kaji Statistik & Jana Kombinasi</button>
-        
-        <!-- Paparan Analisis Kekerapan Digit -->
-        <div class="analysis-box">
-            <h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">📊 Analisis Kekerapan Digit</h4>
-            <p>🔥 Top 6 (Hot): <br><span class="digit-hot" id="paparHot">-</span></p>
-            <p>❄️ Jarang/Hilang (Cold): <br><span class="digit-cold" id="paparCold">-</span></p>
-        </div>
-
-        <!-- Sistem Pusingan Wheeling Top 6 -->
-        <div class="result-box wheeling">
-            <h4>Kombinasi Pusingan (Wheeling) Top 6:</h4>
-            <p style="font-size: 12px; color: #666; margin: 0 0 10px 0;">Menjana semua 15 kemungkinan gabungan 4D daripada 6 angka Hot teratas.</p>
-            <div id="wheeling_container" class="wheel-grid">
-                <!-- Kombinasi wheeling akan dipaparkan di sini -->
-            </div>
-        </div>
-
-        <!-- Paparan Keputusan Terarah 4D (Hot) -->
-        <div class="result-box">
-            <h4>Variasi 4D (Kunci Asas 3D Hot):</h4>
-            <div style="margin-bottom: 8px;">Asas 3D Terkunci: <span class="result-item" id="result3D_hot">-</span></div>
-            <div id="senarai4D_hot" style="margin-top: 10px;"></div>
-        </div>
-
-        <!-- Paparan Keputusan Terarah 4D (Silang) -->
-        <div class="result-box" style="border-left-color: #007bff;">
-            <h4>Variasi 4D Silang (Hot + Cold):</h4>
-            <div style="margin-bottom: 8px;">Asas 3D Silang: <span class="result-item" style="color: #007bff;" id="result3D_silang">-</span></div>
-            <div id="senarai4D_silang" style="margin-top: 10px;"></div>
-        </div>
-        
-        <button class="btn-reset" onclick="resetData()" style="margin-top: 20px;">Kosongkan Papan Analisis</button>
-
+<div class="container">
+    <h2>Enjin Analisis Matriks 2D/3D</h2>
+    
+    <div class="input-group">
+        <label for="num1">Nombor Asas 1 (Cth: Draw No 437 atau 4D):</label>
+        <input type="number" id="num1" placeholder="Masukkan 3D atau 4D" required>
     </div>
+    
+    <div class="input-group">
+        <label for="num2">Nombor Asas 2 (Cth: 983 atau 8049):</label>
+        <input type="number" id="num2" placeholder="Masukkan 3D atau 4D" required>
+    </div>
+    
+    <button onclick="janaKeputusan()">Jana Unjuran Matriks</button>
 
-    <script>
-        // Fungsi Penukaran Cermin
-        function getMirror(str) {
-            const mirrors = { '0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4' };
-            return str.split('').map(d => mirrors[d] || d).join('');
+    <div id="hasil" style="display: none;">
+        <div class="result-box">
+            <p><strong>Kunci Matriks Utama:</strong> <span id="master-key" style="color:#e74c3c; font-weight:bold; font-size:18px;"></span></p>
+        </div>
+        
+        <div class="result-box">
+            <p><strong>Unjuran 2D Kukuh:</strong></p>
+            <div id="output-2d"></div>
+        </div>
+
+        <div class="result-box">
+            <p><strong>Unjuran 3D Kukuh:</strong></p>
+            <div id="output-3d"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function janaKeputusan() {
+        const str1 = document.getElementById('num1').value;
+        const str2 = document.getElementById('num2').value;
+
+        if (!str1 || !str2) {
+            alert("Sila masukkan kedua-dua nombor asas.");
+            return;
         }
 
-        // Fungsi Kombinasi Matematik (Wheeling)
-        function getCombinations(arr, k) {
-            let i, j, combs, head, tailcombs;
-            if (k > arr.length || k <= 0) return [];
-            if (k == arr.length) return [arr];
-            if (k == 1) {
-                combs = [];
-                for (i = 0; i < arr.length; i++) combs.push([arr[i]]);
-                return combs;
-            }
-            combs = [];
-            for (i = 0; i < arr.length - k + 1; i++) {
-                head = arr.slice(i, i + 1);
-                tailcombs = getCombinations(arr.slice(i + 1), k - 1);
-                for (j = 0; j < tailcombs.length; j++) {
-                    combs.push(head.concat(tailcombs[j]));
+        // 1. Penguraian Akar (Root Decomposition)
+        const sum1 = str1.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+        const sum2 = str2.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+
+        // 2. Pemecahan Nilai & Penjanaan Kod Pengunci (Modifiers)
+        const kodTambah = sum1 + sum2;
+        const kodTolak = Math.abs(sum1 - sum2);
+
+        // 3. Mengumpulkan Kunci Matriks (Membuang nombor berulang)
+        const rawKeys = str1 + str2 + sum1.toString() + sum2.toString() + kodTambah.toString() + kodTolak.toString();
+        // Dapatkan hanya digit unik
+        let masterKeys = [...new Set(rawKeys.split(''))].filter(x => !isNaN(x)).sort();
+
+        // Jika kunci terlalu banyak, hadkan kepada 5 digit dominan sahaja untuk elak lambakan
+        if (masterKeys.length > 5) {
+            masterKeys = masterKeys.slice(0, 5);
+        }
+
+        document.getElementById('master-key').innerText = masterKeys.join(' - ');
+
+        // 4. Penjanaan Unjuran 2D Kukuh
+        let result2D = [];
+        for (let i = 0; i < masterKeys.length; i++) {
+            for (let j = 0; j < masterKeys.length; j++) {
+                if (i !== j) {
+                    result2D.push(masterKeys[i] + masterKeys[j]);
                 }
             }
-            return combs;
         }
+        // Ambil 8 kombinasi 2D teratas
+        result2D = result2D.slice(0, 8);
+        document.getElementById('output-2d').innerHTML = result2D.map(num => `<span class="number-tag">${num}</span>`).join('');
 
-        function resetData() {
-            document.getElementById('inputResults').value = "";
-            document.getElementById("paparHot").innerText = "-";
-            document.getElementById("paparCold").innerText = "-";
-            document.getElementById("wheeling_container").innerHTML = "";
-            document.getElementById("result3D_hot").innerText = "-";
-            document.getElementById("senarai4D_hot").innerHTML = "";
-            document.getElementById("result3D_silang").innerText = "-";
-            document.getElementById("senarai4D_silang").innerHTML = "";
+        // 5. Penjanaan Unjuran 3D Kukuh
+        let result3D = [];
+        for (let i = 0; i < masterKeys.length; i++) {
+            for (let j = 0; j < masterKeys.length; j++) {
+                for (let k = 0; k < masterKeys.length; k++) {
+                    if (i !== j && j !== k && i !== k) {
+                        result3D.push(masterKeys[i] + masterKeys[j] + masterKeys[k]);
+                    }
+                }
+            }
         }
+        // Ambil 8 kombinasi 3D teratas
+        result3D = result3D.slice(0, 8);
+        document.getElementById('output-3d').innerHTML = result3D.map(num => `<span class="number-tag">${num}</span>`).join('');
 
-        function analisisKeputusan() {
-            let inputRaw = document.getElementById('inputResults').value;
-            let match4D = inputRaw.match(/\b\d{4}\b/g);
-            let digitsOnly = match4D ? match4D.join('') : inputRaw.replace(/[^0-9]/g, '');
+        // Tunjukkan bahagian hasil
+        document.getElementById('hasil').style.display = 'block';
+    }
+</script>
 
-            if (digitsOnly.length < 4) {
-                alert("Sila paste keputusan yang mengandungi nombor 4D!");
-                return;
-            }
-
-            // 1. Kira Kekerapan
-            let counts = { '0':0, '1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0, '9':0 };
-            for (let char of digitsOnly) counts[char]++;
-
-            let sortedDigits = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-            let hotDigits = sortedDigits.filter(d => counts[d] > 0);
-            let missingDigits = sortedDigits.filter(d => counts[d] === 0);
-            let coldDigits = missingDigits.length > 0 ? missingDigits : sortedDigits.slice(-3);
-
-            document.getElementById('paparHot').innerText = hotDigits.slice(0, 6).join(' ');
-            document.getElementById('paparCold').innerText = coldDigits.slice(0, 5).join(' ');
-
-            // 2. Sistem Wheeling (Kombinasi 4 dari 6)
-            let top6 = hotDigits.slice(0, 6);
-            let htmlWheeling = "";
-            if (top6.length >= 4) {
-                let wheelingCombinations = getCombinations(top6, 4);
-                wheelingCombinations.forEach(comb => {
-                    htmlWheeling += `<div class="wheel-item">${comb.join('')}</div>`;
-                });
-            } else {
-                htmlWheeling = "<div style='grid-column: span 3;'>Data tidak mencukupi untuk wheeling.</div>";
-            }
-            document.getElementById('wheeling_container').innerHTML = htmlWheeling;
-
-            // 3. Asas 3D & Array Pilihan 1D Pelengkap (Kekal Sama)
-            let val3D_hot = ""; let arr_pelengkap_hot = [];
-            let val3D_silang = ""; let arr_pelengkap_silang = [];
-
-            if (hotDigits.length >= 3) {
-                val3D_hot = hotDigits[0] + hotDigits[1] + hotDigits[2];
-                if(hotDigits[3]) arr_pelengkap_hot.push(hotDigits[3]);
-                if(hotDigits[4]) arr_pelengkap_hot.push(hotDigits[4]);
-                if(hotDigits[5]) arr_pelengkap_hot.push(hotDigits[5]);
-            }
-            if (hotDigits.length >= 2) {
-                let coldDigitToUse = coldDigits[0];
-                val3D_silang = hotDigits[0] + hotDigits[1] + coldDigitToUse;
-                if(hotDigits[2]) arr_pelengkap_silang.push(hotDigits[2]);
-                if(hotDigits[3]) arr_pelengkap_silang.push(hotDigits[3]);
-                if(hotDigits[4]) arr_pelengkap_silang.push(hotDigits[4]);
-            }
-
-            // Papar Senarai 4D Kunci Asas
-            document.getElementById('result3D_hot').innerText = val3D_hot;
-            let htmlHot = "";
-            arr_pelengkap_hot.forEach(digit => {
-                let full4D = val3D_hot + digit;
-                htmlHot += `<div class="list-4d" style="color: #28a745;">🎯 ${full4D} <span class="mirror-text">(Cermin: ${getMirror(full4D)})</span></div>`;
-            });
-            document.getElementById('senarai4D_hot').innerHTML = htmlHot || "-";
-
-            document.getElementById('result3D_silang').innerText = val3D_silang;
-            let htmlSilang = "";
-            arr_pelengkap_silang.forEach(digit => {
-                let full4D = val3D_silang + digit;
-                htmlSilang += `<div class="list-4d" style="color: #007bff;">🎯 ${full4D} <span class="mirror-text">(Cermin: ${getMirror(full4D)})</span></div>`;
-            });
-            document.getElementById('senarai4D_silang').innerHTML = htmlSilang || "-";
-        }
-    </script>
-
-    <!-- Kod Iklan Adsterra -->
-    <script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
+<!-- Kod Iklan Adsterra -->
+<script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
 
 </body>
 </html>
