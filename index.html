@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Matriks 2D & 3D</title>
+    <title>Penjana Matriks 2D & 3D Pro</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,60 +18,124 @@
             background: #fff;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             max-width: 500px;
             width: 100%;
         }
         h2 {
             text-align: center;
             color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
         }
         .input-group {
             margin-bottom: 15px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
         }
         input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
             box-sizing: border-box;
             font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
         button {
-            width: 100%;
+            flex: 1;
             padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-jana {
             background-color: #2980b9;
             color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
         }
-        button:hover {
-            background-color: #3498db;
+        .btn-jana:hover { background-color: #3498db; }
+        
+        .btn-reset {
+            background-color: #e74c3c;
+            color: white;
         }
+        .btn-reset:hover { background-color: #c0392b; }
+
+        .btn-copy {
+            background-color: #27ae60;
+            color: white;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            float: right;
+            margin-top: -3px;
+        }
+        .btn-copy:hover { background-color: #2ecc71; }
+
         .result-box {
             margin-top: 20px;
             padding: 15px;
-            background: #e8f4f8;
+            background: #f8fafc;
             border-left: 4px solid #2980b9;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .result-header {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: #2c3e50;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+        .math-breakdown {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 10px;
+            background: #fff;
+            padding: 8px;
             border-radius: 4px;
+            border: 1px dashed #cbd5e0;
+        }
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
         }
         .number-tag {
-            display: inline-block;
             background: #2c3e50;
             color: #fff;
-            padding: 5px 10px;
-            margin: 3px;
+            padding: 8px 0;
+            text-align: center;
             border-radius: 4px;
             font-weight: bold;
             letter-spacing: 1px;
+            font-size: 15px;
+        }
+        /* Penyerlahan Kunci Matriks */
+        .master-key-text {
+            color: #e74c3c; 
+            font-weight: 800; 
+            font-size: 20px;
+            letter-spacing: 2px;
         }
     </style>
 </head>
@@ -90,21 +154,32 @@
         <input type="number" id="num2" placeholder="Masukkan 3D atau 4D" required>
     </div>
     
-    <button onclick="janaKeputusan()">Jana Unjuran Matriks</button>
+    <div class="btn-group">
+        <button class="btn-jana" onclick="janaKeputusan()">Jana Unjuran</button>
+        <button class="btn-reset" onclick="resetBorang()">Kosongkan</button>
+    </div>
 
     <div id="hasil" style="display: none;">
         <div class="result-box">
-            <p><strong>Kunci Matriks Utama:</strong> <span id="master-key" style="color:#e74c3c; font-weight:bold; font-size:18px;"></span></p>
+            <p class="result-header"><strong>Kunci Matriks Utama:</strong></p>
+            <div id="math-steps" class="math-breakdown"></div>
+            <p style="text-align: center; margin: 10px 0 5px 0;"><span id="master-key" class="master-key-text"></span></p>
         </div>
         
         <div class="result-box">
-            <p><strong>Unjuran 2D Kukuh:</strong></p>
-            <div id="output-2d"></div>
+            <p class="result-header">
+                <strong>Unjuran 2D Kukuh</strong>
+                <button class="btn-copy" onclick="salinNombor('output-2d')">Salin 2D</button>
+            </p>
+            <div id="output-2d" class="number-grid"></div>
         </div>
 
-        <div class="result-box">
-            <p><strong>Unjuran 3D Kukuh:</strong></p>
-            <div id="output-3d"></div>
+        <div class="result-box" style="border-left-color: #8e44ad;">
+            <p class="result-header">
+                <strong>Unjuran 3D Kukuh</strong>
+                <button class="btn-copy" style="background-color: #9b59b6;" onclick="salinNombor('output-3d')">Salin 3D</button>
+            </p>
+            <div id="output-3d" class="number-grid"></div>
         </div>
     </div>
 </div>
@@ -115,7 +190,7 @@
         const str2 = document.getElementById('num2').value;
 
         if (!str1 || !str2) {
-            alert("Sila masukkan kedua-dua nombor asas.");
+            alert("Sila masukkan kedua-dua nombor asas untuk memulakan enjin.");
             return;
         }
 
@@ -123,20 +198,22 @@
         const sum1 = str1.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
         const sum2 = str2.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
 
-        // 2. Pemecahan Nilai & Penjanaan Kod Pengunci (Modifiers)
+        // 2. Pemecahan Nilai & Penjanaan Kod Pengunci
         const kodTambah = sum1 + sum2;
         const kodTolak = Math.abs(sum1 - sum2);
 
-        // 3. Mengumpulkan Kunci Matriks (Membuang nombor berulang)
+        // Paparkan Jalan Kira
+        document.getElementById('math-steps').innerHTML = 
+            `Akar 1: <b>${sum1}</b> | Akar 2: <b>${sum2}</b> <br> Pelaras Tambah: <b>+${kodTambah}</b> | Pelaras Tolak: <b>-${kodTolak}</b>`;
+
+        // 3. Mengumpulkan Kunci Matriks
         const rawKeys = str1 + str2 + sum1.toString() + sum2.toString() + kodTambah.toString() + kodTolak.toString();
-        // Dapatkan hanya digit unik
         let masterKeys = [...new Set(rawKeys.split(''))].filter(x => !isNaN(x)).sort();
 
-        // Jika kunci terlalu banyak, hadkan kepada 5 digit dominan sahaja untuk elak lambakan
-        if (masterKeys.length > 5) {
-            masterKeys = masterKeys.slice(0, 5);
+        // Hadkan kepada 6 digit dominan untuk keseimbangan (Wheeling optimum)
+        if (masterKeys.length > 6) {
+            masterKeys = masterKeys.slice(0, 6);
         }
-
         document.getElementById('master-key').innerText = masterKeys.join(' - ');
 
         // 4. Penjanaan Unjuran 2D Kukuh
@@ -148,9 +225,11 @@
                 }
             }
         }
-        // Ambil 8 kombinasi 2D teratas
-        result2D = result2D.slice(0, 8);
-        document.getElementById('output-2d').innerHTML = result2D.map(num => `<span class="number-tag">${num}</span>`).join('');
+        // Ambil 12 kombinasi 2D teratas
+        result2D = result2D.slice(0, 12);
+        document.getElementById('output-2d').innerHTML = result2D.map(num => `<div class="number-tag">${num}</div>`).join('');
+        // Simpan nilai rawak untuk copy paste
+        document.getElementById('output-2d').setAttribute('data-raw', result2D.join(', '));
 
         // 5. Penjanaan Unjuran 3D Kukuh
         let result3D = [];
@@ -163,12 +242,31 @@
                 }
             }
         }
-        // Ambil 8 kombinasi 3D teratas
-        result3D = result3D.slice(0, 8);
-        document.getElementById('output-3d').innerHTML = result3D.map(num => `<span class="number-tag">${num}</span>`).join('');
+        // Ambil 15 kombinasi 3D teratas
+        result3D = result3D.slice(0, 15);
+        document.getElementById('output-3d').innerHTML = result3D.map(num => `<div class="number-tag" style="background:#8e44ad;">${num}</div>`).join('');
+        // Simpan nilai rawak untuk copy paste
+        document.getElementById('output-3d').setAttribute('data-raw', result3D.join(', '));
 
         // Tunjukkan bahagian hasil
         document.getElementById('hasil').style.display = 'block';
+    }
+
+    function resetBorang() {
+        document.getElementById('num1').value = '';
+        document.getElementById('num2').value = '';
+        document.getElementById('hasil').style.display = 'none';
+    }
+
+    function salinNombor(elementId) {
+        const rawText = document.getElementById(elementId).getAttribute('data-raw');
+        if(rawText) {
+            navigator.clipboard.writeText(rawText).then(() => {
+                alert("Berjaya disalin: " + rawText);
+            }).catch(err => {
+                alert("Gagal menyalin teks.");
+            });
+        }
     }
 </script>
 
