@@ -1,276 +1,303 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penjana Matriks 2D & 3D Pro</title>
+    <title>Mesin Matriks 2D Anchor + Pivot 3D Pro</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: #f0f2f5;
+            color: #1c1e21;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
         }
         .container {
-            background: #fff;
+            background: #ffffff;
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 520px;
             width: 100%;
         }
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
+        h2 { text-align: center; color: #1a365d; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #718096; font-size: 13px; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        input[type="text"], textarea {
+            width: 100%; padding: 12px; border: 2px solid #cbd5e0;
+            border-radius: 8px; box-sizing: border-box; font-size: 18px;
+            font-family: monospace; letter-spacing: 2px;
         }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        textarea { font-size: 14px; letter-spacing: normal; resize: vertical; }
+        input:focus, textarea:focus { outline: none; border-color: #3182ce; }
+        .checkbox-group { margin: 15px 0; font-size: 14px; font-weight: 600; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
         button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
+            flex: 1; padding: 12px; border: none; border-radius: 8px;
+            font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
-        .btn-jana {
-            background-color: #2980b9;
-            color: white;
-        }
-        .btn-jana:hover { background-color: #3498db; }
-        
-        .btn-reset {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .btn-reset:hover { background-color: #c0392b; }
-
-        .btn-copy {
-            background-color: #27ae60;
-            color: white;
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 4px;
-            float: right;
-            margin-top: -3px;
-        }
-        .btn-copy:hover { background-color: #2ecc71; }
-
+        .btn-jana { background-color: #3182ce; color: white; }
+        .btn-jana:hover { background-color: #2b6cb0; }
+        .btn-reset { background-color: #e53e3e; color: white; }
+        .btn-copy { background-color: #38a169; color: white; font-size: 12px; padding: 4px 8px; border-radius: 4px; float: right; }
         .result-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8fafc;
-            border-left: 4px solid #2980b9;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .result-header {
-            margin: 0 0 10px 0;
-            font-size: 15px;
-            color: #2c3e50;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 5px;
-        }
-        .math-breakdown {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 10px;
-            background: #fff;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px dashed #cbd5e0;
+            margin-top: 20px; padding: 15px; background: #f7fafc;
+            border-left: 4px solid #3182ce; border-radius: 6px;
         }
         .number-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
-            gap: 8px;
-            margin-top: 10px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 8px; margin-top: 10px;
         }
         .number-tag {
-            background: #2c3e50;
-            color: #fff;
-            padding: 8px 0;
-            text-align: center;
-            border-radius: 4px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            font-size: 15px;
+            background: #2d3748; color: #fff; padding: 8px 0;
+            text-align: center; border-radius: 6px; font-weight: bold;
+            font-family: monospace; font-size: 16px; letter-spacing: 1px;
         }
-        /* Penyerlahan Kunci Matriks */
-        .master-key-text {
-            color: #e74c3c; 
-            font-weight: 800; 
-            font-size: 20px;
-            letter-spacing: 2px;
-        }
+        .key-tag { color: #dd6b20; font-weight: 800; font-size: 18px; letter-spacing: 2px; }
+        .anchor-tag { background: #2b6cb0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Enjin Analisis Matriks 2D/3D</h2>
+    <h2>Mesin Matriks 2D Anchor + Pivot 3D</h2>
+    <p class="subtitle">Prediksi Presisi Tinggi Menggunakan Teknik Anchor 2D & Single Pivot</p>
     
     <div class="input-group">
-        <label for="num1">Nombor Asas 1 (Cth: Draw No 437 atau 4D):</label>
-        <input type="number" id="num1" placeholder="Masukkan 3D atau 4D" required>
+        <label for="num1">Nomor Dasar 1 (Contoh: 3594):</label>
+        <input type="text" id="num1" maxlength="4" placeholder="0000" pattern="\d*" required>
     </div>
     
     <div class="input-group">
-        <label for="num2">Nombor Asas 2 (Cth: 983 atau 8049):</label>
-        <input type="number" id="num2" placeholder="Masukkan 3D atau 4D" required>
+        <label for="num2">Nomor Dasar 2 (Contoh: 8040):</label>
+        <input type="text" id="num2" maxlength="4" placeholder="0000" pattern="\d*" required>
+    </div>
+
+    <!-- Ruangan untuk Sejarah Cabutan (Trajektori Kekerapan) -->
+    <div class="input-group">
+        <label for="history">Sejarah Cabutan Lepas (Penting untuk Trajektori):</label>
+        <textarea id="history" rows="3" placeholder="Paste result lepas di sini...&#10;Contoh: 1508, 5241, 6336, 2203, 4065..."></textarea>
+    </div>
+
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="useMirror" checked> Aktifkan Formula Cermin (0↔5, 1↔6, 2↔7, 3↔8, 4↔9)</label>
     </div>
     
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaKeputusan()">Jana Unjuran</button>
-        <button class="btn-reset" onclick="resetBorang()">Kosongkan</button>
+        <button class="btn-jana" onclick="janaKeputusan()">Proses Anchor & Pivot</button>
+        <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
     <div id="hasil" style="display: none;">
         <div class="result-box">
-            <p class="result-header"><strong>Kunci Matriks Utama:</strong></p>
-            <div id="math-steps" class="math-breakdown"></div>
-            <p style="text-align: center; margin: 10px 0 5px 0;"><span id="master-key" class="master-key-text"></span></p>
+            <p><strong>Kunci Matriks Dominan (Top Momentum):</strong> <span id="master-key" class="key-tag"></span></p>
+            <p id="pivot-info" style="margin-top:5px; font-size:13px; color:#2c5282;">
+                <strong>Digit Pivot Utama (Mean Reversion):</strong> <span id="pivot-keys" style="font-weight:bold;"></span>
+            </p>
         </div>
         
         <div class="result-box">
-            <p class="result-header">
-                <strong>Unjuran 2D Kukuh</strong>
-                <button class="btn-copy" onclick="salinNombor('output-2d')">Salin 2D</button>
-            </p>
-            <div id="output-2d" class="number-grid"></div>
+            <p><strong>2D Anchor Solid (Tunjang)</strong> <button class="btn-copy" onclick="salin('out-2d')">Salin 2D</button></p>
+            <div id="out-2d" class="number-grid"></div>
         </div>
 
-        <div class="result-box" style="border-left-color: #8e44ad;">
-            <p class="result-header">
-                <strong>Unjuran 3D Kukuh</strong>
-                <button class="btn-copy" style="background-color: #9b59b6;" onclick="salinNombor('output-3d')">Salin 3D</button>
-            </p>
-            <div id="output-3d" class="number-grid"></div>
+        <div class="result-box" style="border-left-color: #d69e2e;">
+            <p><strong>Proyeksi 3D Muktamad (Solid Core)</strong> <button class="btn-copy" style="background:#d69e2e;" onclick="salin('out-3d')">Salin 3D</button></p>
+            <div id="out-3d" class="number-grid"></div>
+        </div>
+
+        <div class="result-box" style="border-left-color: #805ad5;">
+            <p><strong>Proyeksi 4D iBox (3D Muktamad + Golden 1D)</strong> <button class="btn-copy" style="background:#805ad5;" onclick="salin('out-4d')">Salin 4D</button></p>
+            <div id="out-4d" class="number-grid"></div>
         </div>
     </div>
 </div>
 
 <script>
-    function janaKeputusan() {
-        const str1 = document.getElementById('num1').value;
-        const str2 = document.getElementById('num2').value;
+    // 1. KELAS ENJIN MATRIKS PRO
+    class MesinMatriksPro {
+        constructor() {
+            this.MIRROR_MAP = {
+                '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
+                '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
+            };
+        }
 
-        if (!str1 || !str2) {
-            alert("Sila masukkan kedua-dua nombor asas untuk memulakan enjin.");
+        sortCombo(str) { return str.split('').sort().join(''); }
+
+        uraiAkar(nomborAsas) {
+            let digits = nomborAsas.split('').map(Number);
+            let sum = digits.reduce((a, b) => a + b, 0); 
+            let sumStr = sum.toString();
+            let sumDigits = sumStr.split('').map(Number);
+            
+            let cabangTambah = sumDigits.reduce((a, b) => a + b, 0);
+            let cabangTolak = sumDigits.length > 1 ? Math.abs(sumDigits[0] - sumDigits[1]) : sumDigits[0];
+            
+            let rawData = nomborAsas + sumStr + cabangTambah.toString() + cabangTolak.toString();
+            return { akar: sum, rawData: rawData };
+        }
+
+        kiraTrajektori(sejarahCabutan) {
+            let skor = [];
+            let t3 = sejarahCabutan.slice(0, 3).join('');
+            let t5 = sejarahCabutan.slice(0, 5).join('');
+            let t15 = sejarahCabutan.slice(0, 15).join('');
+
+            for (let i = 0; i <= 9; i++) {
+                let d = i.toString();
+                let f_mikro = t3.split(d).length - 1;
+                let c_t5 = t5.split(d).length - 1;
+                let c_t15 = t15.split(d).length - 1;
+                
+                let halaju = (c_t5 / 5.0) - (c_t15 / 15.0);
+                skor.push({ digit: d, skor: (0.5 * f_mikro) + (0.5 * halaju) });
+            }
+            return skor.sort((a, b) => b.skor - a.skor).map(x => x.digit);
+        }
+
+        cariPelengkapEmas(kombinasi3D, rawAkarData) {
+            let pelengkap = [];
+            let set3D = kombinasi3D.split('');
+
+            set3D.forEach(digit => {
+                let cermin = this.MIRROR_MAP[digit];
+                if (!set3D.includes(cermin) && rawAkarData.includes(cermin)) {
+                    pelengkap.push(cermin);
+                }
+            });
+            return [...new Set(pelengkap)];
+        }
+
+        // =========================================================
+        // ENJIN MUKTAMAD 3D TERAS + GOLDEN 1D COMPLEMENT
+        // =========================================================
+        jana(nomborAsas, sejarahCabutan, gunaCermin) {
+            let dataAkar = this.uraiAkar(nomborAsas);
+            let trajektori = this.kiraTrajektori(sejarahCabutan);
+            
+            // 1. Ambil 3 Digit Momentum Paling Dominan
+            let top3Digits = trajektori.slice(0, 3); // Contoh: ['1', '4', '9']
+            
+            // 2. MUKTAMADKAN 3D TERAS (Solid Core 3D)
+            let core3DSet = new Set();
+            
+            // a. 3D Teras Utama dari Top 3 Trajektori
+            let primary3D = this.sortCombo(top3Digits.join(''));
+            core3DSet.add(primary3D); // Contoh: "149" (MUKTAMAD)
+
+            // b. 3D Teras Cermin Direct (jika diaktifkan)
+            if(gunaCermin) {
+                top3Digits.forEach(d => {
+                    let mirrorD = this.MIRROR_MAP[d];
+                    // Gantikan salah satu digit dengan cerminnya untuk membina 3D Teras Cermin
+                    let alt3D = this.sortCombo(primary3D.replace(d, mirrorD));
+                    core3DSet.add(alt3D); // Contoh: "146" atau "169"
+                });
+            }
+
+            let array3DMuktamad = Array.from(core3DSet); // Hanya 3D TERAS MUKTAMAD diproduksi
+
+            // 3. CARI GOLDEN 1D COMPLEMENT UNTUK SETIAP 3D MUKTAMAD
+            let set4D = new Set();
+            array3DMuktamad.forEach(kombo3D => {
+                // Cari 1D pelengkap berdasarkan Hanging Mirrors & Cabang Akar
+                let senaraiPelengkap = this.cariPelengkapEmas(kombo3D, dataAkar.rawData);
+                
+                // Ekstrak juga digit dari input asas sebagai pelengkap potensi
+                nomborAsas.split('').forEach(d => {
+                    if(!kombo3D.includes(d) && dataAkar.rawData.includes(d)) {
+                        senaraiPelengkap.push(d);
+                    }
+                });
+
+                // Gabungkan 3D Muktamad + Golden 1D
+                [...new Set(senaraiPelengkap)].forEach(p => {
+                    set4D.add(this.sortCombo(kombo3D + p));
+                });
+            });
+
+            // Ekstrak 2D Anchor dari 3D Muktamad untuk paparan UI
+            let set2D = new Set();
+            array3DMuktamad.forEach(s3 => {
+                set2D.add(s3.substring(0,2));
+                set2D.add(s3.substring(1,3));
+            });
+
+            return {
+                tunjang: top3Digits,
+                pivot: trajektori.slice(-2),
+                keputusan2D: Array.from(set2D),
+                keputusan3D: array3DMuktamad, // 3D MUKTAMAD & PADU
+                keputusan4D: Array.from(set4D).slice(0, 12) // 4D iBox berasaskan 3D Muktamad + Golden 1D
+            };
+        }
+    }
+
+    // 2. INSTANTIASI ENJIN
+    const enjin = new MesinMatriksPro();
+
+    // 3. FUNGSI SAMBUNGAN UI KE ENJIN
+    function janaKeputusan() {
+        const str1 = document.getElementById('num1').value.trim();
+        const str2 = document.getElementById('num2').value.trim();
+        const historyRaw = document.getElementById('history').value.trim();
+        const gunaCermin = document.getElementById('useMirror').checked;
+
+        if (str1.length < 3 && str2.length < 3) {
+            alert("Silakan masukkan nombor dasar yang valid (minimal 3D).");
             return;
         }
 
-        // 1. Penguraian Akar (Root Decomposition)
-        const sum1 = str1.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
-        const sum2 = str2.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+        const nomborAsas = str1 + str2; 
 
-        // 2. Pemecahan Nilai & Penjanaan Kod Pengunci
-        const kodTambah = sum1 + sum2;
-        const kodTolak = Math.abs(sum1 - sum2);
-
-        // Paparkan Jalan Kira
-        document.getElementById('math-steps').innerHTML = 
-            `Akar 1: <b>${sum1}</b> | Akar 2: <b>${sum2}</b> <br> Pelaras Tambah: <b>+${kodTambah}</b> | Pelaras Tolak: <b>-${kodTolak}</b>`;
-
-        // 3. Mengumpulkan Kunci Matriks
-        const rawKeys = str1 + str2 + sum1.toString() + sum2.toString() + kodTambah.toString() + kodTolak.toString();
-        let masterKeys = [...new Set(rawKeys.split(''))].filter(x => !isNaN(x)).sort();
-
-        // Hadkan kepada 6 digit dominan untuk keseimbangan (Wheeling optimum)
-        if (masterKeys.length > 6) {
-            masterKeys = masterKeys.slice(0, 6);
+        // Ekstrak 4 digit sejarah daripada textarea menggunakan Regex
+        let sejarahCabutan = historyRaw.match(/\d{4}/g);
+        
+        // Data sandaran (fallback) jika pengguna membiarkan kotak sejarah kosong
+        if (!sejarahCabutan || sejarahCabutan.length < 5) {
+            sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055", "0275", "5620", "7819", "9152", "6693"];
         }
-        document.getElementById('master-key').innerText = masterKeys.join(' - ');
 
-        // 4. Penjanaan Unjuran 2D Kukuh
-        let result2D = [];
-        for (let i = 0; i < masterKeys.length; i++) {
-            for (let j = 0; j < masterKeys.length; j++) {
-                if (i !== j) {
-                    result2D.push(masterKeys[i] + masterKeys[j]);
-                }
-            }
-        }
-        // Ambil 12 kombinasi 2D teratas
-        result2D = result2D.slice(0, 12);
-        document.getElementById('output-2d').innerHTML = result2D.map(num => `<div class="number-tag">${num}</div>`).join('');
-        // Simpan nilai rawak untuk copy paste
-        document.getElementById('output-2d').setAttribute('data-raw', result2D.join(', '));
+        // Proses menggunakan Enjin Matriks Pro
+        const hasil = enjin.jana(nomborAsas, sejarahCabutan, gunaCermin);
 
-        // 5. Penjanaan Unjuran 3D Kukuh
-        let result3D = [];
-        for (let i = 0; i < masterKeys.length; i++) {
-            for (let j = 0; j < masterKeys.length; j++) {
-                for (let k = 0; k < masterKeys.length; k++) {
-                    if (i !== j && j !== k && i !== k) {
-                        result3D.push(masterKeys[i] + masterKeys[j] + masterKeys[k]);
-                    }
-                }
-            }
-        }
-        // Ambil 15 kombinasi 3D teratas
-        result3D = result3D.slice(0, 15);
-        document.getElementById('output-3d').innerHTML = result3D.map(num => `<div class="number-tag" style="background:#8e44ad;">${num}</div>`).join('');
-        // Simpan nilai rawak untuk copy paste
-        document.getElementById('output-3d').setAttribute('data-raw', result3D.join(', '));
+        // Paparkan ke UI Web
+        document.getElementById('master-key').innerText = hasil.tunjang.join(' - ');
+        document.getElementById('pivot-keys').innerText = hasil.pivot.join(', ');
 
-        // Tunjukkan bahagian hasil
+        document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag anchor-tag">${n}</div>`).join('');
+        document.getElementById('out-2d').setAttribute('data-raw', hasil.keputusan2D.join(', '));
+
+        document.getElementById('out-3d').innerHTML = hasil.keputusan3D.map(n => `<div class="number-tag" style="background:#d69e2e;">${n}</div>`).join('');
+        document.getElementById('out-3d').setAttribute('data-raw', hasil.keputusan3D.join(', '));
+
+        document.getElementById('out-4d').innerHTML = hasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;">${n}</div>`).join('');
+        document.getElementById('out-4d').setAttribute('data-raw', hasil.keputusan4D.join(', '));
+
         document.getElementById('hasil').style.display = 'block';
     }
 
+    // 4. FUNGSI UTILITI
     function resetBorang() {
         document.getElementById('num1').value = '';
         document.getElementById('num2').value = '';
+        document.getElementById('history').value = '';
         document.getElementById('hasil').style.display = 'none';
     }
 
-    function salinNombor(elementId) {
-        const rawText = document.getElementById(elementId).getAttribute('data-raw');
-        if(rawText) {
-            navigator.clipboard.writeText(rawText).then(() => {
-                alert("Berjaya disalin: " + rawText);
-            }).catch(err => {
-                alert("Gagal menyalin teks.");
-            });
+    function salin(id) {
+        const txt = document.getElementById(id).getAttribute('data-raw');
+        if(txt) {
+            navigator.clipboard.writeText(txt).then(() => alert("Berhasil disalin: " + txt));
         }
     }
 </script>
 
-<!-- Kod Iklan Adsterra -->
+<!-- Script Iklan Adsterra -->
 <script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
 
 </body>
