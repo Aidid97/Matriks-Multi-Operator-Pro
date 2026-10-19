@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesin Matriks 2D Anchor + Pivot 3D Pro</title>
+    <title>Mesin Matriks Multi-Operator Pro (Toto & GD Lotto)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -26,13 +26,14 @@
         p.subtitle { text-align: center; color: #718096; font-size: 13px; margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
-        input[type="text"], textarea {
+        input[type="text"], textarea, select {
             width: 100%; padding: 12px; border: 2px solid #cbd5e0;
-            border-radius: 8px; box-sizing: border-box; font-size: 18px;
-            font-family: monospace; letter-spacing: 2px;
+            border-radius: 8px; box-sizing: border-box; font-size: 16px;
+            font-family: monospace;
         }
-        textarea { font-size: 14px; letter-spacing: normal; resize: vertical; }
-        input:focus, textarea:focus { outline: none; border-color: #3182ce; }
+        select { font-family: 'Segoe UI', sans-serif; font-weight: bold; cursor: pointer; }
+        textarea { font-size: 14px; resize: vertical; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #3182ce; }
         .checkbox-group { margin: 15px 0; font-size: 14px; font-weight: 600; }
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
         button {
@@ -58,14 +59,27 @@
         }
         .key-tag { color: #dd6b20; font-weight: 800; font-size: 18px; letter-spacing: 2px; }
         .anchor-tag { background: #2b6cb0; }
+        .badge-mode {
+            display: inline-block; padding: 3px 8px; border-radius: 4px;
+            font-size: 11px; font-weight: bold; color: white; background: #805ad5; margin-left: 5px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Mesin Matriks 2D Anchor + Pivot 3D</h2>
-    <p class="subtitle">Prediksi Presisi Tinggi Menggunakan Teknik Anchor 2D & Single Pivot</p>
+    <h2>Mesin Matriks Multi-Operator Pro</h2>
+    <p class="subtitle">Sistem Penjanaan Presisi Tinggi (SportsToto & Grand Dragon 4D)</p>
     
+    <!-- Pilihan Operator / Pasaran -->
+    <div class="input-group">
+        <label for="operator">Pilih Operator / Pasaran:</label>
+        <select id="operator">
+            <option value="toto">SportsToto (3x Seminggu - Mod Stabil)</option>
+            <option value="gdlotto">GD Lotto (Setiap Hari - Mod Drift Pantas)</option>
+        </select>
+    </div>
+
     <div class="input-group">
         <label for="num1">Nomor Dasar 1 (Contoh: 3594):</label>
         <input type="text" id="num1" maxlength="4" placeholder="0000" pattern="\d*" required>
@@ -76,9 +90,8 @@
         <input type="text" id="num2" maxlength="4" placeholder="0000" pattern="\d*" required>
     </div>
 
-    <!-- Ruangan untuk Sejarah Cabutan (Trajektori Kekerapan) -->
     <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas (Penting untuk Trajektori):</label>
+        <label for="history">Sejarah Cabutan Lepas (Paste Result):</label>
         <textarea id="history" rows="3" placeholder="Paste result lepas di sini...&#10;Contoh: 1508, 5241, 6336, 2203, 4065..."></textarea>
     </div>
 
@@ -93,7 +106,7 @@
 
     <div id="hasil" style="display: none;">
         <div class="result-box">
-            <p><strong>Kunci Matriks Dominan (Top Momentum):</strong> <span id="master-key" class="key-tag"></span></p>
+            <p><strong>Kunci Matriks Dominan:</strong> <span id="master-key" class="key-tag"></span> <span id="mode-badge" class="badge-mode"></span></p>
             <p id="pivot-info" style="margin-top:5px; font-size:13px; color:#2c5282;">
                 <strong>Digit Pivot Utama (Mean Reversion):</strong> <span id="pivot-keys" style="font-weight:bold;"></span>
             </p>
@@ -117,7 +130,6 @@
 </div>
 
 <script>
-    // 1. KELAS ENJIN MATRIKS PRO
     class MesinMatriksPro {
         constructor() {
             this.MIRROR_MAP = {
@@ -141,11 +153,15 @@
             return { akar: sum, rawData: rawData };
         }
 
-        kiraTrajektori(sejarahCabutan) {
+        kiraTrajektori(sejarahCabutan, isGDLotto) {
             let skor = [];
             let t3 = sejarahCabutan.slice(0, 3).join('');
             let t5 = sejarahCabutan.slice(0, 5).join('');
             let t15 = sejarahCabutan.slice(0, 15).join('');
+
+            // Pemberat Trajektori mengikut pasaran
+            let w_micro = isGDLotto ? 0.7 : 0.5; // GD Lotto utamakan pergerakan 3 cabutan terdekat
+            let w_velocity = isGDLotto ? 0.3 : 0.5;
 
             for (let i = 0; i <= 9; i++) {
                 let d = i.toString();
@@ -154,7 +170,7 @@
                 let c_t15 = t15.split(d).length - 1;
                 
                 let halaju = (c_t5 / 5.0) - (c_t15 / 15.0);
-                skor.push({ digit: d, skor: (0.5 * f_mikro) + (0.5 * halaju) });
+                skor.push({ digit: d, skor: (w_micro * f_mikro) + (w_velocity * halaju) });
             }
             return skor.sort((a, b) => b.skor - a.skor).map(x => x.digit);
         }
@@ -172,80 +188,87 @@
             return [...new Set(pelengkap)];
         }
 
-        // =========================================================
-        // ENJIN MUKTAMAD 3D TERAS + GOLDEN 1D COMPLEMENT
-        // =========================================================
-        jana(nomborAsas, sejarahCabutan, gunaCermin) {
+        jana(nomborAsas, sejarahCabutan, gunaCermin, operator) {
+            let isGDLotto = (operator === 'gdlotto');
             let dataAkar = this.uraiAkar(nomborAsas);
-            let trajektori = this.kiraTrajektori(sejarahCabutan);
+            let trajektori = this.kiraTrajektori(sejarahCabutan, isGDLotto);
             
-            // 1. Ambil 3 Digit Momentum Paling Dominan
-            let top3Digits = trajektori.slice(0, 3); // Contoh: ['1', '4', '9']
-            
-            // 2. MUKTAMADKAN 3D TERAS (Solid Core 3D)
-            let core3DSet = new Set();
-            
-            // a. 3D Teras Utama dari Top 3 Trajektori
-            let primary3D = this.sortCombo(top3Digits.join(''));
-            core3DSet.add(primary3D); // Contoh: "149" (MUKTAMAD)
+            let hotDigits = trajektori.slice(0, 4); 
+            let coldPivot = isGDLotto ? trajektori.slice(-4) : trajektori.slice(-3); 
 
-            // b. 3D Teras Cermin Direct (jika diaktifkan)
-            if(gunaCermin) {
-                top3Digits.forEach(d => {
-                    let mirrorD = this.MIRROR_MAP[d];
-                    // Gantikan salah satu digit dengan cerminnya untuk membina 3D Teras Cermin
-                    let alt3D = this.sortCombo(primary3D.replace(d, mirrorD));
-                    core3DSet.add(alt3D); // Contoh: "146" atau "169"
+            // 1. Pembentukan 2D Anchor
+            let anchors2D = new Set();
+            for (let i = 0; i < hotDigits.length; i++) {
+                for (let j = i + 1; j < hotDigits.length; j++) {
+                    anchors2D.add(this.sortCombo(hotDigits[i] + hotDigits[j]));
+                }
+            }
+            if (gunaCermin) {
+                hotDigits.forEach(d => {
+                    anchors2D.add(this.sortCombo(d + this.MIRROR_MAP[d]));
                 });
             }
+            let array2D = Array.from(anchors2D);
 
-            let array3DMuktamad = Array.from(core3DSet); // Hanya 3D TERAS MUKTAMAD diproduksi
+            // 2. Pembentukan 3D Teras (Mengelakkan Perangkap Kembar)
+            let core3DSet = new Set();
+            array2D.forEach(anchor => {
+                coldPivot.forEach(pivot => {
+                    core3DSet.add(this.sortCombo(anchor + pivot));
+                });
+                nomborAsas.split('').forEach(pivot => {
+                    core3DSet.add(this.sortCombo(anchor + pivot));
+                });
+            });
 
-            // 3. CARI GOLDEN 1D COMPLEMENT UNTUK SETIAP 3D MUKTAMAD
+            // Bagi GD Lotto, tambah variasi silang trajektori top 3 untuk cegah 3D mengecil
+            if (isGDLotto) {
+                core3DSet.add(this.sortCombo(hotDigits[0] + hotDigits[1] + hotDigits[2]));
+                core3DSet.add(this.sortCombo(hotDigits[0] + hotDigits[1] + hotDigits[3]));
+            }
+
+            let array3DMuktamad = Array.from(core3DSet).slice(0, 12);
+
+            // 3. Pembentukan 4D iBox
             let set4D = new Set();
             array3DMuktamad.forEach(kombo3D => {
-                // Cari 1D pelengkap berdasarkan Hanging Mirrors & Cabang Akar
                 let senaraiPelengkap = this.cariPelengkapEmas(kombo3D, dataAkar.rawData);
                 
-                // Ekstrak juga digit dari input asas sebagai pelengkap potensi
                 nomborAsas.split('').forEach(d => {
-                    if(!kombo3D.includes(d) && dataAkar.rawData.includes(d)) {
+                    if (!kombo3D.includes(d)) {
                         senaraiPelengkap.push(d);
                     }
                 });
 
-                // Gabungkan 3D Muktamad + Golden 1D
+                if (gunaCermin) {
+                    kombo3D.split('').forEach(d => {
+                        senaraiPelengkap.push(this.MIRROR_MAP[d]);
+                    });
+                }
+
                 [...new Set(senaraiPelengkap)].forEach(p => {
                     set4D.add(this.sortCombo(kombo3D + p));
                 });
             });
 
-            // Ekstrak 2D Anchor dari 3D Muktamad untuk paparan UI
-            let set2D = new Set();
-            array3DMuktamad.forEach(s3 => {
-                set2D.add(s3.substring(0,2));
-                set2D.add(s3.substring(1,3));
-            });
-
             return {
-                tunjang: top3Digits,
-                pivot: trajektori.slice(-2),
-                keputusan2D: Array.from(set2D),
-                keputusan3D: array3DMuktamad, // 3D MUKTAMAD & PADU
-                keputusan4D: Array.from(set4D).slice(0, 12) // 4D iBox berasaskan 3D Muktamad + Golden 1D
+                tunjang: hotDigits,
+                pivot: coldPivot,
+                keputusan2D: array2D,
+                keputusan3D: array3DMuktamad,
+                keputusan4D: Array.from(set4D).slice(0, 16)
             };
         }
     }
 
-    // 2. INSTANTIASI ENJIN
     const enjin = new MesinMatriksPro();
 
-    // 3. FUNGSI SAMBUNGAN UI KE ENJIN
     function janaKeputusan() {
         const str1 = document.getElementById('num1').value.trim();
         const str2 = document.getElementById('num2').value.trim();
         const historyRaw = document.getElementById('history').value.trim();
         const gunaCermin = document.getElementById('useMirror').checked;
+        const operator = document.getElementById('operator').value;
 
         if (str1.length < 3 && str2.length < 3) {
             alert("Silakan masukkan nombor dasar yang valid (minimal 3D).");
@@ -254,20 +277,17 @@
 
         const nomborAsas = str1 + str2; 
 
-        // Ekstrak 4 digit sejarah daripada textarea menggunakan Regex
-        let sejarahCabutan = historyRaw.match(/\d{4}/g);
+        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g);
         
-        // Data sandaran (fallback) jika pengguna membiarkan kotak sejarah kosong
-        if (!sejarahCabutan || sejarahCabutan.length < 5) {
-            sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055", "0275", "5620", "7819", "9152", "6693"];
+        if (!sejarahCabutan || sejarahCabutan.length < 3) {
+            sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055"];
         }
 
-        // Proses menggunakan Enjin Matriks Pro
-        const hasil = enjin.jana(nomborAsas, sejarahCabutan, gunaCermin);
+        const hasil = enjin.jana(nomborAsas, sejarahCabutan, gunaCermin, operator);
 
-        // Paparkan ke UI Web
         document.getElementById('master-key').innerText = hasil.tunjang.join(' - ');
         document.getElementById('pivot-keys').innerText = hasil.pivot.join(', ');
+        document.getElementById('mode-badge').innerText = operator.toUpperCase();
 
         document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag anchor-tag">${n}</div>`).join('');
         document.getElementById('out-2d').setAttribute('data-raw', hasil.keputusan2D.join(', '));
@@ -281,7 +301,6 @@
         document.getElementById('hasil').style.display = 'block';
     }
 
-    // 4. FUNGSI UTILITI
     function resetBorang() {
         document.getElementById('num1').value = '';
         document.getElementById('num2').value = '';
