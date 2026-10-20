@@ -103,7 +103,7 @@
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom:1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Strategy Core: 3D Muktamad & 1D Pelengkap</p>
+            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom:1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Strategy Core: 3D Muktamad & 1D Pelengkap (Priority Fallback)</p>
             🔥 <b>1D Dominan (Hot):</b> <span class="hot-num" id="h1d"></span><br>
             🚀 <b>2D Tunjang:</b> <span class="missing-num" id="h2d"></span><br>
             <hr style="border-top:1px dashed #cbd5e0; margin:8px 0;">
@@ -354,6 +354,41 @@ class MesinMatriksPro {
         };
     }
 }
+
+function janaUnjuran4DAkhir(matriks, tigaDMuktamad, satuDDominan, pivotUtama) {
+    let array3D = Array.isArray(tigaDMuktamad) ? tigaDMuktamad : tigaDMuktamad.toString().split('').map(Number);
+    let kotakKuning = [
+        matriks[0][0], matriks[0][1],
+        matriks[1][0], matriks[1][1]
+    ];
+    let unikKotakKuning = [...new Set(kotakKuning)];
+    let calonGolden1D = unikKotakKuning.filter(digit => !array3D.includes(digit));
+    let senaraiGolden1DAkhir = [];
+
+    if (calonGolden1D.length > 0) {
+        senaraiGolden1DAkhir = calonGolden1D;
+        console.log("Tier 1 Berjaya: Menggunakan Kotak Kuning ->", senaraiGolden1DAkhir);
+    } else {
+        console.log("Tier 1 Ditapis Penuh. Beralih ke Tier 2 (1D Dominan).");
+        let calonDominan = satuDDominan.filter(digit => !array3D.includes(digit));
+        
+        if (calonDominan.length > 0) {
+            senaraiGolden1DAkhir = calonDominan;
+            console.log("Tier 2 Berjaya: Menggunakan 1D Dominan ->", senaraiGolden1DAkhir);
+        } else {
+            senaraiGolden1DAkhir = pivotUtama;
+            console.log("Tier 2 Ditapis Penuh. Beralih ke Tier 3 (Pivot Utama) ->", senaraiGolden1DAkhir);
+        }
+    }
+
+    let unjuran4D_iBox = senaraiGolden1DAkhir.map(digitGolden => {
+        return array3D.join('') + digitGolden.toString();
+    });
+
+    return unjuran4D_iBox;
+}
+
+window.janaUnjuran4DAkhir = janaUnjuran4DAkhir;
 
 const enjin = new MesinMatriksPro();
 let globalHasil = null;
