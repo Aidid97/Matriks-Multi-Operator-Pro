@@ -27,7 +27,7 @@
     .matrix-table td { border: 2px solid #4a5568; padding: 12px; width: 25%; background: #fff; text-align: center; transition: all 0.3s; }
     .matrix-table tr:first-child td { background-color: #e2e8f0; }
     .highlight-box { background-color: #fff4cd !important; color: #056404; }
-    .highlight-1d { border: 4px solid #0d6efd !important; box-shadow: inset 0 0 10px rgba(13,110,253,0.4); }
+    .highlight-3d { border: 4px solid #0d6efd !important; box-shadow: inset 0 0 10px rgba(13,110,253,0.4); }
     .highlight-2d { border: 4px solid #dc3545 !important; box-shadow: inset 0 0 10px rgba(220,53,69,0.4); }
     .result-box { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
     .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; margin-top: 10px; }
@@ -160,23 +160,24 @@ class MesinMatriksPro {
     }
 
     sortCombo(str) {
-        return str.split('').sort().join('');
+        return (str || "").split('').sort().join('');
     }
 
     getMirror(str) {
-        return str.split('').map(c => this.MIRROR_MAP[c] || c).join('');
+        return (str || "").split('').map(c => this.MIRROR_MAP[c] || c).join('');
     }
 
     binaMatrix4x4(str1, str2) {
         let combined = (str1 + (str2 || "8040")).replace(/[^0-9]/g, '');
         if (combined.length < 4) combined = "5829";
-        let baseRow = combined.substring(0, 4).split('').map(Number);
         
+        let baseRow = combined.substring(0, 4).split('').map(Number);
         let matrix = [baseRow];
+        
         for (let r = 1; r < 4; r++) {
             let row = [];
             for (let c = 0; c < 4; c++) {
-                let val = (matrix[r - 1][c] + 9) % 10;
+                let val = (matrix[r - 1][c] + 9) % 10; 
                 row.push(val);
             }
             matrix.push(row);
@@ -185,12 +186,13 @@ class MesinMatriksPro {
     }
 
     uraiAkar(nomborAsas) {
+        if (!nomborAsas) nomborAsas = "0000";
         let digits = nomborAsas.split('').map(Number);
-        let sum = digits.reduce((a, b) => a + b, 0);
+        let sum = digits.reduce((a, b) => a + (b || 0), 0);
         let sumStr = sum.toString();
         let sunDigits = sumStr.split('').map(Number);
 
-        let cabangTambah = sunDigits.reduce((a, b) => a + b, 0);
+        let cabangTambah = sunDigits.reduce((a, b) => a + (b || 0), 0);
         let cabangTolak = sunDigits.length > 1 ? Math.abs(sunDigits[0] - sunDigits[1]) : sunDigits[0];
 
         let rawData = nomborAsas + sumStr + cabangTambah.toString() + cabangTolak.toString();
@@ -204,31 +206,38 @@ class MesinMatriksPro {
 
     kiraTrajektori(sejarahCabutan, operator) {
         let skor = [];
-        let t3 = sejarahCabutan.slice(0, 3).join('');
-        let t5 = sejarahCabutan.slice(0, 5).join('');
-        let t15 = sejarahCabutan.slice(0, 15).join('');
+        let maxLen = sejarahCabutan.length;
+        let l3 = Math.min(3, maxLen);
+        let l5 = Math.min(5, maxLen);
+        let l15 = Math.min(15, maxLen);
+
+        let t3 = sejarahCabutan.slice(0, l3).join('');
+        let t5 = sejarahCabutan.slice(0, l5).join('');
+        let t15 = sejarahCabutan.slice(0, l15).join('');
 
         let w_micro = 0.5;
         let w_velocity = 0.5;
 
         if (operator === 'gdlotto') {
-            w_micro = 0.7;
-            w_velocity = 0.3;
+            w_micro = 0.7; w_velocity = 0.3;
         } else if (operator === 'magnum') {
-            w_micro = 0.55;
-            w_velocity = 0.45;
+            w_micro = 0.55; w_velocity = 0.45;
         }
 
         for (let i = 0; i <= 9; i++) {
             let d = i.toString();
-            let f_mikro = t3.split(d).length - 1;
-            let c_t5 = t5.split(d).length - 1;
-            let c_t15 = t15.split(d).length - 1;
+            let f_mikro = t3 ? (t3.split(d).length - 1) : 0;
+            let c_t5 = t5 ? (t5.split(d).length - 1) : 0;
+            let c_t15 = t15 ? (t15.split(d).length - 1) : 0;
 
-            let halaju = (c_t5 / 5.0) - (c_t15 / 15.0);
+            let vel5 = l5 > 0 ? (c_t5 / l5) : 0;
+            let vel15 = l15 > 0 ? (c_t15 / l15) : 0;
+            let halaju = vel5 - vel15;
+
             skor.push({ digit: d, skor: (w_micro * f_mikro) + (w_velocity * halaju) });
         }
-        return skor.sort((a, b) => b.skor - a.skor).map(x => x.digit);
+        
+        return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);
     }
 
     ekstrakPolaMatrix(m) {
@@ -250,20 +259,22 @@ class MesinMatriksPro {
         if (!kombinasi3D.includes(dataAkar.cabangTolak)) {
             pelengkapTier.push(dataAkar.cabangTolak);
         }
-        if (coldPivot.length > 0 && !kombinasi3D.includes(coldPivot[0])) {
+        if (coldPivot && coldPivot.length > 0 && !kombinasi3D.includes(coldPivot[0])) {
             pelengkapTier.push(coldPivot[0]);
         }
 
         kombinasi3D.split('').forEach(digit => {
             let cermin = this.MIRROR_MAP[digit];
-            if (!kombinasi3D.includes(cermin) && dataAkar.rawdata.includes(cermin)) {
+            if (cermin && !kombinasi3D.includes(cermin) && dataAkar.rawdata.includes(cermin)) {
                 pelengkapTier.push(cermin);
             }
         });
 
-        coldPivot.slice(1).forEach(p => {
-            if (!kombinasi3D.includes(p)) pelengkapTier.push(p);
-        });
+        if(coldPivot) {
+            coldPivot.slice(1).forEach(p => {
+                if (!kombinasi3D.includes(p)) pelengkapTier.push(p);
+            });
+        }
 
         return [...new Set(pelengkapTier)];
     }
@@ -273,13 +284,14 @@ class MesinMatriksPro {
         let isMagnum = (operator === 'magnum');
 
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
-        let dataAkar = this.uraiAkar(nomborAsas, str2 || "");
+        let dataAkar = this.uraiAkar(nomborAsas);
         let trajektori = this.kiraTrajektori(sejarahCabutan, operator);
 
         let hotDigits = trajektori.slice(0, 4);
         let coldPivot = (isGDLotto || isMagnum) ? trajektori.slice(-4) : trajektori.slice(-3);
-        let hot1D = hotDigits[0];
-        let hot2D_pair = hotDigits[0] + hotDigits[1];
+        
+        let hot1D = hotDigits[0] || "0";
+        let hot2D_pair = (hotDigits[0] || "0") + (hotDigits[1] || "1");
 
         let anchors2D = new Set();
         for (let i = 0; i < hotDigits.length; i++) {
@@ -289,10 +301,10 @@ class MesinMatriksPro {
         }
         if (gunaCermin) {
             hotDigits.forEach(d => {
-                anchors2D.add(this.sortCombo(d + this.MIRROR_MAP[d]));
+                if(this.MIRROR_MAP[d]) anchors2D.add(this.sortCombo(d + this.MIRROR_MAP[d]));
             });
         }
-        let array2D = Array.from(anchors2D);
+        let array2D = Array.from(anchors2D).slice(0, 15);
 
         let primary3D = this.sortCombo(hotDigits.slice(0, 3).join(''));
         let solidCore3D = primary3D;
@@ -301,7 +313,7 @@ class MesinMatriksPro {
         }
 
         let array3DMuktamad = [solidCore3D];
-        if (isGDLotto) {
+        if (isGDLotto && coldPivot.length > 0) {
             let alt3D30 = this.sortCombo(hotDigits[0] + hotDigits[1] + coldPivot[0]);
             array3DMuktamad = [solidCore3D, alt3D30].filter((v, i, a) => a.indexOf(v) === i);
         }
@@ -311,23 +323,20 @@ class MesinMatriksPro {
 
         array3DMuktamad.forEach(kombo3D => {
             let senaraiPelengkap = this.cariPelengkapEmasPro(kombo3D, dataAkar, coldPivot);
-            if (senaraiPelengkap.length > 0) {
-                golden1DList.push(...senaraiPelengkap);
-            }
-            senaraiPelengkap.forEach(p => {
-                set4D.add(this.sortCombo(kombo3D + p));
-            });
+            if (senaraiPelengkap.length > 0) golden1DList.push(...senaraiPelengkap);
+            senaraiPelengkap.forEach(p => set4D.add(this.sortCombo(kombo3D + p)));
         });
 
-        let singleGolden1D = dataAkar.cabangTolak;
-        if (solidCore3D.includes(singleGolden1D)) {
+        let singleGolden1D = dataAkar.cabangTolak || "0";
+        if (solidCore3D.includes(singleGolden1D) && coldPivot.length > 0) {
             singleGolden1D = coldPivot[0];
         }
-        if (solidCore3D.includes(singleGolden1D)) {
+        if (solidCore3D.includes(singleGolden1D) && golden1DList.length > 0) {
             singleGolden1D = golden1DList.find(d => !solidCore3D.includes(d)) || "2";
         }
 
         let target4D = this.sortCombo(solidCore3D + singleGolden1D);
+        if(target4D.length < 4) target4D = target4D.padEnd(4, '0');
 
         return {
             matrix: matrix,
@@ -340,7 +349,7 @@ class MesinMatriksPro {
             target4D: target4D,
             keputusan2D: array2D,
             keputusan3DMuktamad: array3DMuktamad,
-            keputusan4D: Array.from(set4D),
+            keputusan4D: Array.from(set4D).slice(0, 8),
             polaObj: this.ekstrakPolaMatrix(matrix)
         };
     }
@@ -350,52 +359,63 @@ const enjin = new MesinMatriksPro();
 let globalHasil = null;
 
 function janaKeputusan() {
-    const str1 = document.getElementById('num1').value.trim();
-    const str2 = document.getElementById('num2').value.trim();
-    const historyRaw = document.getElementById('history').value.trim();
-    const gunaCermin = document.getElementById('useMirror').checked;
-    const operator = document.getElementById('operator').value;
+    try {
+        const str1 = document.getElementById('num1').value.trim();
+        const str2 = document.getElementById('num2').value.trim();
+        const historyRaw = document.getElementById('history').value.trim();
+        const gunaCermin = document.getElementById('useMirror').checked;
+        const operator = document.getElementById('operator').value;
 
-    if (str1.length < 3) {
-        alert("Sila masukkan Nombor Induk 1 yang valid (minimum 3/4 digit).");
-        return;
+        if (str1.length < 3) {
+            alert("Sila masukkan Nombor Induk 1 yang valid (minimum 3 digit).");
+            return;
+        }
+
+        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
+        if (sejarahCabutan.length < 3) {
+            sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055"];
+        }
+
+        globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin, operator);
+
+        if (!globalHasil || !globalHasil.matrix) {
+            throw new Error("Gagal menjana struktur matriks.");
+        }
+
+        lukisJadual(globalHasil.matrix);
+        highlightStrategyBox(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
+
+        document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
+        document.getElementById('pivot-keys').innerText = globalHasil.pivot.join(', ');
+        document.getElementById('mode-badge').innerText = operator.toUpperCase();
+
+        document.getElementById('h1d').innerText = `${globalHasil.hot1D} & (${globalHasil.tunjang[1] || '-'})`;
+        const hot2DDisplay = globalHasil.hot2DPair || '';
+        const hot2DSorted = hot2DDisplay ? enjin.sortCombo(hot2DDisplay) : '-';
+        document.getElementById('h2d').innerText = hot2DDisplay ? `${hot2DDisplay} / (${hot2DSorted})` : '—';
+        
+        document.getElementById('a3d').innerText = globalHasil.solidCore3D;
+        document.getElementById('p1d').innerText = globalHasil.golden1D;
+        document.getElementById('s40').innerText = globalHasil.target4D;
+
+        document.getElementById('out-2d').innerHTML = globalHasil.keputusan2D.map(n => `<div class="number-tag anchor-tag">${n}</div>`).join('');
+        document.getElementById('out-2d').setAttribute('data-raw', globalHasil.keputusan2D.join(', '));
+
+        document.getElementById('out-3d').innerHTML = globalHasil.keputusan3DMuktamad.map(n => `<div class="number-tag" style="background:#Ad6e2e;">${n}</div>`).join('');
+        document.getElementById('out-3d').setAttribute('data-raw', globalHasil.keputusan3DMuktamad.join(', '));
+
+        document.getElementById('out-4d').innerHTML = globalHasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;">${n}</div>`).join('');
+        document.getElementById('out-4d').setAttribute('data-raw', globalHasil.keputusan4D.join(', '));
+
+        renderPolaGrid(globalHasil.polaObj, gunaCermin);
+        kocokPolaVisual();
+
+        document.getElementById('hasil').style.display = 'block';
+
+    } catch (err) {
+        console.error("Ralat Mesin Matriks:", err);
+        alert("Sistem terhalang (Crash dipintas). Sila semak input semula.\nRalat: " + err.message);
     }
-
-    let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g);
-    if (!sejarahCabutan || sejarahCabutan.length < 3) {
-        sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055"];
-    }
-
-    globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin, operator);
-
-    lukisJadual(globalHasil.matrix);
-    highlightStrategyBox(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
-
-    document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
-    document.getElementById('pivot-keys').innerText = globalHasil.pivot.join(', ');
-    document.getElementById('mode-badge').innerText = operator.toUpperCase();
-
-    document.getElementById('h1d').innerText = `${globalHasil.hot1D} & (${globalHasil.tunjang[1]})`;
-    const hot2DDisplay = globalHasil.hot2DPair || '';
-    const hot2DSorted = hot2DDisplay ? enjin.sortCombo(hot2DDisplay) : '-';
-    document.getElementById('h2d').innerText = hot2DDisplay ? `${hot2DDisplay} / (${hot2DSorted})` : '—';
-    document.getElementById('a3d').innerText = globalHasil.solidCore3D;
-    document.getElementById('p1d').innerText = globalHasil.golden1D;
-    document.getElementById('s40').innerText = globalHasil.target4D;
-
-    document.getElementById('out-2d').innerHTML = globalHasil.keputusan2D.map(n => `<div class="number-tag anchor-tag">${n}</div>`).join('');
-    document.getElementById('out-2d').setAttribute('data-raw', globalHasil.keputusan2D.join(', '));
-
-    document.getElementById('out-3d').innerHTML = globalHasil.keputusan3DMuktamad.map(n => `<div class="number-tag" style="background:#Ad6e2e;">${n}</div>`).join('');
-    document.getElementById('out-3d').setAttribute('data-raw', globalHasil.keputusan3DMuktamad.join(', '));
-
-    document.getElementById('out-4d').innerHTML = globalHasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;">${n}</div>`).join('');
-    document.getElementById('out-4d').setAttribute('data-raw', globalHasil.keputusan4D.join(', '));
-
-    renderPolaGrid(globalHasil.polaObj, gunaCermin);
-    kocokPolaVisual();
-
-    document.getElementById('hasil').style.display = 'block';
 }
 
 function lukisJadual(m) {
@@ -403,7 +423,7 @@ function lukisJadual(m) {
     for (let r = 0; r < 4; r++) {
         h += "<tr>";
         for (let c = 0; c < 4; c++) {
-            h += `<td id="c-${r}-${c}">${m[r][c]}</td>`;
+            h += `<td id="c-${r}-${c}">${m[r][c] || 0}</td>`;
         }
         h += "</tr>";
     }
@@ -413,10 +433,13 @@ function lukisJadual(m) {
 function highlightStrategyBox(m, hot1D, solid3D) {
     document.querySelectorAll('td').forEach(td => td.className = "");
     let found = false;
+    let targetNum = parseInt(hot1D);
+    if(isNaN(targetNum)) return;
+
     for (let r = 0; r < 3; r++) {
         for (let c = 0; c < 3; c++) {
             let block = [m[r][c], m[r][c + 1], m[r + 1][c], m[r + 1][c + 1]];
-            if (block.includes(parseInt(hot1D))) {
+            if (block.includes(targetNum)) {
                 [`c-${r}-${c}`, `c-${r}-${c+1}`, `c-${r+1}-${c}`, `c-${r+1}-${c+1}`].forEach(id => {
                     let el = document.getElementById(id);
                     if (el) el.classList.add('highlight-box');
@@ -430,9 +453,11 @@ function highlightStrategyBox(m, hot1D, solid3D) {
 }
 
 function kocokPolaVisual() {
-    if (!globalHasil) return;
+    if (!globalHasil || !globalHasil.polaObj) return;
     let pobji = globalHasil.polaObj;
     let keys = Object.keys(pobji);
+    if(keys.length === 0) return;
+    
     let gunaCermin = document.getElementById('useMirror').checked;
 
     document.querySelectorAll('td').forEach(td => td.classList.remove('highlight-3d', 'highlight-2d'));
@@ -496,12 +521,17 @@ function resetBorang() {
 }
 
 function salin(id) {
-    const txt = document.getElementById(id).getAttribute('data-raw');
+    const el = document.getElementById(id);
+    if (!el) return;
+    const txt = el.getAttribute('data-raw');
     if (txt) {
-        navigator.clipboard.writeText(txt).then(() => alert("Berjaya disalin: " + txt));
+        navigator.clipboard.writeText(txt).then(() => alert("Berjaya disalin: " + txt)).catch(e => console.log("Gagal salin", e));
     }
 }
 </script>
+
+<!-- Script Iklan Adsterra -->
 <script data-cfasync="false" src="https://bauval.org/14/8ed7ff2149891600bc1774052ca193b4"></script>
+
 </body>
 </html>
