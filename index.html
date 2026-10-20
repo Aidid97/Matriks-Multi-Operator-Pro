@@ -103,7 +103,7 @@
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom:1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Strategy Core: 3D Muktamad & 1D Pelengkap Iinas</p>
+            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom:1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Strategy Core: 3D Muktamad & 1D Pelengkap</p>
             🔥 <b>1D Dominan (Hot):</b> <span class="hot-num" id="h1d"></span><br>
             🚀 <b>2D Tunjang:</b> <span class="missing-num" id="h2d"></span><br>
             <hr style="border-top:1px dashed #cbd5e0; margin:8px 0;">
@@ -376,7 +376,9 @@ function janaKeputusan() {
     document.getElementById('mode-badge').innerText = operator.toUpperCase();
 
     document.getElementById('h1d').innerText = `${globalHasil.hot1D} & (${globalHasil.tunjang[1]})`;
-    document.getElementById('h2d').innerText = `${globalHasil.hot2DPair} / (${enjin.sortCombo(globalHasil.hot2Pair || globalHasil.hot2DPair)})`;
+    const hot2DDisplay = globalHasil.hot2DPair || '';
+    const hot2DSorted = hot2DDisplay ? enjin.sortCombo(hot2DDisplay) : '-';
+    document.getElementById('h2d').innerText = hot2DDisplay ? `${hot2DDisplay} / (${hot2DSorted})` : '—';
     document.getElementById('a3d').innerText = globalHasil.solidCore3D;
     document.getElementById('p1d').innerText = globalHasil.golden1D;
     document.getElementById('s40').innerText = globalHasil.target4D;
