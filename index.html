@@ -54,9 +54,9 @@
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran :</label>
         <select id="operator">
-            <option value="toto">SportsToto (Mod Kestabilan Trajektori)</option>
+            <option value="toto" selected>SportsToto (Mod Kestabilan Trajektori)</option>
             <option value="magnum">Magnum 4D (Mod Cermin & Frekuensi Seimbang)</option>
-            <option value="gdlotto" selected>GD Lotto (Mod Drift Pantas Harian)</option>
+            <option value="gdlotto">GD Lotto (Mod Drift Pantas Harian)</option>
         </select>
     </div>
 
@@ -213,7 +213,6 @@ class MesinMatriksPro {
         let w_micro = 0.5;
         let w_velocity = 0.5;
         
-        // --- PENYELESAIAN MASALAH 1: Tambah 'toto' dalam logik pemberat ---
         if (operator === 'gdlotto') {
             w_micro = 0.7; w_velocity = 0.3;
         } else if (operator === 'magnum') {
@@ -251,37 +250,28 @@ class MesinMatriksPro {
         };
     }
 
-    cariPelengkapEmasPro(kombinasi3D, dataAkar, coldPivot) {
-        let pelengkapTier = [];
-        if (kombinasi3D.includes(dataAkar.cabangTolak)) pelengkapTier.push(dataAkar.cabangTolak);
-        if (coldPivot && coldPivot.length > 0 && !kombinasi3D.includes(coldPivot[0])) pelengkapTier.push(coldPivot[0]);
-        
-        kombinasi3D.split('').forEach(digit => {
-            let cermin = this.MIRROR_MAP[digit];
-            if (cermin && !kombinasi3D.includes(cermin) && dataAkar.rawdata.includes(cermin)) pelengkapTier.push(cermin);
-        });
-        
-        if (coldPivot) {
-            coldPivot.slice(1).forEach(p => { if (!kombinasi3D.includes(p)) pelengkapTier.push(p); });
-        }
-        return [...new Set(pelengkapTier)];
-    }
-
     jana(nomborAsas, str2, sejarahCabutan, gunaCermin, operator) {
-        let isGdLotto = (operator === 'gdlotto');
-        let isMagnum = (operator === 'magnum');
-        let isToto = (operator === 'toto'); // --- PENYELESAIAN MASALAH 2: Daftar flag isToto ---
-
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
-        let dataAkar = this.uraiAkar(nomborAsas);
         let trajektori = this.kiraTrajektori(sejarahCabutan, operator);
         
-        let hotDigits = trajektori.slice(0, 4);
-        let coldPivot = (isGdLotto || isMagnum || isToto) ? trajektori.slice(-4) : trajektori.slice(-3); // Apply pada semua operator
+        // --- PENYELARASAN EKSTRAKSI DARI MATRIKS (Bukan Rambang) ---
+        // 1. Ekstrak digit penting terus dari kotak matriks yang diwarnakan
+        const bingkaiMerah = [matrix[0][0], matrix[0][2]]; // Index 0, 2
+        const bingkaiBiru = [matrix[0][3], matrix[1][2], matrix[2][3], matrix[3][2]]; // Index 3, 6, 11, 14
+        const kotakKuning = [matrix[1][0], matrix[1][1], matrix[2][0], matrix[2][1]]; // Index 4, 5, 8, 9
+
+        // 2. Bina Kunci Matriks Dominan daripada Kotak Kuning
+        let hotDigits = [...new Set([...kotakKuning])].slice(0, 4).map(String);
+        if (hotDigits.length < 4) {
+             hotDigits = [...new Set([...hotDigits, ...bingkaiMerah.map(String)])].slice(0, 4);
+        }
+
+        let coldPivot = [matrix[0][0], matrix[2][2], matrix[3][3], matrix[0][2]].map(String);
         
         let hot1D = hotDigits[0] || "0";
         let hot2D_pair = (hotDigits[0] || "0") + (hotDigits[1] || "1");
         
+        // 3. Bina 2D Anchor
         let anchors2D = new Set();
         for (let i = 0; i < hotDigits.length; i++) {
             for (let j = i + 1; j < hotDigits.length; j++) {
@@ -293,33 +283,35 @@ class MesinMatriksPro {
         }
         let array2D = Array.from(anchors2D).slice(0, 15);
         
-        let primary3D = this.sortCombo(hotDigits.slice(0, 3).join(''));
+        // 4. Bina 3D Muktamad (Ambil dari kombinasi terkuat kotak kuning & bingkai merah)
+        let primary3D = this.sortCombo([kotakKuning[0], kotakKuning[1], bingkaiMerah[0]].join(''));
         let solidCore3D = primary3D;
-        if (gunaCermin && dataAkar.rawdata.includes(this.MIRROR_MAP[hotDigits[0]])) {
-            solidCore3D = this.sortCombo(primary3D.replace(hotDigits[0], this.MIRROR_MAP[hotDigits[0]]));
-        }
         
         let array3DMuktamad = [solidCore3D];
-        if (isGdLotto && coldPivot.length > 0) {
-            let alt3D30 = this.sortCombo(hotDigits[0] + hotDigits[1] + coldPivot[0]);
-            array3DMuktamad.push(alt3D30);
-        }
-        
+        // Tambah kombinasi 3D ke-2 (Kotak kuning + bingkai biru)
+        let alt3D = this.sortCombo([kotakKuning[2], kotakKuning[3], bingkaiBiru[0]].join(''));
+        if (alt3D !== solidCore3D) array3DMuktamad.push(alt3D);
+
+        // 5. Bina Proyeksi 4D iBox (Gabungan 3D + Digit Pelengkap dari matriks)
         let set4D = new Set();
-        let golden1DList = [];
+        let pelengkapList = [...bingkaiBiru, matrix[3][0], matrix[3][1]].map(String);
         
         array3DMuktamad.forEach(kombo3D => {
-            let senaraiPelengkap = this.cariPelengkapEmasPro(kombo3D, dataAkar, coldPivot);
-            if (senaraiPelengkap.length > 0) golden1DList.push(...senaraiPelengkap);
-            senaraiPelengkap.forEach(p => set4D.add(this.sortCombo(kombo3D + p)));
+            pelengkapList.forEach(p => {
+                if(!kombo3D.includes(p)) {
+                   set4D.add(this.sortCombo(kombo3D + p)); 
+                }
+            });
+            if(gunaCermin) {
+                pelengkapList.forEach(p => {
+                    let c = this.MIRROR_MAP[p];
+                    if(c && !kombo3D.includes(c)) set4D.add(this.sortCombo(kombo3D + c));
+                });
+            }
         });
         
-        let singleGolden1D = dataAkar.cabangTolak || "0";
-        if (solidCore3D.includes(singleGolden1D) && coldPivot.length > 0) singleGolden1D = coldPivot[0];
-        if (solidCore3D.includes(singleGolden1D) && golden1DList.length > 0) singleGolden1D = golden1DList.find(d => !solidCore3D.includes(d)) || "2";
-        
-        let target4D = this.sortCombo(solidCore3D + singleGolden1D);
-        if (target4D.length < 4) target4D = target4D.padEnd(4, '0');
+        let golden1D = pelengkapList[0] || "0";
+        let target4D = this.sortCombo(solidCore3D + golden1D);
         
         return {
             matrix: matrix,
@@ -328,33 +320,15 @@ class MesinMatriksPro {
             hot1D: hot1D,
             hot2DPair: hot2D_pair,
             solidCore3D: solidCore3D,
-            golden1D: singleGolden1D,
+            golden1D: golden1D,
             target4D: target4D,
             keputusan2D: array2D,
             keputusan3DMuktamad: array3DMuktamad,
-            keputusan4D: Array.from(set4D).slice(0, 8),
+            keputusan4D: Array.from(set4D).slice(0, 8), // Hadkan kepada 8 kombinasi
             polaObj: this.ekstrakPolaMatrix(matrix)
         };
     }
 }
-
-function janaUnjuran4DAkhir(matriks, tigaDMuktamad, satuDDominan, pivotUtama) {
-    let array3D = Array.isArray(tigaDMuktamad) ? tigaDMuktamad : tigaDMuktamad.toString().split('').map(Number);
-    let kotakKuning = [ matriks[0][0], matriks[0][1], matriks[1][0], matriks[1][1] ];
-    let unikKotakKuning = [...new Set(kotakKuning)];
-    let calonGolden1D = unikKotakKuning.filter(digit => !array3D.includes(digit));
-    let senaraiGolden1DAkhir = [];
-
-    if (calonGolden1D.length > 0) senaraiGolden1DAkhir = calonGolden1D;
-    else {
-        let calonDominan = satuDDominan.filter(digit => !array3D.includes(digit));
-        if (calonDominan.length > 0) senaraiGolden1DAkhir = calonDominan;
-        else senaraiGolden1DAkhir = pivotUtama;
-    }
-    
-    return senaraiGolden1DAkhir.map(digitGolden => array3D.join('') + digitGolden.toString());
-}
-window.janaUnjuran4DAkhir = janaUnjuran4DAkhir;
 
 const enjin = new MesinMatriksPro();
 let globalHasil = null;
@@ -374,7 +348,6 @@ function janaKeputusan() {
         
         let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
         
-        // --- PENYELESAIAN MASALAH 3: Hentikan paksaan array GD Lotto palsu. Wajibkan paste result sebenar ---
         if (sejarahCabutan.length < 3) {
             alert("Sila paste sekurang-kurangnya 3 result sejarah cabutan lepas yang sah di ruangan Sejarah Cabutan untuk pasaran " + operator.toUpperCase() + ".");
             return;
@@ -385,12 +358,11 @@ function janaKeputusan() {
         if (!globalHasil || !globalHasil.matrix) throw new Error("Gagal menjana struktur matriks.");
         
         lukisJadual(globalHasil.matrix);
-        highlightStrategyBox(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
+        highlightStrategyBox(globalHasil.matrix);
         
         document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
         document.getElementById('pivot-keys').innerText = globalHasil.pivot.join(', ');
         
-        // --- PENYELESAIAN MASALAH 4: Lencana Operator Khas mengikut warna/tulisan yang betul ---
         const badgeEl = document.getElementById('node-badge');
         if (operator === 'toto') {
             badgeEl.innerText = "SPORTSTOTO";
@@ -444,26 +416,16 @@ function lukisJadual(m) {
     document.getElementById('matrixTable').innerHTML = h;
 }
 
-function highlightStrategyBox(m, hot1D, solid3D) {
+function highlightStrategyBox(m) {
     document.querySelectorAll('td').forEach(td => td.className = "");
-    let found = false;
-    let targetNum = parseInt(hot1D);
-    if (isNaN(targetNum)) return;
+    // Pewarnaan statik berdasarkan corak kotak kuning/merah/biru
+    const yellow = ["c-1-0", "c-1-1", "c-2-0", "c-2-1"];
+    const red = ["c-0-0", "c-0-2"];
+    const blue = ["c-0-3", "c-1-2", "c-2-3", "c-3-2"];
     
-    for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 3; c++) {
-            let block = [m[r][c], m[r][c+1], m[r+1][c], m[r+1][c+1]];
-            if (block.includes(targetNum)) {
-                [`c-${r}-${c}`, `c-${r}-${c+1}`, `c-${r+1}-${c}`, `c-${r+1}-${c+1}`].forEach(id => {
-                    let el = document.getElementById(id);
-                    if(el) el.classList.add('highlight-box');
-                });
-                found = true;
-                break;
-            }
-        }
-        if (found) break;
-    }
+    yellow.forEach(id => { let e = document.getElementById(id); if(e) e.classList.add('highlight-box'); });
+    red.forEach(id => { let e = document.getElementById(id); if(e) { e.style.border = "4px solid #e74c3c"; e.style.boxShadow = "inset 0 0 10px rgba(231,76,60,0.4)"; } });
+    blue.forEach(id => { let e = document.getElementById(id); if(e) { e.style.border = "4px solid #0d6efd"; e.style.boxShadow = "inset 0 0 10px rgba(13,110,253,0.4)"; } });
 }
 
 function kocokPolaVisual() {
@@ -473,12 +435,10 @@ function kocokPolaVisual() {
     if (keys.length === 0) return;
     
     let gunaCermin = document.getElementById('useMirror').checked;
-    document.querySelectorAll('td').forEach(td => td.classList.remove('highlight-3d', 'highlight-2d'));
     
     let k3 = keys[Math.floor(Math.random() * keys.length)];
     let d3 = pobj[k3];
     let v3 = d3.v;
-    let c3 = d3.c;
     
     if (gunaCermin && Math.random() > 0.5) {
         v3 = enjin.getMirror(v3);
@@ -488,7 +448,6 @@ function kocokPolaVisual() {
     let k2 = keys[Math.floor(Math.random() * keys.length)];
     let d2 = pobj[k2];
     let v2 = d2.v.substring(0, 2);
-    let c2 = d2.c.slice(0, 2);
     
     if (gunaCermin && Math.random() > 0.5) {
         v2 = enjin.getMirror(v2);
@@ -499,15 +458,6 @@ function kocokPolaVisual() {
     document.getElementById('val3D').innerText = v3;
     document.getElementById('src2D').innerText = `Pola: ${k2} (${d2.v})`;
     document.getElementById('val2D').innerText = v2;
-    
-    c3.forEach(c => {
-        let el = document.getElementById(`c-${c[0]}-${c[1]}`);
-        if(el) el.classList.add('highlight-3d');
-    });
-    c2.forEach(c => {
-        let el = document.getElementById(`c-${c[0]}-${c[1]}`);
-        if(el) el.classList.add('highlight-2d');
-    });
 }
 
 function renderPolaGrid(pObj, gunaCermin) {
@@ -540,9 +490,6 @@ function salin(id) {
     }
 }
 </script>
-
-<!-- Script Iklan Adsterra -->
 <script data-cfasync="false" src="https://bmuval.org/14/0ed7ff2149891600bc1774052ca193b4"></script>
-
 </body>
 </html>
