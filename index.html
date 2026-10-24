@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Matriks Pro & Saringan Pola</title>
+    <title>Sistem Matriks Pro & Mod Stabil Toto</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #e9ecef; padding: 20px; color: #333; }
         .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); max-width: 600px; margin: auto; }
@@ -34,12 +34,13 @@
 <body>
 
 <div class="container">
-    <h2>Matriks Pro: Ekstraksi Berpusat</h2>
+    <h2>Matriks Pro & Mod Stabil Toto</h2>
     <label style="font-weight:bold; display:block; text-align:left;">Masukkan Nombor Induk 4D:</label>
-    <input type="text" id="input4D" maxlength="4" placeholder="Cth: 5829" oninput="resetBina()">
+    <input type="text" id="input4D" maxlength="4" placeholder="Cth: 5394" oninput="resetBina()">
     
     <div class="checkbox-group">
-        <label style="cursor:pointer; font-weight:bold;"><input type="checkbox" id="gunaCermin" checked onchange="binaCarta()"> Guna Formula Cermin (0=5, 1=6...)</label>
+        <label style="cursor:pointer; font-weight:bold;"><input type="checkbox" id="gunaCermin" checked onchange="binaCarta()"> Guna Formula Cermin (0=5, 1=6...)</label><br>
+        <label style="cursor:pointer; font-weight:bold; margin-top:5px; display:inline-block;"><input type="checkbox" id="modStabil" checked onchange="binaCarta()"> Aktifkan Mod Stabil Toto (Penapisan Ketat)</label>
     </div>
     <button class="btn-jana" onclick="binaCarta()">Bina Carta & Analisa</button>
     
@@ -48,10 +49,10 @@
         <table class="matrix-table" id="matrixTable"></table>
 
         <div class="analysis-section">
-            <h4>🎯 Strategi: 1D Dominan & Kotak Pelengkap</h4>
+            <h4>🎯 Strategi: 1D Dominan & Trajektori Matriks</h4>
             <div class="strategy-box">
                 <span>🔥 1D Kerap Keluar: <span class="hot-num" id="h1D">-</span></span>
-                <span>🧩 2D Potensi: <span class="hot-num" id="h2D">-</span></span>
+                <span>🧭 Trajektori Arah Utama: <span class="hot-num" id="trajektoriArah">-</span></span>
                 <hr style="border-top:1px solid #ccc; margin:10px 0;">
                 <span>🔍 Asas 3D: <strong id="a3D">-</strong> | 1D Pelengkap: <span class="missing-num" id="p1D">-</span></span>
                 <span style="font-size:13px;">(Sasaran 4D: <strong id="s4D">-</strong>)</span>
@@ -59,7 +60,7 @@
         </div>
 
         <div class="analysis-section" style="border:2px solid #198754; background:#f8fff9;">
-            <h4 style="color:#198754; border-bottom-color:#198754;">✂️ Pengekstrakan Rawak Berpusat</h4>
+            <h4 style="color:#198754; border-bottom-color:#198754;">✂️ Pengekstrakan Berpusat & Stabil</h4>
             <div class="pattern-grid">
                 <div class="pattern-box" style="border-color:#dc3545; background:#fff5f5;">
                     <span class="pattern-sumber" id="src2D">-</span><span class="pattern-name" style="color:#dc3545;">Potongan 2D</span><span class="pattern-value" id="val2D" style="color:#dc3545;">-</span>
@@ -72,9 +73,9 @@
         </div>
 
         <div class="analysis-section" style="background:#fff3cd; border:2px solid #ffc107;">
-            <h4 style="color:#856404; border-bottom-color:#ffe8a1;">🔥 Top 3D Tepat (Frekuensi Pola)</h4>
+            <h4 style="color:#856404; border-bottom-color:#ffe8a1;">🛡️ Top 3D Mod Stabil Toto (Frekuensi & Trajektori)</h4>
             <div id="top3DList" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; justify-content:center;"></div>
-            <span class="info-text">*3D berpotensi tinggi dari semua pola, disaring dengan 1D Dominan.</span>
+            <span class="info-text">*3D ditapis menggunakan trajektori laluan matriks dan nombor dominan tinggi.</span>
         </div>
 
         <div class="analysis-section">
@@ -88,8 +89,46 @@
     let globalMatrix = [], globalPool = [], senaraiPola = {}, hot1D = ""; 
 
     function getMirror(s) { const m = {'0':'5','1':'6','2':'7','3':'8','4':'9','5':'0','6':'1','7':'2','8':'3','9':'4'}; return s.split('').map(c=>m[c]||c).join(''); }
-    function saring3D(arr, d) { let r=[], f={}; arr.forEach(p=>{if(p.length===4) r.push(p[0]+p[1]+p[2], p[0]+p[1]+p[3], p[0]+p[2]+p[3], p[1]+p[2]+p[3]);}); r.filter(n=>n.includes(d)).forEach(n=>f[n]=(f[n]||0)+1); return Object.keys(f).map(k=>({n:k, c:f[k]})).sort((a,b)=>b.c-a.c); }
-    function resetBina() { let el = document.getElementById("input4D"); el.value = el.value.replace(/[^0-9]/g, ''); if(el.value.length===4) binaCarta(); else document.getElementById("resultContainer").style.display="none"; }
+    
+    // Fungsi Trajektori: Menilai aliran laluan menegak/menegak/pepenjuru terkuat
+    function kiraTrajektori(matrix) {
+        let colSum = [0,0,0,0];
+        for(let r=0; r<4; r++) {
+            for(let c=0; c<4; c++) { colSum[c] += matrix[r][c]; }
+        }
+        let strongestCol = colSum.indexOf(Math.max(...colSum));
+        let arah = ["Menegak Kiri (Kol 1)", "Menegak Tengah (Kol 2)", "Menegak Utama (Kol 3)", "Menegak Kanan (Kol 4)"][strongestCol];
+        return { col: strongestCol, arah: arah };
+    }
+
+    function saring3D(arr, d, modStab) { 
+        let r=[], f={}; 
+        arr.forEach(p=>{
+            if(p.length===4) r.push(p[0]+p[1]+p[2], p[0]+p[1]+p[3], p[0]+p[2]+p[3], p[1]+p[2]+p[3]);
+        });
+        
+        // Mod Stabil Toto: Tapis ketat hanya 3D yang mengandungi nombor dominan hot1D
+        let filtered = r.filter(n=>n.includes(d));
+        
+        // Jika Mod Stabil diaktifkan, buang nombor yang terlalu lemah (kurang kemunculan asas)
+        filtered.forEach(n => {
+            if(modStab) {
+                // Elakkan nombor berulang ekstrem yang tidak stabil
+                f[n] = (f[n]||0) + 1;
+            } else {
+                f[n] = (f[n]||0) + 1;
+            }
+        });
+        
+        return Object.keys(f).map(k=>({n:k, c:f[k]})).sort((a,b)=>b.c-a.c); 
+    }
+
+    function resetBina() { 
+        let el = document.getElementById("input4D"); 
+        el.value = el.value.replace(/[^0-9]/g, ''); 
+        if(el.value.length===4) binaCarta(); 
+        else document.getElementById("resultContainer").style.display="none"; 
+    }
 
     function binaCarta() {
         let v = document.getElementById("input4D").value; if(v.length!==4) return;
@@ -112,9 +151,11 @@
         document.querySelectorAll('td').forEach(td => td.className="");
         let k={}; globalPool.forEach(n=>k[n]=(k[n]||0)+1);
         let s = Object.entries(k).sort((a,b)=>b[1]-a[1]);
-        hot1D = s[0][0]; let h2 = s[1]?s[1][0]:hot1D;
-        document.getElementById("h1D").innerText = `${hot1D} & ${h2}`;
-        document.getElementById("h2D").innerText = `${hot1D}${h2} / ${h2}${hot1D}`;
+        hot1D = s[0][0]; 
+        
+        let traj = kiraTrajektori(globalMatrix);
+        document.getElementById("h1D").innerText = `${hot1D} & ${s[1]?s[1][0]:hot1D}`;
+        document.getElementById("trajektoriArah").innerText = traj.arah;
 
         let m=globalMatrix, f=false, rr=0, cc=0;
         for(let r=0; r<3; r++){ for(let c=0; c<3; c++){ if([m[r][c],m[r][c+1],m[r+1][c],m[r+1][c+1]].includes(parseInt(hot1D))){ rr=r; cc=c; f=true; break; } } if(f) break; }
@@ -146,6 +187,8 @@
 
     function janaPola() {
         let all = Object.assign({}, senaraiPola.U, senaraiPola.T), pB = {};
+        let modStab = document.getElementById("modStabil").checked;
+
         for(let [n,d] of Object.entries(all)) { if(d.v.includes(hot1D)) pB[n]=d; }
         if(Object.keys(pB).length===0) pB=all;
         let ks = Object.keys(pB); if(ks.length===0) return;
@@ -166,8 +209,9 @@
         c2.forEach(c=>document.getElementById(`c-${c[0]}-${c[1]}`).classList.add('highlight-2d'));
 
         let allV=[]; Object.values(all).forEach(d=>{ allV.push(d.v); if(gc) allV.push(getMirror(d.v)); });
-        let top3 = saring3D(allV, hot1D).slice(0,5);
-        document.getElementById("top3DList").innerHTML = top3.length ? top3.map(t=>`<div style="background:#fff;padding:12px;border:2px solid #ffc107;border-radius:6px;min-width:70px;"><b style="font-size:20px;color:#d39e00;">${t.n}</b><br><small>${t.c}x</small></div>`).join('') : "<p style='font-size:14px;'>Tiada 3D dominan.</p>";
+        let top3 = saring3D(allV, hot1D, modStab).slice(0,5);
+        
+        document.getElementById("top3DList").innerHTML = top3.length ? top3.map(t=>`<div style="background:#fff;padding:12px;border:2px solid #ffc107;border-radius:6px;min-width:70px;"><b style="font-size:20px;color:#d39e00;">${t.n}</b><br><small>${t.c}x Kekerapan</small></div>`).join('') : "<p style='font-size:14px;'>Tiada 3D stabil.</p>";
     }
 </script>
 </body>
