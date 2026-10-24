@@ -191,7 +191,6 @@ class MesinGeometriTulen {
         let list3DWithSource = [];
         let set4D = new Set();
         
-        // Baca semua trajektori tanpa menyekat kepada Golden Key semata-mata
         Object.entries(trajektoriMap).forEach(([namaPola, val]) => {
             if(val.length === 4) {
                 set4D.add(val); 
@@ -207,7 +206,6 @@ class MesinGeometriTulen {
             if(!unik3D.has(item.num)) unik3D.set(item.num, item.source);
         });
 
-        // Hadkan kepada 5 sasaran maksimum untuk elak nombor berserabut
         let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 5); 
         let arr4D = Array.from(set4D).slice(0, 5); 
 
@@ -219,6 +217,12 @@ class MesinGeometriTulen {
             arr2D = arr2D.map(n => this.getMirror(n));
             arr3D = arr3D.map(item => ({ num: this.getMirror(item.num), source: item.source }));
             arr4D = arr4D.map(n => this.getMirror(n));
+            
+            let newMap = {};
+            for(let key in trajektoriMap) {
+                newMap[key] = this.getMirror(trajektoriMap[key]);
+            }
+            trajektoriMap = newMap;
         }
 
         return {
@@ -316,7 +320,7 @@ function janaAnalisisPenuh() {
             raw4DArray.push(num);
             let c = "#805ad5"; 
             for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
-                if(nilai === num || (nilai === hasil.getMirror(num) && gunaCermin)) {
+                if(nilai === num) {
                     c = getPolaColor(nama);
                     break;
                 }
