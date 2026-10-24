@@ -177,7 +177,7 @@ class MesinMatriksPro {
         for (let r = 1; r < 4; r++) {
             let row = [];
             for (let c = 0; c < 4; c++) {
-                let val = (matrix[r - 1][c] + 9) % 10; // Trajektori menurun (-1)
+                let val = (matrix[r - 1][c] + 9) % 10; 
                 row.push(val);
             }
             matrix.push(row);
@@ -185,7 +185,6 @@ class MesinMatriksPro {
         return matrix;
     }
     
-    // PENAMBAHAN LENGKAP: Pola T, L, Y, O, Zig-Zag Kiri/Kanan & Pepenjuru berserta Variasi Terbalik (Reversed Path)
     ekstrakPolaMatrix(m) {
         return {
             "Pola L": { v: `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`, c: [[0,0],[1,0],[2,0],[2,1]] },
@@ -206,43 +205,60 @@ class MesinMatriksPro {
             "Zig-Zag Kanan (Terbalik)": { v: `${m[3][2]}${m[2][3]}${m[1][2]}${m[0][3]}`, c: [[3,2],[2,3],[1,2],[0,3]] },
             
             "Poligon Kanan": { v: `${m[0][2]}${m[0][3]}${m[1][2]}${m[2][2]}`, c: [[0,2],[0,3],[1,2],[2,2]] },
-            "Pepenjuru Utama": { v: `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`, c: [[0,0],[1,1],[2,2],[3,3]] }
+            "Pepenjuru Utama": { v: `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`, c: [[0,0],[1,1],[2,2],[3,3]] },
+            "Pepenjuru Silang": { v: `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`, c: [[0,3],[1,2],[2,1],[3,0]] }
         };
     }
 
     jana(nomborAsas, str2, sejarahCabutan, gunaCermin, operator) {
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
         
-        // --- LOGIK IMBASAN MENYELURUH (MENANGKAP ANGKA POD SEPERTI 7, 8, 2, 9) ---
-        let v1 = matrix[1][0].toString(); // Kotak kiri
-        let v2 = matrix[1][1].toString(); // Kotak tengah-kiri
-        let v3 = matrix[2][2].toString(); // Lajur kanan (Contoh: 8)
-        let v4 = matrix[3][2].toString(); // Lajur kanan bawah (Contoh: 7)
-        let vTop = matrix[0][1].toString(); // Baris atas (Contoh: 2)
-        let vTop0 = matrix[0][2].toString(); // Baris atas (Contoh: 0)
+        let v1 = matrix[1][0].toString(); 
+        let v2 = matrix[1][1].toString(); 
+        let v3 = matrix[2][2].toString(); 
+        let v4 = matrix[3][2].toString(); 
+        let vTop = matrix[0][1].toString(); 
+        let vTop0 = matrix[0][2].toString(); 
 
         let hotDigits = [...new Set([v1, v2, v3, v4])]; 
         let coldPivot = [matrix[0][0], matrix[2][2], matrix[3][3], matrix[0][2]].map(String);
 
-        let hot1D = v4; 
-        let hot2D_pair = v4 + v3; 
+        let hot1D, hot2DPair, solidCore3D, golden1D;
 
-        let solidCore3D = this.sortCombo(v4 + v3 + vTop); 
-        let golden1D = vTop0; 
+        if (operator === 'toto') {
+            hot1D = v4; 
+            hot2DPair = v4 + v3; 
+            solidCore3D = this.sortCombo(v4 + v3 + vTop); 
+            golden1D = vTop0; 
+        } else if (operator === 'gdlotto') {
+            hot1D = matrix[3][3].toString(); 
+            hot2DPair = matrix[3][3].toString() + v3;
+            solidCore3D = this.sortCombo(matrix[3][3].toString() + v3 + vTop0); 
+            golden1D = matrix[3][0].toString(); 
+        } else {
+            hot1D = v3;
+            hot2DPair = v3 + v2;
+            solidCore3D = this.sortCombo(v2 + v3 + vTop);
+            golden1D = v1;
+        }
+
         let target4D = this.sortCombo(solidCore3D + golden1D);
 
         let anchors2D = new Set([
-            this.sortCombo(v4 + v3), this.sortCombo(v3 + vTop), 
-            this.sortCombo(v4 + vTop), this.sortCombo(v1 + v2), 
-            this.sortCombo(v2 + vTop0), this.sortCombo(v3 + v1)
+            this.sortCombo(hot1D + v3), this.sortCombo(v3 + vTop), 
+            this.sortCombo(hot1D + vTop), this.sortCombo(v1 + v2), 
+            this.sortCombo(v2 + vTop0), this.sortCombo(v3 + v1),
+            this.sortCombo(hot2DPair)
         ]);
         
         if (gunaCermin) {
             let temp2D = [...anchors2D];
             temp2D.forEach(d => {
-                let c1 = this.MIRROR_MAP[d[0]] || d[0];
-                let c2 = this.MIRROR_MAP[d[1]] || d[1];
-                anchors2D.add(this.sortCombo(c1 + c2));
+                if(d.length === 2) {
+                    let c1 = this.MIRROR_MAP[d[0]] || d[0];
+                    let c2 = this.MIRROR_MAP[d[1]] || d[1];
+                    anchors2D.add(this.sortCombo(c1 + c2));
+                }
             });
         }
         let array2D = Array.from(anchors2D).slice(0, 8);
@@ -267,7 +283,7 @@ class MesinMatriksPro {
             tunjang: hotDigits,
             pivot: coldPivot,
             hot1D: hot1D,
-            hot2DPair: hot2D_pair,
+            hot2DPair: hot2DPair,
             solidCore3D: solidCore3D,
             golden1D: golden1D,
             target4D: target4D,
