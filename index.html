@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin Trajektori & Frekuensi Kerap SportsToto Pro</title>
+<title>Mesin Trajektori Berwarna SportsToto Pro</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 540px; width: 100%; }
@@ -25,14 +25,16 @@
     .matrix-table td { border: 2px solid #4a5568; padding: 12px; width: 25%; background: #fff; text-align: center; }
     .matrix-table tr:first-child td { background-color: #e2e8f0; }
     .result-box { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
-    .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 6px; margin-top: 10px; }
-    .number-tag { background: #2d3748; color: #fff; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 15px; letter-spacing: 1px; }
+    .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; margin-top: 10px; }
+    .number-tag { background: #2d3748; color: #fff; padding: 8px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 14px; cursor: pointer; transition: 0.2s; }
+    .number-tag:hover { background: #3182ce; }
+    .number-tag span { display: block; font-size: 9px; color: #cbd5f0; margin-top: 3px; text-transform: uppercase; }
     .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; }
     .node-badge { display: inline-block; padding: 3px 8px; background: #0d6efd; color: white; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; margin-left: 5px; }
     .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; text-align: left; margin-top: 10px; }
     .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .pattern-box { background: white; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; text-align: center; display: flex; flex-direction: column; }
-    .pattern-sumber { font-size: 10px; color: #fff; background: #2b6cb0; padding: 3px; border-radius: 4px; margin-bottom: 5px; font-weight: bold; }
+    .pattern-box { background: white; padding: 12px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .pattern-sumber { font-size: 10px; color: #fff; padding: 4px 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; display: inline-block; }
     .pattern-name { font-size: 11px; color: #718096; font-weight: bold; text-transform: uppercase; }
     .pattern-value { font-size: 18px; font-weight: bold; letter-spacing: 2px; color: #2d3748; font-family: monospace; }
 </style>
@@ -40,33 +42,33 @@
 <body>
 
 <div class="container">
-    <h2>Mesin Matriks SportsToto Pro</h2>
-    <p class="subtitle">Analisis Frekuensi Kerap Result Lepas + Trajektori Penuh</p>
+    <h2>Mesin Trajektori Berwarna Pro</h2>
+    <p class="subtitle">Analisis Penuh: Pola Berwarna, Jejak 3D & Saringan Ketat</p>
 
     <div class="input-group">
-        <label for="num1">Nombor Asas Rivet 1 (4 Digit):</label>
+        <label for="num1">Nombor Asas Cabutan 1 (Rivet Asal):</label>
         <input type="text" id="num1" maxlength="4" placeholder="3166" pattern="\d*">
     </div>
 
     <div class="input-group">
-        <label for="num2">Nombor Asas Rivet 2 (4 Digit):</label>
-        <input type="text" id="num2" maxlength="4" placeholder="6640" pattern="\d*">
+        <label for="num2">Nombor Asas Cabutan 2 (Rivet Cermin):</label>
+        <input type="text" id="num2" maxlength="4" placeholder="8611" pattern="\d*">
     </div>
 
     <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas (Masukkan nombor-nombor result lepas):</label>
-        <textarea id="history" rows="3" placeholder="Contoh: 3166, 6640, 4937, 9801, 8909..."></textarea>
+        <label for="history">Sejarah Cabutan Lepas (Untuk Kira Digit Hot):</label>
+        <textarea id="history" rows="3" placeholder="Masukkan senarai result lepas..."></textarea>
     </div>
 
     <div class="checkbox-group">
         <label style="cursor:pointer; margin:0;">
             <input type="checkbox" id="useMirror" checked>
-            Aktifkan Sistem Cermin (+5 / Sahkan Nilai Carta)
+            Sahkan Melalui Sistem Cermin (+5)
         </label>
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana Analisis Frekuensi & Trajektori</button>
+        <button class="btn-jana" onclick="janaAnalisisWarna()">Jana Analisis Berwarna</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
@@ -77,45 +79,60 @@
         </div>
 
         <div class="result-box">
-            <p style="margin:0;"><strong>1D Golden Digit (Pelengkap Utama):</strong> <span id="golden-1d" class="key-tag" style="font-size:20px;"></span>
-            <span class="node-badge">GOLDEN DIGIT</span></p>
+            <p style="margin:0;"><strong>1D Golden Digit Utama:</strong> <span id="golden-1d" class="key-tag" style="font-size:20px;"></span>
+            <span class="node-badge">GOLDEN KEY</span></p>
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🔥 Analisis Status Digit (Dari Result Lepas & Carta)</p>
-            🔥 Nombor Hot (Paling Kerap dari Result Lepas): <span id="hot-no" style="color:#d63031; font-weight:bold; font-size:16px;"></span><br>
-            ⚡ Nombor Cool (Sederhana): <span id="cool-no" style="color:#2b6cb0; font-weight:bold;"></span><br>
-            🔍 Nombor Missing (Kurang/Tiada): <span id="missing-no" style="color:#dd6b20; font-weight:bold;"></span>
+            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🔥 Analisis Status Digit</p>
+            🔥 Digit Hot: <span id="hot-no" style="color:#d63031; font-weight:bold; font-size:16px;"></span><br>
+            ⚡ Digit Cool: <span id="cool-no" style="color:#2b6cb0; font-weight:bold;"></span><br>
+            🔍 Digit Missing: <span id="missing-no" style="color:#dd6b20; font-weight:bold;"></span>
         </div>
 
         <div class="result-box" style="border-left-color: #2b6cb0;">
-            <p style="margin:0;"><strong>Gandingan 2D (Berdasarkan Frekuensi & Sel Carta)</strong> <button class="btn-copy" onclick="salin('out-2d')">Salin 2D</button></p>
+            <p style="margin:0;"><strong>Sasaran 2D Tunjang</strong> <button class="btn-copy" onclick="salin('out-2d')">Salin 2D</button></p>
             <div id="out-2d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Gandingan 3D (Trajektori Asal + Terbalik + Kerap)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button></p>
+            <p style="margin:0;"><strong>Sasaran 3D Gandingan (Klik untuk lihat asal-usul pola)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Proyeksi Utama 4D iBox</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
+            <p style="margin:0;"><strong>Sasaran Utama 4D iBox</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
             <div id="out-4d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="background: #f0ffff; border-left-color: #198754;">
-            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Trajektori Geometri (Asal & Terbalik / Reversed)</p>
+            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Kotak Pola Geometri Berwarna (Asal & Terbalik)</p>
             <div class="pattern-grid" id="gridPola"></div>
         </div>
     </div>
 </div>
 
 <script>
-class MesinFrekuensiTrajektori {
+class MesinTrajektoriWarna {
     constructor() {
         this.MIRROR_MAP = {
             '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
             '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
+        };
+        // Tetapan warna khusus untuk setiap jenis pola
+        this.COLOR_MAP = {
+            "Pepenjuru Utama": "#2b6cb0",      // Biru
+            "Pepenjuru Terbalik (Rev)": "#3182ce", // Biru Cerah
+            "Pola L": "#38a169",                 // Hijau
+            "L Terbalik (Rev)": "#48bb78",       // Hijau Cerah
+            "Pola T": "#dd6b20",                 // Oren
+            "T Terbalik (Rev)": "#ed8936",       // Oren Cerah
+            "Pola Z": "#805ad5",                 // Ungu
+            "Z Terbalik (Rev)": "#9f7aea",       // Ungu Cerah
+            "Pola Y (Simetri Silang)": "#e53e3e", // Merah
+            "Y Terbalik (Rev)": "#fc8181",       // Merah Cerah
+            "Pola O (Gelung Luar)": "#d69e2e",   // Emas
+            "O Terbalik (Rev)": "#ecc94b"        // Kuning Emas
         };
     }
 
@@ -134,7 +151,6 @@ class MesinFrekuensiTrajektori {
         let baseRow = combined.substring(0, 4).split('').map(Number);
         let matrix = [baseRow];
         
-        // Formula Asal: Tolak 1 (-1) ke bawah secara konsisten
         for (let r = 1; r < 4; r++) {
             let row = [];
             for (let c = 0; c < 4; c++) {
@@ -148,40 +164,38 @@ class MesinFrekuensiTrajektori {
     
     ekstrakTrajektoriPenuh(m) {
         let pepenjuruUtama = `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`;
-        let pepenjuruSilang = `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`;
         let polaL = `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`;
         let polaT = `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`;
         let polaZ = `${m[0][0]}${m[1][1]}${m[1][0]}${m[3][1]}`;
-        
+        let polaY = `${m[0][0]}${m[0][3]}${m[1][1]}${m[2][2]}`;
+        let ringkasO = `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`;
+
         return {
-            "Pola Pepenjuru Utama": pepenjuruUtama,
+            "Pepenjuru Utama": pepenjuruUtama,
             "Pepenjuru Terbalik (Rev)": pepenjuruUtama.split('').reverse().join(''),
-            "Pepenjuru Silang": pepenjuruSilang,
-            "Silang Terbalik (Rev)": pepenjuruSilang.split('').reverse().join(''),
             "Pola L": polaL,
             "L Terbalik (Rev)": polaL.split('').reverse().join(''),
             "Pola T": polaT,
             "T Terbalik (Rev)": polaT.split('').reverse().join(''),
-            "Pola Z (Zig-Zag)": polaZ,
-            "Z Terbalik (Rev)": polaZ.split('').reverse().join('')
+            "Pola Z": polaZ,
+            "Z Terbalik (Rev)": polaZ.split('').reverse().join(''),
+            "Pola Y (Simetri Silang)": polaY,
+            "Y Terbalik (Rev)": polaY.split('').reverse().join(''),
+            "Pola O (Gelung Luar)": ringkasO,
+            "O Terbalik (Rev)": ringkasO.split('').reverse().join('')
         };
     }
 
     analisisFrekuensiDigit(historyRaw) {
         let counts = {};
         for(let i=0; i<=9; i++) counts[i.toString()] = 0;
-        
         let digits = historyRaw.replace(/[^0-9]/g, '').split('');
-        digits.forEach(d => {
-            if(counts[d] !== undefined) counts[d]++;
-        });
-
-        // Susun digit dari yang paling kerap ke yang paling jarang muncul dalam result lepas
+        digits.forEach(d => { if(counts[d] !== undefined) counts[d]++; });
         let sortedDigits = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
         return {
-            hot: sortedDigits.slice(0, 3),   // 3 digit paling kerap
-            cool: sortedDigits.slice(3, 7),  // 4 digit sederhana
-            missing: sortedDigits.slice(7)   // 3 digit paling jarang/hilang
+            hot: sortedDigits.slice(0, 3),
+            cool: sortedDigits.slice(3, 7),
+            missing: sortedDigits.slice(7)
         };
     }
 
@@ -190,64 +204,50 @@ class MesinFrekuensiTrajektori {
         let trajektoriMap = this.ekstrakTrajektoriPenuh(matrix);
         let freq = this.analisisFrekuensiDigit(historyRaw);
 
-        let golden1D = matrix[1][1].toString();
-        // Jika ada digit hot daripada result lepas, jadikan keutamaan Golden Digit
-        if(freq.hot.length > 0 && freq.hot[0]) {
-            golden1D = freq.hot[0];
-        }
+        let golden1D = freq.hot.length > 0 && freq.hot[0] ? freq.hot[0] : matrix[1][1].toString();
 
-        let matrixDigitsSet = new Set();
-        matrix.forEach(row => row.forEach(d => matrixDigitsSet.add(d.toString())));
-
-        // Pembentukan 2D berdasarkan digit kerap (hot) dan sel carta
-        let list2D = new Set();
+        let set2D = new Set();
         if(freq.hot.length >= 2) {
-            list2D.add(freq.hot[0] + freq.hot[1]);
-            list2D.add(freq.hot[1] + freq.hot[0]);
+            set2D.add(freq.hot[0] + freq.hot[1]);
+            set2D.add(freq.hot[1] + freq.hot[0]);
         }
-        for(let r=0; r<4; r++) {
-            for(let c=0; c<3; c++) {
-                list2D.add(matrix[r][c].toString() + matrix[r][c+1].toString());
-            }
-        }
+        set2D.add(golden1D + matrix[0][0]);
 
-        // Pembentukan 3D menggabungkan trajektori dan digit kerap
-        let list3D = new Set();
-        Object.values(trajektoriMap).forEach(val => {
+        let list3DWithSource = [];
+        Object.entries(trajektoriMap).forEach(([namaPola, val]) => {
             if(val.length >= 3) {
                 let sub3 = val.substring(0, 3);
-                list3D.add(sub3);
-                if(freq.hot.length > 0) {
-                    list3D.add(sub3.substring(0, 2) + freq.hot[0]);
-                }
+                list3DWithSource.push({ num: sub3, source: namaPola });
+                let sub3Rev = val.substring(1, 4);
+                list3DWithSource.push({ num: sub3Rev, source: namaPola + " (Anjak)" });
             }
         });
 
-        // Pembentukan 4D iBox utama
-        let list4D = new Set();
-        list3D.forEach(t3 => {
-            freq.hot.forEach(d => {
-                let combo = this.sortCombo(t3 + d);
-                if(combo.length === 4) list4D.add(combo);
+        let set4D = new Set();
+        list3DWithSource.forEach(item => {
+            freq.hot.slice(0, 2).forEach(d => {
+                let combo = this.sortCombo(item.num + d);
+                if(combo.length === 4) set4D.add(combo);
             });
         });
 
-        let arr2D = Array.from(list2D);
-        let arr3D = Array.from(list3D);
-        let arr4D = Array.from(list4D).slice(0, 12);
+        let arr2D = Array.from(set2D).slice(0, 4);
+        let arr3D = list3DWithSource.slice(0, 6);
+        let arr4D = Array.from(set4D).slice(0, 5);
 
-        // Pengesahan Sistem Cermin (+5)
         if(gunaCermin) {
             golden1D = this.getMirror(golden1D);
             freq.hot = freq.hot.map(n => this.getMirror(n));
             freq.cool = freq.cool.map(n => this.getMirror(n));
             freq.missing = freq.missing.map(n => this.getMirror(n));
             arr2D = arr2D.map(n => this.getMirror(n));
-            arr3D = arr3D.map(n => this.getMirror(n));
+            arr3D = arr3D.map(item => ({ num: this.getMirror(item.num), source: item.source + " (Cermin)" }));
             arr4D = arr4D.map(n => this.getMirror(n));
+            let newMap = {};
             for(let key in trajektoriMap) {
-                trajektoriMap[key] = this.getMirror(trajektoriMap[key]);
+                newMap[key] = this.getMirror(trajektoriMap[key]);
             }
+            trajektoriMap = newMap;
         }
 
         return {
@@ -259,14 +259,15 @@ class MesinFrekuensiTrajektori {
             keputusan2D: arr2D,
             keputusan3D: arr3D,
             keputusan4D: arr4D,
-            polaObj: trajektoriMap
+            polaObj: trajektoriMap,
+            colorMap: this.COLOR_MAP
         };
     }
 }
 
-const enjinPro = new MesinFrekuensiTrajektori();
+const enjinWarna = new MesinTrajektoriWarna();
 
-function janaAnalisisPenuh() {
+function janaAnalisisWarna() {
     try {
         const num1 = document.getElementById('num1').value.trim();
         const num2 = document.getElementById('num2').value.trim();
@@ -274,13 +275,12 @@ function janaAnalisisPenuh() {
         const gunaCermin = document.getElementById('useMirror').checked;
         
         if (num1.length < 3) {
-            alert("Sila masukkan Nombor Asas Rivet minimum 3 digit.");
+            alert("Sila masukkan Nombor Asas Cabutan 1 minimum 3 digit.");
             return;
         }
 
-        let hasil = enjinPro.jana(num1, num2, historyRaw, gunaCermin);
+        let hasil = enjinWarna.jana(num1, num2, historyRaw, gunaCermin);
         
-        // Lukis Jadual Matriks
         let h = "";
         for (let r = 0; r < 4; r++) {
             h += "<tr>";
@@ -299,18 +299,27 @@ function janaAnalisisPenuh() {
         document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag" style="background:#2b6cb0;">${n}</div>`).join('');
         document.getElementById('out-2d').setAttribute('data-raw', hasil.keputusan2D.join(', '));
         
-        document.getElementById('out-3d').innerHTML = hasil.keputusan3D.map(n => `<div class="number-tag" style="background:#dd6b20;">${n}</div>`).join('');
-        document.getElementById('out-3d').setAttribute('data-raw', hasil.keputusan3D.join(', '));
+        let html3D = "";
+        let raw3DArray = [];
+        hasil.keputusan3D.forEach(item => {
+            raw3DArray.push(item.num);
+            html3D += `<div class="number-tag" style="background:#dd6b20;" onclick="alert('Asal-usul 3D [${item.num}] adalah daripada: ${item.source}')">
+                ${item.num}
+                <span>${item.source}</span>
+            </div>`;
+        });
+        document.getElementById('out-3d').innerHTML = html3D;
+        document.getElementById('out-3d').setAttribute('data-raw', raw3DArray.join(', '));
         
         document.getElementById('out-4d').innerHTML = hasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;">${n}</div>`).join('');
         document.getElementById('out-4d').setAttribute('data-raw', hasil.keputusan4D.join(', '));
         
-        // Papar Pola Trajektori Asal & Terbalik
         let hPola = "";
         for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
+            let warnaBg = hasil.colorMap[nama] || "#4a5568";
             hPola += `
-            <div class="pattern-box">
-                <span class="pattern-sumber">${nama}</span>
+            <div class="pattern-box" style="border-top: 4px solid ${warnaBg};">
+                <span class="pattern-sumber" style="background:${warnaBg};">${nama}</span>
                 <span class="pattern-name">Laluan Sel</span>
                 <span class="pattern-value">${nilai}</span>
             </div>`;
