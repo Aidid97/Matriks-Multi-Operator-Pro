@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin Matriks Multi-Operator Pro</title>
+<title>Mesin Matriks SportsToto Pro</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 500px; width: 100%; }
@@ -11,10 +11,9 @@
     p.subtitle { text-align: center; color: #718096; font-size: 12px; margin-bottom: 20px; }
     .input-group { margin-bottom: 15px; text-align: left; }
     label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
-    input[type="text"], textarea, select { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px; font-family: monospace; }
-    select { font-family: 'Segoe UI', sans-serif; font-weight: bold; cursor: pointer; }
+    input[type="text"], textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px; font-family: monospace; }
     textarea { font-size: 13px; resize: vertical; }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: #3182ce; }
+    input:focus, textarea:focus { outline: none; border-color: #3182ce; }
     .checkbox-group { text-align: left; margin: 15px 0; font-size: 13px; font-weight: 600; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; cursor: pointer; }
     .btn-group { display: flex; gap: 10px; margin-top: 15px; }
     button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
@@ -30,7 +29,7 @@
     .number-tag { background: #2d3748; color: #fff; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 15px; letter-spacing: 1px; }
     .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; }
     .anchor-tag { background: #2b6cb0; }
-    .node-badge { display: inline-block; padding: 3px 8px; background: #44bb70; color: white; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; margin-left: 5px; }
+    .node-badge { display: inline-block; padding: 3px 8px; background: #0d6efd; color: white; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; margin-left: 5px; }
     .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; text-align: left; margin-top: 10px; }
     .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .pattern-box { background: white; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; text-align: center; display: flex; flex-direction: column; }
@@ -42,59 +41,51 @@
 <body>
 
 <div class="container">
-    <h2>Mesin Matriks Multi-Operator Pro</h2>
-    <p class="subtitle">Analisis Titik Persamaan Geometri Carta</p>
+    <h2>Mesin Matriks SportsToto Pro</h2>
+    <p class="subtitle">Enjin Analisis Carta Fizikal & Titik Persamaan Toto</p>
 
     <div class="input-group">
-        <label for="operator">Pilih Operator / Pasaran :</label>
-        <select id="operator">
-            <option value="toto" selected>SportsToto (Mod Titik Persamaan Tepat)</option>
-            <option value="magnum">Magnum 4D (Mod Cermin Seimbang)</option>
-            <option value="gdlotto">GD Lotto (Mod Pantas Harian)</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label for="num1">Nombor Induk / Dasar 1 (Contoh: 782):</label>
+        <label for="num1">Nombor Cabutan Akan Datang 1:</label>
         <input type="text" id="num1" maxlength="4" placeholder="0000" pattern="\d*">
     </div>
 
     <div class="input-group">
-        <label for="num2">Nombor Induk / Dasar 2 (Contoh: 015):</label>
+        <label for="num2">Nombor Cabutan Akan Datang 2:</label>
         <input type="text" id="num2" maxlength="4" placeholder="0000" pattern="\d*">
     </div>
 
     <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas (Paste Result):</label>
+        <label for="history">Sejarah Cabutan Lepas (Paste Result - Titik Persamaan Toto):</label>
         <textarea id="history" rows="3" placeholder="Paste result lepas di sini..."></textarea>
     </div>
 
     <div class="checkbox-group">
         <label style="cursor:pointer; margin:0;">
             <input type="checkbox" id="useMirror" checked>
-            Aktifkan Formula Cermin (0 ↔ 5, 1 ↔ 6, 2 ↔ 7, 3 ↔ 8, 4 ↔ 9)
+            Aktifkan Formula Cermin (+5 / 0↔5, 1↔6, 2↔7, 3↔8, 4↔9)
         </label>
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaKeputusan()">Bina Carta & Analisa</button>
+        <button class="btn-jana" onclick="janaKeputusan()">Bina Carta Toto & Analisa</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
     <div id="hasil" style="display: none;">
         <div class="result-box" style="border-left-color: #4a5568;">
-            <p style="margin:0; font-weight:bold; font-size:13px; color: #2d3748;">📊 Visual Matriks 4x4 Carta Kuasa</p>
+            <p style="margin:0; font-weight:bold; font-size:13px; color: #2d3748;">📊 Visual Matriks Toto 4x4 (Tolak 1)</p>
             <table class="matrix-table" id="matrixTable"></table>
         </div>
 
         <div class="result-box">
-            <p style="margin:0;"><strong>Digit Titik Persamaan Utama:</strong> <span id="master-key" class="key-tag"></span>
-            <span id="node-badge" class="node-badge"></span></p>
+            <p style="margin:0;"><strong>Tunjang Titik Geometri:</strong> <span id="master-key" class="key-tag"></span>
+            <span id="node-badge" class="node-badge">SPORTS TOTO</span></p>
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Teras Sasaran Tepat</p>
-            💎 3D Muktamad (Fokus Utama): <span style="color:#d63031; font-weight:bold; font-size: 17px;" id="a3d"></span><br>
+            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Sasaran Fokus Utama Toto Esok</p>
+            💎 3D Muktamad (Terselaras Result Lepas): <span style="color:#d63031; font-weight:bold; font-size:17px;" id="a3d"></span><br>
+            ✨ 1D Golden Digit (Pelengkap/Digit Hilang): <span style="color:#2b6cb0; font-weight:bold; font-size:17px;" id="g1d"></span><br>
             🎯 Target Utama 4D: <strong id="s40" style="font-size: 19px; color: #805ad5;"></strong>
         </div>
 
@@ -114,14 +105,14 @@
         </div>
 
         <div class="result-box" style="background: #f0ffff; border-left-color: #198754;">
-            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Laluan Pola Geometri Carta</p>
+            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Laluan Pola Geometri (T, L, Y, Z & Terbalik)</p>
             <div class="pattern-grid" id="gridPola"></div>
         </div>
     </div>
 </div>
 
 <script>
-class MesinMatriksPro {
+class MesinMatriksToto {
     constructor() {
         this.MIRROR_MAP = {
             '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
@@ -144,6 +135,7 @@ class MesinMatriksPro {
         let baseRow = combined.substring(0, 4).split('').map(Number);
         let matrix = [baseRow];
         
+        // Matriks Tolak Satu (-1) ke bawah secara konsisten
         for (let r = 1; r < 4; r++) {
             let row = [];
             for (let c = 0; c < 4; c++) {
@@ -163,85 +155,75 @@ class MesinMatriksPro {
             "T (Terbalik)": { v: `${m[1][1]}${m[0][2]}${m[0][1]}${m[0][0]}` },
             "Pola Y": { v: `${m[0][0]}${m[0][2]}${m[1][1]}${m[2][1]}` },
             "Y (Terbalik)": { v: `${m[2][1]}${m[1][1]}${m[0][2]}${m[0][0]}` },
-            "Pola O": { v: `${m[1][1]}${m[1][2]}${m[2][2]}${m[2][1]}` },
-            "Zig-Zag Kiri": { v: `${m[0][0]}${m[1][1]}${m[1][0]}${m[3][1]}` },
-            "Zig-Zag Kanan": { v: `${m[0][3]}${m[1][2]}${m[2][3]}${m[3][2]}` },
+            "Pola Z (Zig-Zag)": { v: `${m[0][0]}${m[1][1]}${m[1][0]}${m[3][1]}` },
+            "Z (Terbalik)": { v: `${m[0][3]}${m[1][2]}${m[2][3]}${m[3][2]}` },
             "Pepenjuru Utama": { v: `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}` },
             "Pepenjuru Silang": { v: `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}` }
         };
     }
 
-    jana(nomborAsas, str2, sejarahCabutan, gunaCermin, operator) {
+    jana(nomborAsas, str2, sejarahCabutan, gunaCermin) {
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
         let polaMap = this.ekstrakPolaMatrix(matrix);
-        
-        // Pengesanan titik persamaan (common intersection) merentasi laluan geometri
-        let freqMap = {};
-        Object.values(polaMap).forEach(p => {
-            let val = p.v;
-            let mVal = gunaCermin ? this.getMirror(val) : "";
-            [val, mVal].forEach(s => {
-                if(!s) return;
-                for(let i=0; i<s.length; i++) {
-                    let d = s[i];
-                    freqMap[d] = (freqMap[d] || 0) + 1;
+
+        let v1 = matrix[0][0].toString();
+        let v2 = matrix[1][1].toString();
+        let v3 = matrix[2][2].toString();
+        let v4 = matrix[3][3].toString();
+
+        let matrixSolid3D = this.sortCombo(v1 + v3 + v4);
+        let matrix2D = this.sortCombo(v1 + v3);
+
+        let historic3DSet = new Set();
+        sejarahCabutan.forEach(res => {
+            let s = res.toString();
+            if(s.length >= 3) {
+                historic3DSet.add(this.sortCombo(s.substring(0, 3)));
+                if(s.length >= 4) {
+                    historic3DSet.add(this.sortCombo(s.substring(1, 4)));
                 }
-            });
-        });
-
-        // Selaraskan dengan trajektori result lepas secara organik
-        if(sejarahCabutan && sejarahCabutan.length > 0) {
-            sejarahCabutan.forEach(res => {
-                let digits = res.toString().split('');
-                digits.forEach(d => {
-                    if(freqMap[d] !== undefined) {
-                        freqMap[d] += 2;
-                    }
-                });
-            });
-        }
-
-        let sortedCommon = Object.keys(freqMap).sort((a,b) => freqMap[b] - freqMap[a]);
-
-        let solidCore3D = this.sortCombo(sortedCommon.slice(0, 3).join(''));
-        let golden1D = sortedCommon[3] || sortedCommon[0];
-        let target4D = this.sortCombo(solidCore3D + golden1D);
-
-        let set2D = new Set();
-        let set3D = new Set();
-        let set4D = new Set();
-
-        set3D.add(solidCore3D);
-        set4D.add(target4D);
-
-        Object.values(polaMap).forEach(p => {
-            let val = p.v;
-            if(val.length >= 2) set2D.add(this.sortCombo(val.substring(0, 2)));
-            if(val.length >= 3) set3D.add(this.sortCombo(val.substring(0, 3)));
-            set4D.add(this.sortCombo(val));
-
-            if(gunaCermin) {
-                let mVal = this.getMirror(val);
-                if(mVal.length >= 2) set2D.add(this.sortCombo(mVal.substring(0, 2)));
-                if(mVal.length >= 3) set3D.add(this.sortCombo(mVal.substring(0, 3)));
-                set4D.add(this.sortCombo(mVal));
             }
         });
 
+        let allDigits = ['0','1','2','3','4','5','6','7','8','9'];
+        let historicDigits = new Set();
+        sejarahCabutan.forEach(res => res.toString().split('').forEach(d => historicDigits.add(d)));
+        let missingDigits = allDigits.filter(d => !historicDigits.has(d));
+        let golden1D = missingDigits.length > 0 ? missingDigits[0] : v2;
+
+        let final3D = matrixSolid3D;
+        if(historic3DSet.size > 0) {
+            let matched3D = Array.from(historic3DSet).find(h3 => h3.includes(matrixSolid3D[0]) || h3.includes(matrixSolid3D[1]));
+            if(matched3D) {
+                final3D = matched3D;
+            }
+        }
+
+        let final2D = matrix2D;
+        let target4D = this.sortCombo(final3D + golden1D);
+
+        if(gunaCermin) {
+            final3D = this.getMirror(final3D);
+            final2D = this.getMirror(final2D);
+            golden1D = this.getMirror(golden1D);
+            target4D = this.sortCombo(final3D + golden1D);
+        }
+
         return {
             matrix: matrix,
-            tunjang: sortedCommon,
-            solidCore3D: solidCore3D,
+            tunjang: [v1, v2, v3, v4],
+            solidCore3D: final3D,
+            golden1D: golden1D,
             target4D: target4D,
-            keputusan2D: Array.from(set2D).slice(0, 6),
-            keputusan3DMuktamad: [solidCore3D, ...Array.from(set3D).slice(0, 3)],
-            keputusan4D: Array.from(set4D).slice(0, 6),
+            keputusan2D: [final2D],
+            keputusan3DMuktamad: [final3D],
+            keputusan4D: [target4D],
             polaObj: polaMap
         };
     }
 }
 
-const enjin = new MesinMatriksPro();
+const enjin = new MesinMatriksToto();
 let globalHasil = null;
 
 function janaKeputusan() {
@@ -250,26 +232,23 @@ function janaKeputusan() {
         const str2 = document.getElementById('num2').value.trim();
         const historyRaw = document.getElementById('history').value.trim();
         const gunaCermin = document.getElementById('useMirror').checked;
-        const operator = document.getElementById('operator').value;
         
         if (str1.length < 3) {
-            alert("Sila masukkan Nombor Induk 1 minimum 3 digit.");
+            alert("Sila masukkan Nombor Cabutan Akan Datang minimum 3 digit.");
             return;
         }
         
         let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
 
-        globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin, operator);
+        globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin);
         
         if (!globalHasil || !globalHasil.matrix) throw new Error("Gagal menjana struktur matriks.");
         
         lukisJadual(globalHasil.matrix);
         document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
         
-        const badgeEl = document.getElementById('node-badge');
-        badgeEl.innerText = operator.toUpperCase();
-        
         document.getElementById('a3d').innerText = globalHasil.solidCore3D;
+        document.getElementById('g1d').innerText = globalHasil.golden1D;
         document.getElementById('s40').innerText = globalHasil.target4D;
         
         document.getElementById('out-2d').innerHTML = globalHasil.keputusan2D.map(n => `<div class="number-tag anchor-tag">${n}</div>`).join('');
@@ -309,7 +288,7 @@ function renderPolaGrid(pObj, gunaCermin) {
         h += `
         <div class="pattern-box">
             <span class="pattern-sumber">${n}</span>
-            <span class="pattern-name">Laluan</span>
+            <span class="pattern-name">Laluan Geometri</span>
             <span class="pattern-value">${val}</span>
         </div>`;
     }
