@@ -78,6 +78,15 @@
             <span class="info-text">*3D ditapis menggunakan trajektori laluan matriks dan nombor dominan tinggi.</span>
         </div>
 
+        <!-- LOG REKOD SEJARAH UNJURAN -->
+        <div class="analysis-section" style="background-color: #e2e3e5; border: 2px solid #6c757d;">
+            <h4 style="color: #383d41; border-bottom-color: #b8daff;">📋 Log Sejarah Unjuran Semasa</h4>
+            <div id="logSejarahList" style="font-size: 13px; color: #333; max-height: 120px; overflow-y: auto; text-align: left; padding: 5px;">
+                <p style="color: #666; text-align: center;">Tiada rekod unjuran sesi ini lagi.</p>
+            </div>
+            <button onclick="simpanLogUnjuran()" style="background-color: #6c757d; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 14px; width: 100%;">Simpan Rekod Unjuran Ini</button>
+        </div>
+
         <div class="analysis-section">
             <h4>📊 Analisis Pola 4D Utama</h4><div class="pattern-grid" id="gridU"></div>
             <h4>📈 Pola Tambahan (Penjuru & Zig-Zag)</h4><div class="pattern-grid" id="gridT"></div>
@@ -90,36 +99,18 @@
 
     function getMirror(s) { const m = {'0':'5','1':'6','2':'7','3':'8','4':'9','5':'0','6':'1','7':'2','8':'3','9':'4'}; return s.split('').map(c=>m[c]||c).join(''); }
     
-    // Fungsi Trajektori: Menilai aliran laluan menegak/menegak/pepenjuru terkuat
     function kiraTrajektori(matrix) {
         let colSum = [0,0,0,0];
-        for(let r=0; r<4; r++) {
-            for(let c=0; c<4; c++) { colSum[c] += matrix[r][c]; }
-        }
+        for(let r=0; r<4; r++) { for(let c=0; c<4; c++) { colSum[c] += matrix[r][c]; } }
         let strongestCol = colSum.indexOf(Math.max(...colSum));
-        let arah = ["Menegak Kiri (Kol 1)", "Menegak Tengah (Kol 2)", "Menegak Utama (Kol 3)", "Menegak Kanan (Kol 4)"][strongestCol];
-        return { col: strongestCol, arah: arah };
+        return ["Menegak Kiri (Kol 1)", "Menegak Tengah (Kol 2)", "Menegak Utama (Kol 3)", "Menegak Kanan (Kol 4)"][strongestCol];
     }
 
     function saring3D(arr, d, modStab) { 
         let r=[], f={}; 
-        arr.forEach(p=>{
-            if(p.length===4) r.push(p[0]+p[1]+p[2], p[0]+p[1]+p[3], p[0]+p[2]+p[3], p[1]+p[2]+p[3]);
-        });
-        
-        // Mod Stabil Toto: Tapis ketat hanya 3D yang mengandungi nombor dominan hot1D
+        arr.forEach(p=>{ if(p.length===4) r.push(p[0]+p[1]+p[2], p[0]+p[1]+p[3], p[0]+p[2]+p[3], p[1]+p[2]+p[3]); });
         let filtered = r.filter(n=>n.includes(d));
-        
-        // Jika Mod Stabil diaktifkan, buang nombor yang terlalu lemah (kurang kemunculan asas)
-        filtered.forEach(n => {
-            if(modStab) {
-                // Elakkan nombor berulang ekstrem yang tidak stabil
-                f[n] = (f[n]||0) + 1;
-            } else {
-                f[n] = (f[n]||0) + 1;
-            }
-        });
-        
+        filtered.forEach(n => { f[n] = (f[n]||0) + 1; });
         return Object.keys(f).map(k=>({n:k, c:f[k]})).sort((a,b)=>b.c-a.c); 
     }
 
@@ -153,9 +144,8 @@
         let s = Object.entries(k).sort((a,b)=>b[1]-a[1]);
         hot1D = s[0][0]; 
         
-        let traj = kiraTrajektori(globalMatrix);
         document.getElementById("h1D").innerText = `${hot1D} & ${s[1]?s[1][0]:hot1D}`;
-        document.getElementById("trajektoriArah").innerText = traj.arah;
+        document.getElementById("trajektoriArah").innerText = kiraTrajektori(globalMatrix);
 
         let m=globalMatrix, f=false, rr=0, cc=0;
         for(let r=0; r<3; r++){ for(let c=0; c<3; c++){ if([m[r][c],m[r][c+1],m[r+1][c],m[r+1][c+1]].includes(parseInt(hot1D))){ rr=r; cc=c; f=true; break; } } if(f) break; }
@@ -212,6 +202,28 @@
         let top3 = saring3D(allV, hot1D, modStab).slice(0,5);
         
         document.getElementById("top3DList").innerHTML = top3.length ? top3.map(t=>`<div style="background:#fff;padding:12px;border:2px solid #ffc107;border-radius:6px;min-width:70px;"><b style="font-size:20px;color:#d39e00;">${t.n}</b><br><small>${t.c}x Kekerapan</small></div>`).join('') : "<p style='font-size:14px;'>Tiada 3D stabil.</p>";
+    }
+
+    function simpanLogUnjuran() {
+        let inputVal = document.getElementById("input4D").value;
+        let top3DText = document.getElementById("top3DList").innerText.replace(/\s+/g, ' ');
+        
+        if (!inputVal) {
+            alert("Sila masukkan nombor induk 4D terlebih dahulu!");
+            return;
+        }
+
+        let logContainer = document.getElementById("logSejarahList");
+        if (logContainer.innerHTML.includes("Tiada rekod")) {
+            logContainer.innerHTML = ""; 
+        }
+
+        let waktu = new Date().toLocaleTimeString();
+        let barisLog = document.createElement("div");
+        barisLog.style = "border-bottom: 1px solid #ccc; padding: 5px 0; margin-bottom: 5px;";
+        barisLog.innerHTML = `<b>[${waktu}] Induk: ${inputVal}</b><br><span style="color:#b02a37;">Top 3D:</span> ${top3DText}`;
+        
+        logContainer.prepend(barisLog); 
     }
 </script>
 </body>
