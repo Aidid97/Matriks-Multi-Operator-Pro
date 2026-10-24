@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin Imbasan 360° Visual Interaktif Pro</title>
+<title>Mesin 360° Geometri Tulen (Visual Interaktif)</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 540px; width: 100%; }
@@ -22,33 +22,25 @@
     .btn-reset { background-color: #dc3545; color: white; }
     .btn-copy { background-color: #38a169; color: white; font-size: 11px; padding: 4px 8px; float: right; border-radius: 4px; }
     
-    /* CSS Carta Matriks Interaktif */
-    .matrix-table { width: 100%; margin: 15px 0 5px 0; border-collapse: collapse; font-size: 24px; font-weight: bold; background: #fff; text-align: center; }
-    .matrix-table td { border: 2px solid #4a5568; padding: 12px; width: 25%; background: #fff; text-align: center; transition: background 0.3s, transform 0.2s, color 0.3s, box-shadow 0.3s; border-radius: 4px; }
-    .matrix-table tr:first-child td { background-color: #f8fafc; } /* Warna default baris pertama diringankan sikit supaya senang tukar warna */
+    .matrix-table { width: 100%; margin: 15px 0; border-collapse: collapse; font-size: 24px; font-weight: bold; background: #fff; text-align: center; position: relative; }
+    .matrix-table td { border: 2px solid #cbd5e0; padding: 15px 12px; width: 25%; background: #fff; text-align: center; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border-radius: 6px; box-sizing: border-box; position: relative; z-index: 1; }
+    .matrix-table tr:first-child td { background-color: #f8fafc; }
     
     .result-box { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
     .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
-    .number-tag { background: #2d3748; color: #fff; padding: 10px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 16px; cursor: pointer; transition: 0.2s; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .number-tag:hover { opacity: 0.85; transform: translateY(-2px); }
+    .number-tag { background: #2d3748; color: #fff; padding: 12px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 16px; cursor: pointer; transition: 0.2s; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .number-tag:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
     
-    .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; cursor: pointer; padding: 2px 8px; border-radius: 4px; transition: 0.2s; display: inline-block; }
+    .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; cursor: pointer; padding: 4px 10px; background: #fff3cd; border-radius: 4px; transition: 0.2s; display: inline-block; border: 2px solid #dd6b20; }
     .key-tag:hover { background: #dd6b20; color: white; }
-    .node-badge { display: inline-block; padding: 3px 8px; background: #0d6efd; color: white; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; margin-left: 5px; }
     .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; text-align: left; margin-top: 10px; }
-    
-    .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
-    .pattern-box { background: white; padding: 12px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .pattern-sumber { font-size: 10px; color: #fff; padding: 4px 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; display: inline-block; }
-    .pattern-name { font-size: 11px; color: #718096; font-weight: bold; text-transform: uppercase; }
-    .pattern-value { font-size: 18px; font-weight: bold; letter-spacing: 2px; color: #2d3748; font-family: monospace; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Mesin Carta Visual Interaktif Pro</h2>
-    <p class="subtitle">Klik pada mana-mana nombor jana untuk lihat corak dalam carta!</p>
+    <h2>Mesin 360° Geometri Tulen</h2>
+    <p class="subtitle">Bacaan Penuh Carta (Maksimum 5 Sasaran Tajam)</p>
 
     <div class="input-group">
         <label for="num1">Nombor Asas Cabutan 1 (Rivet Asal):</label>
@@ -57,12 +49,12 @@
 
     <div class="input-group">
         <label for="num2">Nombor Asas Cabutan 2 (Rivet Cermin):</label>
-        <input type="text" id="num2" maxlength="4" placeholder="8611" pattern="\d*">
+        <input type="text" id="num2" maxlength="4" placeholder="6640" pattern="\d*">
     </div>
 
     <div class="input-group">
         <label for="history">Sejarah Cabutan Lepas:</label>
-        <textarea id="history" rows="3" placeholder="Contoh: 3166, 6640, 4937..."></textarea>
+        <textarea id="history" rows="2" placeholder="Masukkan sejarah result lepas..."></textarea>
     </div>
 
     <div class="checkbox-group">
@@ -73,54 +65,45 @@
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana Imbasan 360°</button>
+        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana Carta Visual</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
     <div id="hasil" style="display: none;">
         <div class="result-box" style="border-left-color: #4a5568;">
-            <p style="margin:0; font-weight:bold; font-size:13px; color: #2d3748;">📊 Matriks 4x4 (Klik nombor di bawah untuk jejak laluan)</p>
             <table class="matrix-table" id="matrixTable"></table>
-            <!-- Baris ini memaparkan nama pola trajektori secara aktif -->
-            <div id="active-pola-label" style="text-align:center; font-weight:bold; font-size:13px; margin-top:10px; min-height:20px; color:#718096;"></div>
         </div>
 
         <div class="result-box">
-            <p style="margin:0;"><strong>1D Golden Digit Utama:</strong> 
-            <span id="golden-1d" class="key-tag" style="font-size:20px;" onclick="highlightMatrix(this.innerText, '#dd6b20', 'Golden Digit / Titik Pusat')"></span>
-            <span class="node-badge">GOLDEN KEY</span></p>
+            <p style="margin:0;"><strong>1D Golden Key:</strong> 
+            <span id="golden-1d" class="key-tag" style="font-size:22px;" onclick="highlightMatrix(this.innerText, '#dd6b20')"></span>
         </div>
 
         <div class="strategy-box">
-            🔥 Digit Hot: <span id="hot-no" style="color:#d63031; font-weight:bold;"></span> | 
+            🔥 Hot: <span id="hot-no" style="color:#d63031; font-weight:bold;"></span> | 
             ⚡ Cool: <span id="cool-no" style="color:#2b6cb0; font-weight:bold;"></span> | 
             🔍 Missing: <span id="missing-no" style="color:#dd6b20; font-weight:bold;"></span>
         </div>
 
         <div class="result-box" style="border-left-color: #2b6cb0;">
-            <p style="margin:0;"><strong>Sasaran 2D Tunjang</strong> <button class="btn-copy" onclick="salin('out-2d')">Salin 2D</button></p>
+            <p style="margin:0;"><strong>Sasaran 2D (Gandingan Asas)</strong></p>
             <div id="out-2d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Sasaran 3D (Warna Mewakili Geometri)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button></p>
+            <p style="margin:0;"><strong>Sasaran 3D Sharp (Maks 5)</strong></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Sasaran Utama 4D iBox</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
+            <p style="margin:0;"><strong>Sasaran 4D Geometri Tulen (Maks 5)</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
             <div id="out-4d" class="number-grid"></div>
-        </div>
-
-        <div class="result-box" style="background: #f0ffff; border-left-color: #198754;">
-            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Rujukan Warna Laluan Geometri</p>
-            <div class="pattern-grid" id="gridPola"></div>
         </div>
     </div>
 </div>
 
 <script>
-class MesinImbasan360 {
+class MesinGeometriTulen {
     constructor() {
         this.MIRROR_MAP = {
             '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
@@ -157,20 +140,16 @@ class MesinImbasan360 {
         let pola = {
             "Pepenjuru Utama": `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`,
             "Pepenjuru Silang": `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`,
-            
             "L Kiri Bawah": `${m[2][0]}${m[3][0]}${m[3][1]}${m[3][2]}`,
             "L Kiri Atas": `${m[0][1]}${m[0][0]}${m[1][0]}${m[2][0]}`,
             "L Kanan Bawah": `${m[1][3]}${m[2][3]}${m[3][3]}${m[3][2]}`,
             "L Kanan Atas": `${m[2][3]}${m[1][3]}${m[0][3]}${m[0][2]}`,
-            
             "T Atas": `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`,
             "T Bawah": `${m[3][0]}${m[3][1]}${m[3][2]}${m[2][1]}`,
             "T Kiri": `${m[0][0]}${m[1][0]}${m[2][0]}${m[1][1]}`,
             "T Kanan": `${m[0][3]}${m[1][3]}${m[2][3]}${m[1][2]}`,
-            
             "Z Atas": `${m[0][0]}${m[0][1]}${m[1][1]}${m[1][2]}`,
             "Z Bawah": `${m[2][0]}${m[2][1]}${m[3][1]}${m[3][2]}`,
-            
             "Y Atas": `${m[0][0]}${m[0][2]}${m[1][1]}${m[2][1]}`,
             "O Luar": `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`
         };
@@ -204,28 +183,23 @@ class MesinImbasan360 {
         let golden1D = freq.hot.length > 0 && freq.hot[0] ? freq.hot[0] : matrix[1][1].toString();
 
         let set2D = new Set();
-        if(freq.hot.length >= 2) {
-            set2D.add(freq.hot[0] + freq.hot[1]);
-            set2D.add(freq.hot[1] + freq.hot[0]);
-        }
-        set2D.add(golden1D + matrix[0][0]);
+        set2D.add(String(matrix[0][0]) + String(matrix[0][1]));
+        set2D.add(String(matrix[3][0]) + String(matrix[3][1]));
+        set2D.add(String(golden1D) + String(matrix[1][1]));
+        let arr2D = Array.from(set2D).slice(0, 4);
 
         let list3DWithSource = [];
-        Object.entries(trajektoriMap).forEach(([namaPola, val]) => {
-            if(val.length >= 3) {
-                let sub3 = val.substring(0, 3);
-                if(sub3.includes(golden1D) || (freq.hot[0] && sub3.includes(freq.hot[0]))) {
-                    list3DWithSource.push({ num: sub3, source: namaPola });
-                }
-            }
-        });
-
         let set4D = new Set();
-        list3DWithSource.forEach(item => {
-            freq.hot.slice(0, 2).forEach(d => {
-                let combo = this.sortCombo(item.num + d);
-                if(combo.length === 4) set4D.add(combo);
-            });
+        
+        // Baca semua trajektori tanpa menyekat kepada Golden Key semata-mata
+        Object.entries(trajektoriMap).forEach(([namaPola, val]) => {
+            if(val.length === 4) {
+                set4D.add(val); 
+                let sub1 = val.substring(0, 3);
+                let sub2 = val.substring(1, 4);
+                list3DWithSource.push({ num: sub1, source: namaPola });
+                list3DWithSource.push({ num: sub2, source: namaPola });
+            }
         });
 
         let unik3D = new Map();
@@ -233,9 +207,9 @@ class MesinImbasan360 {
             if(!unik3D.has(item.num)) unik3D.set(item.num, item.source);
         });
 
-        let arr2D = Array.from(set2D).slice(0, 4);
-        let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 8);
-        let arr4D = Array.from(set4D).slice(0, 6);
+        // Hadkan kepada 5 sasaran maksimum untuk elak nombor berserabut
+        let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 5); 
+        let arr4D = Array.from(set4D).slice(0, 5); 
 
         if(gunaCermin) {
             golden1D = this.getMirror(golden1D);
@@ -243,13 +217,8 @@ class MesinImbasan360 {
             freq.cool = freq.cool.map(n => this.getMirror(n));
             freq.missing = freq.missing.map(n => this.getMirror(n));
             arr2D = arr2D.map(n => this.getMirror(n));
-            arr3D = arr3D.map(item => ({ num: this.getMirror(item.num), source: item.source + " (Cermin)" }));
+            arr3D = arr3D.map(item => ({ num: this.getMirror(item.num), source: item.source }));
             arr4D = arr4D.map(n => this.getMirror(n));
-            let newMap = {};
-            for(let key in trajektoriMap) {
-                newMap[key] = this.getMirror(trajektoriMap[key]);
-            }
-            trajektoriMap = newMap;
         }
 
         return {
@@ -266,7 +235,7 @@ class MesinImbasan360 {
     }
 }
 
-const enjin360 = new MesinImbasan360();
+const enjin360 = new MesinGeometriTulen();
 
 function getPolaColor(nama) {
     if(nama.includes("Pepenjuru")) return "#2b6cb0";
@@ -278,40 +247,27 @@ function getPolaColor(nama) {
     return "#4a5568";
 }
 
-// Fungsi Interaktif: Mewarnakan Kotak Matriks Berdasarkan Nombor
-function highlightMatrix(digits, color, sourceText = '') {
+function highlightMatrix(digits, color) {
     let cells = document.querySelectorAll('.matrix-cell');
-    
-    // Reset warna asal semua kotak
     cells.forEach(c => {
-        c.style.background = '';
+        c.style.background = '#fff';
         c.style.color = '#1c1e21';
         c.style.transform = 'scale(1)';
         c.style.boxShadow = 'none';
-        c.style.borderColor = '#4a5568';
+        c.style.borderColor = '#cbd5e0';
+        c.style.zIndex = '1';
     });
     
-    // Highlight digit yang dipadankan
     let digitArr = String(digits).split('');
     cells.forEach(c => {
         if (digitArr.includes(c.innerText)) {
-            c.style.background = color;
-            c.style.color = '#fff';
-            c.style.transform = 'scale(1.1)'; // Membesarkan sedikit kotak carta
-            c.style.boxShadow = '0 0 10px ' + color;
+            c.style.boxShadow = `inset 0 0 0 4px ${color}, 0 0 15px ${color}`;
             c.style.borderColor = color;
+            c.style.color = color;
+            c.style.transform = 'scale(1.15)';
+            c.style.zIndex = '10';
         }
     });
-    
-    // Kemas kini teks rujukan di bawah carta
-    let labelEl = document.getElementById('active-pola-label');
-    if(labelEl) {
-        if(sourceText) {
-            labelEl.innerHTML = `Laluan Aktif: <span style="color:${color}; font-weight:900; font-size:15px;">${sourceText}</span>`;
-        } else {
-            labelEl.innerHTML = `Jejakan Digit: <span style="color:${color}; font-weight:900; font-size:15px;">${digits}</span>`;
-        }
-    }
 }
 
 function janaAnalisisPenuh() {
@@ -343,42 +299,35 @@ function janaAnalisisPenuh() {
         document.getElementById('cool-no').innerText = hasil.cool;
         document.getElementById('missing-no').innerText = hasil.missing;
         
-        // Panggil highlightMatrix apabila nombor 2D ditekan
-        document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag" style="background:#2b6cb0;" onclick="highlightMatrix('${n}', '#2b6cb0', 'Gandingan 2D Tunjang')">${n}</div>`).join('');
-        document.getElementById('out-2d').setAttribute('data-raw', hasil.keputusan2D.join(', '));
+        document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag" style="background:#2b6cb0;" onclick="highlightMatrix('${n}', '#2b6cb0')">${n}</div>`).join('');
         
         let html3D = "";
-        let raw3DArray = [];
         hasil.keputusan3D.forEach(item => {
-            raw3DArray.push(item.num);
             let c = getPolaColor(item.source);
-            // Panggil highlightMatrix secara terus tanpa Alert
-            html3D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${item.num}', '${c}', '${item.source}')" title="Klik untuk lihat laluan geometri">
+            html3D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${item.num}', '${c}')">
                 ${item.num}
             </div>`;
         });
         document.getElementById('out-3d').innerHTML = html3D;
-        document.getElementById('out-3d').setAttribute('data-raw', raw3DArray.join(', '));
         
-        // Panggil highlightMatrix apabila nombor 4D ditekan
-        document.getElementById('out-4d').innerHTML = hasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;" onclick="highlightMatrix('${n}', '#805ad5', 'Proyeksi Utama 4D iBox')">${n}</div>`).join('');
-        document.getElementById('out-4d').setAttribute('data-raw', hasil.keputusan4D.join(', '));
+        let html4D = "";
+        let raw4DArray = [];
+        hasil.keputusan4D.forEach(num => {
+            raw4DArray.push(num);
+            let c = "#805ad5"; 
+            for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
+                if(nilai === num || (nilai === hasil.getMirror(num) && gunaCermin)) {
+                    c = getPolaColor(nama);
+                    break;
+                }
+            }
+            html4D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${num}', '${c}')">${num}</div>`;
+        });
+        document.getElementById('out-4d').innerHTML = html4D;
+        document.getElementById('out-4d').setAttribute('data-raw', raw4DArray.join(', '));
         
-        let hPola = "";
-        for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
-            let warnaBg = getPolaColor(nama);
-            hPola += `
-            <div class="pattern-box" style="border-top: 4px solid ${warnaBg}; cursor:pointer;" onclick="highlightMatrix('${nilai.substring(0,4)}', '${warnaBg}', '${nama}')">
-                <span class="pattern-sumber" style="background:${warnaBg};">${nama}</span>
-                <span class="pattern-name">Klik untuk lihat trajektori</span>
-                <span class="pattern-value">${nilai}</span>
-            </div>`;
-        }
-        document.getElementById('gridPola').innerHTML = hPola;
-        
-        // Reset label setiap kali tekan jana
-        document.getElementById('active-pola-label').innerHTML = "";
         document.getElementById('hasil').style.display = 'block';
+        highlightMatrix('', '#fff');
 
     } catch (err) {
         console.error("Ralat:", err);
