@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin Trajektori Berwarna SportsToto Pro</title>
+<title>Mesin Imbasan 360° Visual Interaktif Pro</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 540px; width: 100%; }
@@ -21,18 +21,23 @@
     .btn-jana:hover { background-color: #0b5ed7; }
     .btn-reset { background-color: #dc3545; color: white; }
     .btn-copy { background-color: #38a169; color: white; font-size: 11px; padding: 4px 8px; float: right; border-radius: 4px; }
-    .matrix-table { width: 100%; margin: 15px 0; border-collapse: collapse; font-size: 24px; font-weight: bold; background: #fff; text-align: center; }
-    .matrix-table td { border: 2px solid #4a5568; padding: 12px; width: 25%; background: #fff; text-align: center; }
-    .matrix-table tr:first-child td { background-color: #e2e8f0; }
+    
+    /* CSS Carta Matriks Interaktif */
+    .matrix-table { width: 100%; margin: 15px 0 5px 0; border-collapse: collapse; font-size: 24px; font-weight: bold; background: #fff; text-align: center; }
+    .matrix-table td { border: 2px solid #4a5568; padding: 12px; width: 25%; background: #fff; text-align: center; transition: background 0.3s, transform 0.2s, color 0.3s, box-shadow 0.3s; border-radius: 4px; }
+    .matrix-table tr:first-child td { background-color: #f8fafc; } /* Warna default baris pertama diringankan sikit supaya senang tukar warna */
+    
     .result-box { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
-    .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; margin-top: 10px; }
-    .number-tag { background: #2d3748; color: #fff; padding: 8px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 14px; cursor: pointer; transition: 0.2s; }
-    .number-tag:hover { background: #3182ce; }
-    .number-tag span { display: block; font-size: 9px; color: #cbd5f0; margin-top: 3px; text-transform: uppercase; }
-    .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; }
+    .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
+    .number-tag { background: #2d3748; color: #fff; padding: 10px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 16px; cursor: pointer; transition: 0.2s; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .number-tag:hover { opacity: 0.85; transform: translateY(-2px); }
+    
+    .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; cursor: pointer; padding: 2px 8px; border-radius: 4px; transition: 0.2s; display: inline-block; }
+    .key-tag:hover { background: #dd6b20; color: white; }
     .node-badge { display: inline-block; padding: 3px 8px; background: #0d6efd; color: white; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; margin-left: 5px; }
     .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; text-align: left; margin-top: 10px; }
-    .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    
+    .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
     .pattern-box { background: white; padding: 12px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .pattern-sumber { font-size: 10px; color: #fff; padding: 4px 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; display: inline-block; }
     .pattern-name { font-size: 11px; color: #718096; font-weight: bold; text-transform: uppercase; }
@@ -42,8 +47,8 @@
 <body>
 
 <div class="container">
-    <h2>Mesin Trajektori Berwarna Pro</h2>
-    <p class="subtitle">Analisis Penuh: Pola Berwarna, Jejak 3D & Saringan Ketat</p>
+    <h2>Mesin Carta Visual Interaktif Pro</h2>
+    <p class="subtitle">Klik pada mana-mana nombor jana untuk lihat corak dalam carta!</p>
 
     <div class="input-group">
         <label for="num1">Nombor Asas Cabutan 1 (Rivet Asal):</label>
@@ -56,8 +61,8 @@
     </div>
 
     <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas (Untuk Kira Digit Hot):</label>
-        <textarea id="history" rows="3" placeholder="Masukkan senarai result lepas..."></textarea>
+        <label for="history">Sejarah Cabutan Lepas:</label>
+        <textarea id="history" rows="3" placeholder="Contoh: 3166, 6640, 4937..."></textarea>
     </div>
 
     <div class="checkbox-group">
@@ -68,26 +73,28 @@
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaAnalisisWarna()">Jana Analisis Berwarna</button>
+        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana Imbasan 360°</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
     <div id="hasil" style="display: none;">
         <div class="result-box" style="border-left-color: #4a5568;">
-            <p style="margin:0; font-weight:bold; font-size:13px; color: #2d3748;">📊 Matriks 4x4 (Tolak 1 Asal)</p>
+            <p style="margin:0; font-weight:bold; font-size:13px; color: #2d3748;">📊 Matriks 4x4 (Klik nombor di bawah untuk jejak laluan)</p>
             <table class="matrix-table" id="matrixTable"></table>
+            <!-- Baris ini memaparkan nama pola trajektori secara aktif -->
+            <div id="active-pola-label" style="text-align:center; font-weight:bold; font-size:13px; margin-top:10px; min-height:20px; color:#718096;"></div>
         </div>
 
         <div class="result-box">
-            <p style="margin:0;"><strong>1D Golden Digit Utama:</strong> <span id="golden-1d" class="key-tag" style="font-size:20px;"></span>
+            <p style="margin:0;"><strong>1D Golden Digit Utama:</strong> 
+            <span id="golden-1d" class="key-tag" style="font-size:20px;" onclick="highlightMatrix(this.innerText, '#dd6b20', 'Golden Digit / Titik Pusat')"></span>
             <span class="node-badge">GOLDEN KEY</span></p>
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🔥 Analisis Status Digit</p>
-            🔥 Digit Hot: <span id="hot-no" style="color:#d63031; font-weight:bold; font-size:16px;"></span><br>
-            ⚡ Digit Cool: <span id="cool-no" style="color:#2b6cb0; font-weight:bold;"></span><br>
-            🔍 Digit Missing: <span id="missing-no" style="color:#dd6b20; font-weight:bold;"></span>
+            🔥 Digit Hot: <span id="hot-no" style="color:#d63031; font-weight:bold;"></span> | 
+            ⚡ Cool: <span id="cool-no" style="color:#2b6cb0; font-weight:bold;"></span> | 
+            🔍 Missing: <span id="missing-no" style="color:#dd6b20; font-weight:bold;"></span>
         </div>
 
         <div class="result-box" style="border-left-color: #2b6cb0;">
@@ -96,7 +103,7 @@
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Sasaran 3D Gandingan (Klik untuk lihat asal-usul pola)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button></p>
+            <p style="margin:0;"><strong>Sasaran 3D (Warna Mewakili Geometri)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
@@ -106,33 +113,18 @@
         </div>
 
         <div class="result-box" style="background: #f0ffff; border-left-color: #198754;">
-            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Kotak Pola Geometri Berwarna (Asal & Terbalik)</p>
+            <p style="margin:0; font-weight:bold; color: #198754;">🔲 Rujukan Warna Laluan Geometri</p>
             <div class="pattern-grid" id="gridPola"></div>
         </div>
     </div>
 </div>
 
 <script>
-class MesinTrajektoriWarna {
+class MesinImbasan360 {
     constructor() {
         this.MIRROR_MAP = {
             '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
             '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
-        };
-        // Tetapan warna khusus untuk setiap jenis pola
-        this.COLOR_MAP = {
-            "Pepenjuru Utama": "#2b6cb0",      // Biru
-            "Pepenjuru Terbalik (Rev)": "#3182ce", // Biru Cerah
-            "Pola L": "#38a169",                 // Hijau
-            "L Terbalik (Rev)": "#48bb78",       // Hijau Cerah
-            "Pola T": "#dd6b20",                 // Oren
-            "T Terbalik (Rev)": "#ed8936",       // Oren Cerah
-            "Pola Z": "#805ad5",                 // Ungu
-            "Z Terbalik (Rev)": "#9f7aea",       // Ungu Cerah
-            "Pola Y (Simetri Silang)": "#e53e3e", // Merah
-            "Y Terbalik (Rev)": "#fc8181",       // Merah Cerah
-            "Pola O (Gelung Luar)": "#d69e2e",   // Emas
-            "O Terbalik (Rev)": "#ecc94b"        // Kuning Emas
         };
     }
 
@@ -147,7 +139,6 @@ class MesinTrajektoriWarna {
     binaMatrix4x4(str1, str2) {
         let combined = (str1 + (str2 || "3166")).replace(/[^0-9]/g, "");
         if (combined.length < 4) combined = "3166";
-        
         let baseRow = combined.substring(0, 4).split('').map(Number);
         let matrix = [baseRow];
         
@@ -162,28 +153,34 @@ class MesinTrajektoriWarna {
         return matrix;
     }
     
-    ekstrakTrajektoriPenuh(m) {
-        let pepenjuruUtama = `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`;
-        let polaL = `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`;
-        let polaT = `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`;
-        let polaZ = `${m[0][0]}${m[1][1]}${m[1][0]}${m[3][1]}`;
-        let polaY = `${m[0][0]}${m[0][3]}${m[1][1]}${m[2][2]}`;
-        let ringkasO = `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`;
-
-        return {
-            "Pepenjuru Utama": pepenjuruUtama,
-            "Pepenjuru Terbalik (Rev)": pepenjuruUtama.split('').reverse().join(''),
-            "Pola L": polaL,
-            "L Terbalik (Rev)": polaL.split('').reverse().join(''),
-            "Pola T": polaT,
-            "T Terbalik (Rev)": polaT.split('').reverse().join(''),
-            "Pola Z": polaZ,
-            "Z Terbalik (Rev)": polaZ.split('').reverse().join(''),
-            "Pola Y (Simetri Silang)": polaY,
-            "Y Terbalik (Rev)": polaY.split('').reverse().join(''),
-            "Pola O (Gelung Luar)": ringkasO,
-            "O Terbalik (Rev)": ringkasO.split('').reverse().join('')
+    ekstrakGeometri360(m) {
+        let pola = {
+            "Pepenjuru Utama": `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`,
+            "Pepenjuru Silang": `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`,
+            
+            "L Kiri Bawah": `${m[2][0]}${m[3][0]}${m[3][1]}${m[3][2]}`,
+            "L Kiri Atas": `${m[0][1]}${m[0][0]}${m[1][0]}${m[2][0]}`,
+            "L Kanan Bawah": `${m[1][3]}${m[2][3]}${m[3][3]}${m[3][2]}`,
+            "L Kanan Atas": `${m[2][3]}${m[1][3]}${m[0][3]}${m[0][2]}`,
+            
+            "T Atas": `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`,
+            "T Bawah": `${m[3][0]}${m[3][1]}${m[3][2]}${m[2][1]}`,
+            "T Kiri": `${m[0][0]}${m[1][0]}${m[2][0]}${m[1][1]}`,
+            "T Kanan": `${m[0][3]}${m[1][3]}${m[2][3]}${m[1][2]}`,
+            
+            "Z Atas": `${m[0][0]}${m[0][1]}${m[1][1]}${m[1][2]}`,
+            "Z Bawah": `${m[2][0]}${m[2][1]}${m[3][1]}${m[3][2]}`,
+            
+            "Y Atas": `${m[0][0]}${m[0][2]}${m[1][1]}${m[2][1]}`,
+            "O Luar": `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`
         };
+
+        let polaKembang = {};
+        for(let key in pola) {
+            polaKembang[key] = pola[key];
+            polaKembang[key + " (Rev)"] = pola[key].split('').reverse().join('');
+        }
+        return polaKembang;
     }
 
     analisisFrekuensiDigit(historyRaw) {
@@ -201,7 +198,7 @@ class MesinTrajektoriWarna {
 
     jana(nomborAsas, str2, historyRaw, gunaCermin) {
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
-        let trajektoriMap = this.ekstrakTrajektoriPenuh(matrix);
+        let trajektoriMap = this.ekstrakGeometri360(matrix);
         let freq = this.analisisFrekuensiDigit(historyRaw);
 
         let golden1D = freq.hot.length > 0 && freq.hot[0] ? freq.hot[0] : matrix[1][1].toString();
@@ -217,9 +214,9 @@ class MesinTrajektoriWarna {
         Object.entries(trajektoriMap).forEach(([namaPola, val]) => {
             if(val.length >= 3) {
                 let sub3 = val.substring(0, 3);
-                list3DWithSource.push({ num: sub3, source: namaPola });
-                let sub3Rev = val.substring(1, 4);
-                list3DWithSource.push({ num: sub3Rev, source: namaPola + " (Anjak)" });
+                if(sub3.includes(golden1D) || (freq.hot[0] && sub3.includes(freq.hot[0]))) {
+                    list3DWithSource.push({ num: sub3, source: namaPola });
+                }
             }
         });
 
@@ -231,9 +228,14 @@ class MesinTrajektoriWarna {
             });
         });
 
+        let unik3D = new Map();
+        list3DWithSource.forEach(item => {
+            if(!unik3D.has(item.num)) unik3D.set(item.num, item.source);
+        });
+
         let arr2D = Array.from(set2D).slice(0, 4);
-        let arr3D = list3DWithSource.slice(0, 6);
-        let arr4D = Array.from(set4D).slice(0, 5);
+        let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 8);
+        let arr4D = Array.from(set4D).slice(0, 6);
 
         if(gunaCermin) {
             golden1D = this.getMirror(golden1D);
@@ -259,15 +261,60 @@ class MesinTrajektoriWarna {
             keputusan2D: arr2D,
             keputusan3D: arr3D,
             keputusan4D: arr4D,
-            polaObj: trajektoriMap,
-            colorMap: this.COLOR_MAP
+            polaObj: trajektoriMap
         };
     }
 }
 
-const enjinWarna = new MesinTrajektoriWarna();
+const enjin360 = new MesinImbasan360();
 
-function janaAnalisisWarna() {
+function getPolaColor(nama) {
+    if(nama.includes("Pepenjuru")) return "#2b6cb0";
+    if(nama.includes("L ")) return "#38a169";
+    if(nama.includes("T ")) return "#dd6b20";
+    if(nama.includes("Z ")) return "#805ad5";
+    if(nama.includes("Y ")) return "#e53e3e";
+    if(nama.includes("O ")) return "#d69e2e";
+    return "#4a5568";
+}
+
+// Fungsi Interaktif: Mewarnakan Kotak Matriks Berdasarkan Nombor
+function highlightMatrix(digits, color, sourceText = '') {
+    let cells = document.querySelectorAll('.matrix-cell');
+    
+    // Reset warna asal semua kotak
+    cells.forEach(c => {
+        c.style.background = '';
+        c.style.color = '#1c1e21';
+        c.style.transform = 'scale(1)';
+        c.style.boxShadow = 'none';
+        c.style.borderColor = '#4a5568';
+    });
+    
+    // Highlight digit yang dipadankan
+    let digitArr = String(digits).split('');
+    cells.forEach(c => {
+        if (digitArr.includes(c.innerText)) {
+            c.style.background = color;
+            c.style.color = '#fff';
+            c.style.transform = 'scale(1.1)'; // Membesarkan sedikit kotak carta
+            c.style.boxShadow = '0 0 10px ' + color;
+            c.style.borderColor = color;
+        }
+    });
+    
+    // Kemas kini teks rujukan di bawah carta
+    let labelEl = document.getElementById('active-pola-label');
+    if(labelEl) {
+        if(sourceText) {
+            labelEl.innerHTML = `Laluan Aktif: <span style="color:${color}; font-weight:900; font-size:15px;">${sourceText}</span>`;
+        } else {
+            labelEl.innerHTML = `Jejakan Digit: <span style="color:${color}; font-weight:900; font-size:15px;">${digits}</span>`;
+        }
+    }
+}
+
+function janaAnalisisPenuh() {
     try {
         const num1 = document.getElementById('num1').value.trim();
         const num2 = document.getElementById('num2').value.trim();
@@ -275,17 +322,17 @@ function janaAnalisisWarna() {
         const gunaCermin = document.getElementById('useMirror').checked;
         
         if (num1.length < 3) {
-            alert("Sila masukkan Nombor Asas Cabutan 1 minimum 3 digit.");
+            alert("Sila masukkan Nombor Asas Cabutan minimum 3 digit.");
             return;
         }
 
-        let hasil = enjinWarna.jana(num1, num2, historyRaw, gunaCermin);
+        let hasil = enjin360.jana(num1, num2, historyRaw, gunaCermin);
         
         let h = "";
         for (let r = 0; r < 4; r++) {
             h += "<tr>";
             for (let c = 0; c < 4; c++) {
-                h += `<td>${hasil.matrix[r][c]}</td>`;
+                h += `<td class="matrix-cell">${hasil.matrix[r][c]}</td>`;
             }
             h += "</tr>";
         }
@@ -296,35 +343,41 @@ function janaAnalisisWarna() {
         document.getElementById('cool-no').innerText = hasil.cool;
         document.getElementById('missing-no').innerText = hasil.missing;
         
-        document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag" style="background:#2b6cb0;">${n}</div>`).join('');
+        // Panggil highlightMatrix apabila nombor 2D ditekan
+        document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag" style="background:#2b6cb0;" onclick="highlightMatrix('${n}', '#2b6cb0', 'Gandingan 2D Tunjang')">${n}</div>`).join('');
         document.getElementById('out-2d').setAttribute('data-raw', hasil.keputusan2D.join(', '));
         
         let html3D = "";
         let raw3DArray = [];
         hasil.keputusan3D.forEach(item => {
             raw3DArray.push(item.num);
-            html3D += `<div class="number-tag" style="background:#dd6b20;" onclick="alert('Asal-usul 3D [${item.num}] adalah daripada: ${item.source}')">
+            let c = getPolaColor(item.source);
+            // Panggil highlightMatrix secara terus tanpa Alert
+            html3D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${item.num}', '${c}', '${item.source}')" title="Klik untuk lihat laluan geometri">
                 ${item.num}
-                <span>${item.source}</span>
             </div>`;
         });
         document.getElementById('out-3d').innerHTML = html3D;
         document.getElementById('out-3d').setAttribute('data-raw', raw3DArray.join(', '));
         
-        document.getElementById('out-4d').innerHTML = hasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;">${n}</div>`).join('');
+        // Panggil highlightMatrix apabila nombor 4D ditekan
+        document.getElementById('out-4d').innerHTML = hasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;" onclick="highlightMatrix('${n}', '#805ad5', 'Proyeksi Utama 4D iBox')">${n}</div>`).join('');
         document.getElementById('out-4d').setAttribute('data-raw', hasil.keputusan4D.join(', '));
         
         let hPola = "";
         for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
-            let warnaBg = hasil.colorMap[nama] || "#4a5568";
+            let warnaBg = getPolaColor(nama);
             hPola += `
-            <div class="pattern-box" style="border-top: 4px solid ${warnaBg};">
+            <div class="pattern-box" style="border-top: 4px solid ${warnaBg}; cursor:pointer;" onclick="highlightMatrix('${nilai.substring(0,4)}', '${warnaBg}', '${nama}')">
                 <span class="pattern-sumber" style="background:${warnaBg};">${nama}</span>
-                <span class="pattern-name">Laluan Sel</span>
+                <span class="pattern-name">Klik untuk lihat trajektori</span>
                 <span class="pattern-value">${nilai}</span>
             </div>`;
         }
         document.getElementById('gridPola').innerHTML = hPola;
+        
+        // Reset label setiap kali tekan jana
+        document.getElementById('active-pola-label').innerHTML = "";
         document.getElementById('hasil').style.display = 'block';
 
     } catch (err) {
@@ -345,7 +398,7 @@ function salin(id) {
     if (!el) return;
     const txt = el.getAttribute('data-raw');
     if (txt) {
-        navigator.clipboard.writeText(txt).then(() => alert('Berjaya disalin: ' + txt)).catch(e => console.log('Gagal salin', e));
+        navigator.clipboard.writeText(txt).then(() => alert('Berjaya disalin')).catch(e => console.log('Gagal salin'));
     }
 }
 </script>
