@@ -1,395 +1,174 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin 360° Fokus 3 Sasaran Pro</title>
-<style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
-    .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 540px; width: 100%; }
-    h2 { text-align: center; color: #1a365d; margin-bottom: 5px; }
-    p.subtitle { text-align: center; color: #718096; font-size: 12px; margin-bottom: 20px; }
-    .input-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
-    input[type="text"], textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px; font-family: monospace; }
-    textarea { font-size: 13px; resize: vertical; }
-    input:focus, textarea:focus { outline: none; border-color: #3182ce; }
-    .checkbox-group { text-align: left; margin: 15px 0; font-size: 13px; font-weight: 600; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; cursor: pointer; }
-    .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-    button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .btn-jana { background-color: #008efd; color: white; }
-    .btn-jana:hover { background-color: #0b5ed7; }
-    .btn-reset { background-color: #dc3545; color: white; }
-    .btn-copy { background-color: #38a169; color: white; font-size: 11px; padding: 4px 8px; float: right; border-radius: 4px; }
-    
-    .matrix-table { width: 100%; margin: 15px 0; border-collapse: collapse; font-size: 24px; font-weight: bold; background: #fff; text-align: center; position: relative; }
-    .matrix-table td { border: 2px solid #cbd5e0; padding: 15px 12px; width: 25%; background: #fff; text-align: center; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border-radius: 6px; box-sizing: border-box; position: relative; z-index: 1; }
-    .matrix-table tr:first-child td { background-color: #f8fafc; }
-    
-    .result-box { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
-    .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
-    .number-tag { background: #2d3748; color: #fff; padding: 12px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 16px; cursor: pointer; transition: 0.2s; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .number-tag:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-    
-    .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; cursor: pointer; padding: 4px 10px; background: #fff3cd; border-radius: 4px; transition: 0.2s; display: inline-block; border: 2px solid #dd6b20; }
-    .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; text-align: left; margin-top: 10px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Matriks Pro & Saringan Pola</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #e9ecef; padding: 20px; color: #333; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); max-width: 600px; margin: auto; }
+        input[type="text"], button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; text-align: center; }
+        .checkbox-group { text-align: left; margin: 10px 0; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; }
+        .btn-jana { background-color: #0d6efd; color: white; border: none; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .btn-jana:hover { background-color: #0b5ed7; }
+        .btn-kocok { background-color: #198754; color: white; border: none; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 10px; }
+        .matrix-table { width: 100%; margin: 20px 0; border-collapse: collapse; font-size: 26px; font-weight: bold; }
+        .matrix-table td { border: 2px solid #444; padding: 15px; width: 25%; background: #fff; position: relative; transition: all 0.3s; }
+        .matrix-table tr:first-child td { background-color: #e9ecef; }
+        .highlight-box { background-color: #fff3cd !important; color: #856404; }
+        .highlight-3d { border: 4px solid #0d6efd !important; box-shadow: inset 0 0 10px rgba(13,110,253,0.3); }
+        .highlight-2d { border: 4px solid #dc3545 !important; box-shadow: inset 0 0 10px rgba(220,53,69,0.3); }
+        .analysis-section { text-align: left; background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; margin-top: 20px; }
+        .analysis-section h4 { margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 8px; color: #212529; font-size: 18px; }
+        .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .pattern-box { background: white; padding: 15px; border: 1px solid #ced4da; border-radius: 6px; text-align: center; display: flex; flex-direction: column; }
+        .pattern-sumber { font-size: 11px; color: #fff; background: #495057; padding: 4px; border-radius: 4px; margin-bottom: 8px; font-weight: bold; }
+        .pattern-name { font-size: 12px; color: #6c757d; font-weight: bold; text-transform: uppercase; }
+        .pattern-value { font-size: 26px; font-weight: bold; letter-spacing: 2px; }
+        .strategy-box { background: #e2e3e5; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; }
+        .hot-num { font-weight: bold; color: #b02a37; font-size: 18px; }
+        .missing-num { font-weight: bold; color: #146c43; font-size: 18px; }
+        .info-text { font-size: 12px; color: #666; margin-top: 10px; display: block; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Mesin 360° Fokus 3 Sasaran</h2>
-    <p class="subtitle">Penapisan Ekstrem: Tepat, Padat & Minimum Modal</p>
-
-    <div class="input-group">
-        <label for="num1">Nombor Asas Cabutan 1 (Rivet Asal):</label>
-        <input type="text" id="num1" maxlength="4" placeholder="6201" pattern="\d*">
-    </div>
-
-    <div class="input-group">
-        <label for="num2">Nombor Asas Cabutan 2 (Rivet Cermin):</label>
-        <input type="text" id="num2" maxlength="4" placeholder="1756" pattern="\d*">
-    </div>
-
-    <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas (Bantuan Sokongan):</label>
-        <textarea id="history" rows="3" placeholder="Contoh: 5915, 4831, 4246..."></textarea>
-    </div>
-
+    <h2>Matriks Pro: Ekstraksi Berpusat</h2>
+    <label style="font-weight:bold; display:block; text-align:left;">Masukkan Nombor Induk 4D:</label>
+    <input type="text" id="input4D" maxlength="4" placeholder="Cth: 5829" oninput="resetBina()">
+    
     <div class="checkbox-group">
-        <label style="cursor:pointer; margin:0;">
-            <input type="checkbox" id="useMirror" checked>
-            Sahkan Melalui Sistem Cermin (+5)
-        </label>
+        <label style="cursor:pointer; font-weight:bold;"><input type="checkbox" id="gunaCermin" checked onchange="binaCarta()"> Guna Formula Cermin (0=5, 1=6...)</label>
     </div>
+    <button class="btn-jana" onclick="binaCarta()">Bina Carta & Analisa</button>
+    
+    <div id="resultContainer" style="display:none;">
+        <p style="font-size:12px; font-weight:bold; color:#555;">*Latar Kuning = Kotak Pelengkap. Bingkai Merah/Biru = Ekstraksi 2D/3D.</p>
+        <table class="matrix-table" id="matrixTable"></table>
 
-    <div class="btn-group">
-        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana 3 Sasaran Utama</button>
-        <button class="btn-reset" onclick="resetBorang()">Reset</button>
-    </div>
-
-    <div id="hasil" style="display: none;">
-        <div class="result-box" style="border-left-color: #4a5568;">
-            <table class="matrix-table" id="matrixTable"></table>
+        <div class="analysis-section">
+            <h4>🎯 Strategi: 1D Dominan & Kotak Pelengkap</h4>
+            <div class="strategy-box">
+                <span>🔥 1D Kerap Keluar: <span class="hot-num" id="h1D">-</span></span>
+                <span>🧩 2D Potensi: <span class="hot-num" id="h2D">-</span></span>
+                <hr style="border-top:1px solid #ccc; margin:10px 0;">
+                <span>🔍 Asas 3D: <strong id="a3D">-</strong> | 1D Pelengkap: <span class="missing-num" id="p1D">-</span></span>
+                <span style="font-size:13px;">(Sasaran 4D: <strong id="s4D">-</strong>)</span>
+            </div>
         </div>
 
-        <div class="result-box">
-            <p style="margin:0;"><strong>1D Golden Key:</strong> 
-            <span id="golden-1d" class="key-tag" style="font-size:22px;" onclick="highlightMatrix(this.innerText, '#dd6b20')"></span>
+        <div class="analysis-section" style="border:2px solid #198754; background:#f8fff9;">
+            <h4 style="color:#198754; border-bottom-color:#198754;">✂️ Pengekstrakan Rawak Berpusat</h4>
+            <div class="pattern-grid">
+                <div class="pattern-box" style="border-color:#dc3545; background:#fff5f5;">
+                    <span class="pattern-sumber" id="src2D">-</span><span class="pattern-name" style="color:#dc3545;">Potongan 2D</span><span class="pattern-value" id="val2D" style="color:#dc3545;">-</span>
+                </div>
+                <div class="pattern-box" style="border-color:#0d6efd; background:#f0f8ff;">
+                    <span class="pattern-sumber" id="src3D">-</span><span class="pattern-name" style="color:#0d6efd;">Potongan 3D</span><span class="pattern-value" id="val3D" style="color:#0d6efd;">-</span>
+                </div>
+            </div>
+            <button class="btn-kocok" onclick="janaPola()">Ekstrak Semula (Tunjuk di Matriks)</button>
         </div>
 
-        <div class="strategy-box">
-            🔥 Hot: <span id="hot-no" style="color:#d63031; font-weight:bold;"></span> | 
-            ⚡ Cool: <span id="cool-no" style="color:#2b6cb0; font-weight:bold;"></span> | 
-            🔍 Missing: <span id="missing-no" style="color:#dd6b20; font-weight:bold;"></span>
+        <div class="analysis-section" style="background:#fff3cd; border:2px solid #ffc107;">
+            <h4 style="color:#856404; border-bottom-color:#ffe8a1;">🔥 Top 3D Tepat (Frekuensi Pola)</h4>
+            <div id="top3DList" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; justify-content:center;"></div>
+            <span class="info-text">*3D berpotensi tinggi dari semua pola, disaring dengan 1D Dominan.</span>
         </div>
 
-        <div class="result-box" style="border-left-color: #2b6cb0;">
-            <p style="margin:0;"><strong>Fasa 1: Gandingan 2D Tunjang (Klik untuk tapis)</strong></p>
-            <div id="out-2d" class="number-grid"></div>
-        </div>
-
-        <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Fasa 2: Sasaran 3D Sharp (Hanya 3 Pilihan Utama)</strong></p>
-            <div id="out-3d" class="number-grid"></div>
-        </div>
-
-        <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Fasa 3: Sasaran 4D Podium (Hanya 3 Pilihan)</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
-            <div id="out-4d" class="number-grid"></div>
+        <div class="analysis-section">
+            <h4>📊 Analisis Pola 4D Utama</h4><div class="pattern-grid" id="gridU"></div>
+            <h4>📈 Pola Tambahan (Penjuru & Zig-Zag)</h4><div class="pattern-grid" id="gridT"></div>
         </div>
     </div>
 </div>
 
 <script>
-class MesinFokusTiga {
-    constructor() {
-        this.MIRROR_MAP = {
-            '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
-            '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
+    let globalMatrix = [], globalPool = [], senaraiPola = {}, hot1D = ""; 
+
+    function getMirror(s) { const m = {'0':'5','1':'6','2':'7','3':'8','4':'9','5':'0','6':'1','7':'2','8':'3','9':'4'}; return s.split('').map(c=>m[c]||c).join(''); }
+    function saring3D(arr, d) { let r=[], f={}; arr.forEach(p=>{if(p.length===4) r.push(p[0]+p[1]+p[2], p[0]+p[1]+p[3], p[0]+p[2]+p[3], p[1]+p[2]+p[3]);}); r.filter(n=>n.includes(d)).forEach(n=>f[n]=(f[n]||0)+1); return Object.keys(f).map(k=>({n:k, c:f[k]})).sort((a,b)=>b.c-a.c); }
+    function resetBina() { let el = document.getElementById("input4D"); el.value = el.value.replace(/[^0-9]/g, ''); if(el.value.length===4) binaCarta(); else document.getElementById("resultContainer").style.display="none"; }
+
+    function binaCarta() {
+        let v = document.getElementById("input4D").value; if(v.length!==4) return;
+        globalMatrix = []; globalPool = []; let b1 = v.split('').map(Number);
+        globalMatrix.push(b1); globalPool.push(...b1);
+        for(let r=1; r<4; r++) {
+            let br=[]; for(let c=0; c<4; c++) { let n=(globalMatrix[r-1][c]+9)%10; br.push(n); globalPool.push(n); }
+            globalMatrix.push(br);
+        }
+        lukisJadual(); kajiStrategi(); ekstrakPola(); janaPola();
+        document.getElementById("resultContainer").style.display="block";
+    }
+
+    function lukisJadual() {
+        let h=""; for(let r=0; r<4; r++){ h+="<tr>"; for(let c=0; c<4; c++) h+=`<td id="c-${r}-${c}">${globalMatrix[r][c]}</td>`; h+="</tr>"; }
+        document.getElementById("matrixTable").innerHTML=h;
+    }
+
+    function kajiStrategi() {
+        document.querySelectorAll('td').forEach(td => td.className="");
+        let k={}; globalPool.forEach(n=>k[n]=(k[n]||0)+1);
+        let s = Object.entries(k).sort((a,b)=>b[1]-a[1]);
+        hot1D = s[0][0]; let h2 = s[1]?s[1][0]:hot1D;
+        document.getElementById("h1D").innerText = `${hot1D} & ${h2}`;
+        document.getElementById("h2D").innerText = `${hot1D}${h2} / ${h2}${hot1D}`;
+
+        let m=globalMatrix, f=false, rr=0, cc=0;
+        for(let r=0; r<3; r++){ for(let c=0; c<3; c++){ if([m[r][c],m[r][c+1],m[r+1][c],m[r+1][c+1]].includes(parseInt(hot1D))){ rr=r; cc=c; f=true; break; } } if(f) break; }
+        if(f){
+            let d1=m[rr][cc], d2=m[rr][cc+1], d3=m[rr+1][cc], p=m[rr+1][cc+1];
+            document.getElementById("a3D").innerText=`${d1}${d2}${d3}`; document.getElementById("p1D").innerText=p; document.getElementById("s4D").innerText=`${d1}${d2}${d3}${p}`;
+            [`c-${rr}-${cc}`, `c-${rr}-${cc+1}`, `c-${rr+1}-${cc}`, `c-${rr+1}-${cc+1}`].forEach(id=>document.getElementById(id).classList.add('highlight-box'));
+        }
+    }
+
+    function ekstrakPola() {
+        let m=globalMatrix;
+        senaraiPola.U = {
+            "Pola L":{v:`${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`, c:[[0,0],[1,0],[2,0],[2,1]]},
+            "Pola T":{v:`${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`, c:[[0,0],[0,1],[0,2],[1,1]]},
+            "Pola Y":{v:`${m[0][0]}${m[0][2]}${m[1][1]}${m[2][1]}`, c:[[0,0],[0,2],[1,1],[2,1]]},
+            "Pola O":{v:`${m[1][1]}${m[1][2]}${m[2][1]}${m[2][2]}`, c:[[1,1],[1,2],[2,1],[2,2]]}
         };
+        senaraiPola.T = {
+            "Pepenjuru 1":{v:`${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`, c:[[0,0],[1,1],[2,2],[3,3]]},
+            "Pepenjuru 2":{v:`${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`, c:[[0,3],[1,2],[2,1],[3,0]]},
+            "Zig Kiri":{v:`${m[0][0]}${m[1][1]}${m[2][0]}${m[3][1]}`, c:[[0,0],[1,1],[2,0],[3,1]]},
+            "Zig Kanan":{v:`${m[0][3]}${m[1][2]}${m[2][3]}${m[3][2]}`, c:[[0,3],[1,2],[2,3],[3,2]]}
+        };
+        let gM=document.getElementById("gunaCermin").checked;
+        const bUI=(id,obj) => document.getElementById(id).innerHTML = Object.entries(obj).map(([n,d])=>`<div class="pattern-box"><span class="pattern-name">${n}</span><span class="pattern-value">${d.v}</span><span style="font-size:11px;color:#17a2b8;font-weight:bold;">${gM?'Cermin: '+getMirror(d.v):''}</span></div>`).join('');
+        bUI("gridU", senaraiPola.U); bUI("gridT", senaraiPola.T);
     }
 
-    sortCombo(str) {
-        return (str || "").split('').sort().join('');
-    }
-
-    getMirror(str) {
-        return (str || "").split('').map(c => this.MIRROR_MAP[c] || c).join('');
-    }
-
-    binaMatrix4x4(str1, str2) {
-        let combined = (str1 + (str2 || "3166")).replace(/[^0-9]/g, "");
-        if (combined.length < 4) combined = "3166";
-        let baseRow = combined.substring(0, 4).split('').map(Number);
-        let matrix = [baseRow];
+    function janaPola() {
+        let all = Object.assign({}, senaraiPola.U, senaraiPola.T), pB = {};
+        for(let [n,d] of Object.entries(all)) { if(d.v.includes(hot1D)) pB[n]=d; }
+        if(Object.keys(pB).length===0) pB=all;
+        let ks = Object.keys(pB); if(ks.length===0) return;
         
-        for (let r = 1; r < 4; r++) {
-            let row = [];
-            for (let c = 0; c < 4; c++) {
-                let val = (matrix[r - 1][c] + 9) % 10; 
-                row.push(val);
-            }
-            matrix.push(row);
-        }
-        return matrix;
-    }
-    
-    ekstrakPolaDinamik(m) {
-        let pola = {
-            "Baris 1": `${m[0][0]}${m[0][1]}${m[0][2]}${m[0][3]}`,
-            "Baris 2": `${m[1][0]}${m[1][1]}${m[1][2]}${m[1][3]}`,
-            "Baris 3": `${m[2][0]}${m[2][1]}${m[2][2]}${m[2][3]}`,
-            "Baris 4": `${m[3][0]}${m[3][1]}${m[3][2]}${m[3][3]}`,
-            "Lajur 1": `${m[0][0]}${m[1][0]}${m[2][0]}${m[3][0]}`,
-            "Lajur 2": `${m[0][1]}${m[1][1]}${m[2][1]}${m[3][1]}`,
-            "Lajur 3": `${m[0][2]}${m[1][2]}${m[2][2]}${m[3][2]}`,
-            "Lajur 4": `${m[0][3]}${m[1][3]}${m[2][3]}${m[3][3]}`,
-            "Pepenjuru Utama": `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`,
-            "Pepenjuru Silang": `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`,
-            "L Kiri Bawah": `${m[2][0]}${m[3][0]}${m[3][1]}${m[3][2]}`,
-            "L Kiri Atas": `${m[0][1]}${m[0][0]}${m[1][0]}${m[2][0]}`,
-            "L Kanan Bawah": `${m[1][3]}${m[2][3]}${m[3][3]}${m[3][2]}`,
-            "L Kanan Atas": `${m[2][3]}${m[1][3]}${m[0][3]}${m[0][2]}`,
-            "Gelung O Luar": `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`
-        };
+        let gc = document.getElementById("gunaCermin").checked;
+        document.querySelectorAll('td').forEach(td => td.classList.remove('highlight-3d', 'highlight-2d'));
 
-        let polaKembang = {};
-        for(let key in pola) {
-            polaKembang[key] = pola[key];
-            polaKembang[key + " (Rev)"] = pola[key].split('').reverse().join('');
-        }
-        return polaKembang;
-    }
-
-    analisisFrekuensiDigit(historyRaw) {
-        let counts = {};
-        for(let i=0; i<=9; i++) counts[i.toString()] = 0;
-        let digits = historyRaw.replace(/[^0-9]/g, '').split('');
-        digits.forEach(d => { if(counts[d] !== undefined) counts[d]++; });
-        let sortedDigits = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-        return {
-            hot: sortedDigits.slice(0, 4),
-            cool: sortedDigits.slice(4, 8),
-            missing: sortedDigits.slice(8)
-        };
-    }
-
-    jana(nomborAsas, str2, historyRaw, gunaCermin, selected2D = null) {
-        let matrix = this.binaMatrix4x4(nomborAsas, str2);
-        let trajektoriMap = this.ekstrakPolaDinamik(matrix);
-        let freq = this.analisisFrekuensiDigit(historyRaw);
-
-        let golden1D = freq.hot.length > 0 && freq.hot[0] ? freq.hot[0] : matrix[1][1].toString();
-
-        let set2D = new Set();
-        Object.values(trajektoriMap).forEach(val => {
-            if (val.length >= 2) {
-                set2D.add(val.substring(0, 2));
-                set2D.add(val.substring(2, 4));
-            }
-        });
-
-        let arr2D = Array.from(set2D).slice(0, 4);
-        let active2D = selected2D || arr2D[0];
-
-        let list3DWithSource = [];
-        let set4D = new Set();
+        let k3=ks[Math.floor(Math.random()*ks.length)], d3=pB[k3], m3=Math.floor(Math.random()*2), v3=d3.v.substr(m3,3), c3=d3.c.slice(m3,m3+3), l3=k3;
+        if(gc && Math.random()>0.5){ v3=getMirror(v3); l3+=" (Cermin)"; }
         
-        Object.entries(trajektoriMap).forEach(([namaPola, val]) => {
-            if(val.length === 4) {
-                set4D.add(val); 
-                let sub1 = val.substring(0, 3);
-                let sub2 = val.substring(1, 4);
-                
-                if (sub1.includes(active2D)) {
-                    list3DWithSource.push({ num: sub1, source: namaPola });
-                }
-                if (sub2.includes(active2D)) {
-                    list3DWithSource.push({ num: sub2, source: namaPola });
-                }
-            }
-        });
+        let k2=ks[Math.floor(Math.random()*ks.length)], d2=pB[k2], m2=Math.floor(Math.random()*3), v2=d2.v.substr(m2,2), c2=d2.c.slice(m2,m2+2), l2=k2;
+        if(gc && Math.random()>0.5){ v2=getMirror(v2); l2+=" (Cermin)"; }
 
-        if(list3DWithSource.length === 0) {
-            Object.values(trajektoriMap).forEach(val => {
-                if(val.length >= 3) list3DWithSource.push({ num: val.substring(0, 3), source: "Trajektori Asas" });
-            });
-        }
-
-        let unik3D = new Map();
-        list3DWithSource.forEach(item => {
-            if(!unik3D.has(item.num)) unik3D.set(item.num, item.source);
-        });
-
-        // HAD KETAT: MAKSIMUM HANYA 3 PILIHAN UTAMA SAHAJA
-        let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 3); 
-        let arr4D = Array.from(set4D).slice(0, 3); 
-
-        if(gunaCermin) {
-            golden1D = this.getMirror(golden1D);
-            freq.hot = freq.hot.map(n => this.getMirror(n));
-            freq.cool = freq.cool.map(n => this.getMirror(n));
-            freq.missing = freq.missing.map(n => this.getMirror(n));
-            arr2D = arr2D.map(n => this.getMirror(n));
-            arr3D = arr3D.map(item => ({ num: this.getMirror(item.num), source: item.source }));
-            arr4D = arr4D.map(n => this.getMirror(n));
-            
-            let newMap = {};
-            for(let key in trajektoriMap) {
-                newMap[key] = this.getMirror(trajektoriMap[key]);
-            }
-            trajektoriMap = newMap;
-        }
-
-        return {
-            matrix: matrix,
-            golden1D: golden1D,
-            hot: freq.hot.join(', '),
-            cool: freq.cool.join(', '),
-            missing: freq.missing.join(', '),
-            keputusan2D: arr2D,
-            keputusan3D: arr3D,
-            keputusan4D: arr4D,
-            polaObj: trajektoriMap,
-            active2D: active2D
-        };
-    }
-}
-
-const enjinFokus = new MesinFokusTiga();
-let globalState = { num1: '', num2: '', history: '', mirror: true };
-
-function getPolaColor(nama) {
-    if(nama.includes("Pepenjuru")) return "#2b6cb0";
-    if(nama.includes("L ")) return "#38a169";
-    if(nama.includes("Gelung")) return "#d69e2e";
-    if(nama.includes("Baris") || nama.includes("Lajur")) return "#dd6b20";
-    return "#805ad5";
-}
-
-function highlightMatrix(digits, color) {
-    let cells = document.querySelectorAll('.matrix-cell');
-    cells.forEach(c => {
-        c.style.background = '#fff';
-        c.style.color = '#1c1e21';
-        c.style.transform = 'scale(1)';
-        c.style.boxShadow = 'none';
-        c.style.borderColor = '#cbd5e0';
-        c.style.zIndex = '1';
-    });
-    
-    let digitArr = String(digits).split('');
-    cells.forEach(c => {
-        if (digitArr.includes(c.innerText)) {
-            c.style.boxShadow = `inset 0 0 0 4px ${color}, 0 0 15px ${color}`;
-            c.style.borderColor = color;
-            c.style.color = color;
-            c.style.transform = 'scale(1.15)';
-            c.style.zIndex = '10';
-        }
-    });
-}
-
-function select2DAndRefresh(d2Value) {
-    let hasil = enjinFokus.jana(globalState.num1, globalState.num2, globalState.history, globalState.mirror, d2Value);
-    renderHasil(hasil);
-    highlightMatrix(d2Value, '#2b6cb0');
-}
-
-function renderHasil(hasil) {
-    let h = "";
-    for (let r = 0; r < 4; r++) {
-        h += "<tr>";
-        for (let c = 0; c < 4; c++) {
-            h += `<td class="matrix-cell">${hasil.matrix[r][c]}</td>`;
-        }
-        h += "</tr>";
-    }
-    document.getElementById('matrixTable').innerHTML = h;
-    
-    document.getElementById('golden-1d').innerText = hasil.golden1D;
-    document.getElementById('hot-no').innerText = hasil.hot;
-    document.getElementById('cool-no').innerText = hasil.cool;
-    document.getElementById('missing-no').innerText = hasil.missing;
-    
-    document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => {
-        let isSelected = (n === hasil.active2D);
-        let bgStyle = isSelected ? "background:#1a365d; border: 2px solid #63b3ed;" : "background:#2b6cb0;";
-        return `<div class="number-tag" style="${bgStyle}" onclick="select2DAndRefresh('${n}')" title="Klik untuk pilih 2D ini">${n}</div>`;
-    }).join('');
-    
-    let html3D = "";
-    if(hasil.keputusan3D.length === 0) {
-        html3D = `<span style="font-size:13px; color:#e53e3e; font-weight:bold;">Tiada 3D sepadan. Sila cuba 2D lain di atas.</span>`;
-    } else {
-        hasil.keputusan3D.forEach(item => {
-            let c = getPolaColor(item.source);
-            html3D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${item.num}', '${c}')">
-                ${item.num}
-            </div>`;
-        });
-    }
-    document.getElementById('out-3d').innerHTML = html3D;
-    
-    let html4D = "";
-    let raw4DArray = [];
-    hasil.keputusan4D.forEach(num => {
-        raw4DArray.push(num);
-        let c = "#805ad5"; 
-        for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
-            if(nilai === num) {
-                c = getPolaColor(nama);
-                break;
-            }
-        }
-        html4D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${num}', '${c}')">${num}</div>`;
-    });
-    document.getElementById('out-4d').innerHTML = html4D;
-    document.getElementById('out-4d').setAttribute('data-raw', raw4DArray.join(', '));
-    
-    document.getElementById('hasil').style.display = 'block';
-}
-
-function janaAnalisisPenuh() {
-    try {
-        globalState.num1 = document.getElementById('num1').value.trim();
-        globalState.num2 = document.getElementById('num2').value.trim();
-        globalState.history = document.getElementById('history').value.trim();
-        globalState.mirror = document.getElementById('useMirror').checked;
+        document.getElementById("src3D").innerText=`Pola: ${l3} [${d3.v}]`; document.getElementById("val3D").innerText=v3;
+        document.getElementById("src2D").innerText=`Pola: ${l2} [${d2.v}]`; document.getElementById("val2D").innerText=v2;
         
-        if (globalState.num1.length < 3) {
-            alert("Sila masukkan Nombor Asas Cabutan minimum 3 digit.");
-            return;
-        }
+        c3.forEach(c=>document.getElementById(`c-${c[0]}-${c[1]}`).classList.add('highlight-3d'));
+        c2.forEach(c=>document.getElementById(`c-${c[0]}-${c[1]}`).classList.add('highlight-2d'));
 
-        let hasil = enjinFokus.jana(globalState.num1, globalState.num2, globalState.history, globalState.mirror);
-        renderHasil(hasil);
-        highlightMatrix('', '#fff');
-
-    } catch (err) {
-        console.error("Ralat:", err);
-        alert("Ralat dipintas: " + err.message);
+        let allV=[]; Object.values(all).forEach(d=>{ allV.push(d.v); if(gc) allV.push(getMirror(d.v)); });
+        let top3 = saring3D(allV, hot1D).slice(0,5);
+        document.getElementById("top3DList").innerHTML = top3.length ? top3.map(t=>`<div style="background:#fff;padding:12px;border:2px solid #ffc107;border-radius:6px;min-width:70px;"><b style="font-size:20px;color:#d39e00;">${t.n}</b><br><small>${t.c}x</small></div>`).join('') : "<p style='font-size:14px;'>Tiada 3D dominan.</p>";
     }
-}
-
-function resetBorang() {
-    document.getElementById('num1').value = "";
-    document.getElementById('num2').value = "";
-    document.getElementById('history').value = "";
-    document.getElementById('hasil').style.display = 'none';
-}
-
-function salin(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const txt = el.getAttribute('data-raw');
-    if (txt) {
-        navigator.clipboard.writeText(txt).then(() => alert('Berjaya disalin')).catch(e => console.log('Gagal salin'));
-    }
-}
 </script>
-
-<script data-cfasync="false" src="https://bmuval.org/14/0ed7ff2149891600bc1774052ca193b4"></script>
 </body>
 </html>
