@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin 360° Geometri Tulen (Visual Interaktif)</title>
+<title>Mesin 360° Fokus 3 Sasaran Pro</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 540px; width: 100%; }
@@ -32,29 +32,28 @@
     .number-tag:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
     
     .key-tag { color: #dd6b20; font-weight: 800; font-size: 17px; font-family: monospace; cursor: pointer; padding: 4px 10px; background: #fff3cd; border-radius: 4px; transition: 0.2s; display: inline-block; border: 2px solid #dd6b20; }
-    .key-tag:hover { background: #dd6b20; color: white; }
     .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; text-align: left; margin-top: 10px; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Mesin 360° Geometri Tulen</h2>
-    <p class="subtitle">Bacaan Penuh Carta (Maksimum 5 Sasaran Tajam)</p>
+    <h2>Mesin 360° Fokus 3 Sasaran</h2>
+    <p class="subtitle">Penapisan Ekstrem: Tepat, Padat & Minimum Modal</p>
 
     <div class="input-group">
         <label for="num1">Nombor Asas Cabutan 1 (Rivet Asal):</label>
-        <input type="text" id="num1" maxlength="4" placeholder="3166" pattern="\d*">
+        <input type="text" id="num1" maxlength="4" placeholder="6201" pattern="\d*">
     </div>
 
     <div class="input-group">
         <label for="num2">Nombor Asas Cabutan 2 (Rivet Cermin):</label>
-        <input type="text" id="num2" maxlength="4" placeholder="6640" pattern="\d*">
+        <input type="text" id="num2" maxlength="4" placeholder="1756" pattern="\d*">
     </div>
 
     <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas:</label>
-        <textarea id="history" rows="2" placeholder="Masukkan sejarah result lepas..."></textarea>
+        <label for="history">Sejarah Cabutan Lepas (Bantuan Sokongan):</label>
+        <textarea id="history" rows="3" placeholder="Contoh: 5915, 4831, 4246..."></textarea>
     </div>
 
     <div class="checkbox-group">
@@ -65,7 +64,7 @@
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana Carta Visual</button>
+        <button class="btn-jana" onclick="janaAnalisisPenuh()">Jana 3 Sasaran Utama</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
@@ -86,24 +85,24 @@
         </div>
 
         <div class="result-box" style="border-left-color: #2b6cb0;">
-            <p style="margin:0;"><strong>Sasaran 2D (Gandingan Asas)</strong></p>
+            <p style="margin:0;"><strong>Fasa 1: Gandingan 2D Tunjang (Klik untuk tapis)</strong></p>
             <div id="out-2d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Sasaran 3D Sharp (Maks 5)</strong></p>
+            <p style="margin:0;"><strong>Fasa 2: Sasaran 3D Sharp (Hanya 3 Pilihan Utama)</strong></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Sasaran 4D Geometri Tulen (Maks 5)</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
+            <p style="margin:0;"><strong>Fasa 3: Sasaran 4D Podium (Hanya 3 Pilihan)</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
             <div id="out-4d" class="number-grid"></div>
         </div>
     </div>
 </div>
 
 <script>
-class MesinGeometriTulen {
+class MesinFokusTiga {
     constructor() {
         this.MIRROR_MAP = {
             '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
@@ -136,22 +135,23 @@ class MesinGeometriTulen {
         return matrix;
     }
     
-    ekstrakGeometri360(m) {
+    ekstrakPolaDinamik(m) {
         let pola = {
+            "Baris 1": `${m[0][0]}${m[0][1]}${m[0][2]}${m[0][3]}`,
+            "Baris 2": `${m[1][0]}${m[1][1]}${m[1][2]}${m[1][3]}`,
+            "Baris 3": `${m[2][0]}${m[2][1]}${m[2][2]}${m[2][3]}`,
+            "Baris 4": `${m[3][0]}${m[3][1]}${m[3][2]}${m[3][3]}`,
+            "Lajur 1": `${m[0][0]}${m[1][0]}${m[2][0]}${m[3][0]}`,
+            "Lajur 2": `${m[0][1]}${m[1][1]}${m[2][1]}${m[3][1]}`,
+            "Lajur 3": `${m[0][2]}${m[1][2]}${m[2][2]}${m[3][2]}`,
+            "Lajur 4": `${m[0][3]}${m[1][3]}${m[2][3]}${m[3][3]}`,
             "Pepenjuru Utama": `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`,
             "Pepenjuru Silang": `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`,
             "L Kiri Bawah": `${m[2][0]}${m[3][0]}${m[3][1]}${m[3][2]}`,
             "L Kiri Atas": `${m[0][1]}${m[0][0]}${m[1][0]}${m[2][0]}`,
             "L Kanan Bawah": `${m[1][3]}${m[2][3]}${m[3][3]}${m[3][2]}`,
             "L Kanan Atas": `${m[2][3]}${m[1][3]}${m[0][3]}${m[0][2]}`,
-            "T Atas": `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`,
-            "T Bawah": `${m[3][0]}${m[3][1]}${m[3][2]}${m[2][1]}`,
-            "T Kiri": `${m[0][0]}${m[1][0]}${m[2][0]}${m[1][1]}`,
-            "T Kanan": `${m[0][3]}${m[1][3]}${m[2][3]}${m[1][2]}`,
-            "Z Atas": `${m[0][0]}${m[0][1]}${m[1][1]}${m[1][2]}`,
-            "Z Bawah": `${m[2][0]}${m[2][1]}${m[3][1]}${m[3][2]}`,
-            "Y Atas": `${m[0][0]}${m[0][2]}${m[1][1]}${m[2][1]}`,
-            "O Luar": `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`
+            "Gelung O Luar": `${m[0][0]}${m[0][3]}${m[3][3]}${m[3][0]}`
         };
 
         let polaKembang = {};
@@ -169,24 +169,29 @@ class MesinGeometriTulen {
         digits.forEach(d => { if(counts[d] !== undefined) counts[d]++; });
         let sortedDigits = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
         return {
-            hot: sortedDigits.slice(0, 3),
-            cool: sortedDigits.slice(3, 7),
-            missing: sortedDigits.slice(7)
+            hot: sortedDigits.slice(0, 4),
+            cool: sortedDigits.slice(4, 8),
+            missing: sortedDigits.slice(8)
         };
     }
 
-    jana(nomborAsas, str2, historyRaw, gunaCermin) {
+    jana(nomborAsas, str2, historyRaw, gunaCermin, selected2D = null) {
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
-        let trajektoriMap = this.ekstrakGeometri360(matrix);
+        let trajektoriMap = this.ekstrakPolaDinamik(matrix);
         let freq = this.analisisFrekuensiDigit(historyRaw);
 
         let golden1D = freq.hot.length > 0 && freq.hot[0] ? freq.hot[0] : matrix[1][1].toString();
 
         let set2D = new Set();
-        set2D.add(String(matrix[0][0]) + String(matrix[0][1]));
-        set2D.add(String(matrix[3][0]) + String(matrix[3][1]));
-        set2D.add(String(golden1D) + String(matrix[1][1]));
+        Object.values(trajektoriMap).forEach(val => {
+            if (val.length >= 2) {
+                set2D.add(val.substring(0, 2));
+                set2D.add(val.substring(2, 4));
+            }
+        });
+
         let arr2D = Array.from(set2D).slice(0, 4);
+        let active2D = selected2D || arr2D[0];
 
         let list3DWithSource = [];
         let set4D = new Set();
@@ -196,18 +201,30 @@ class MesinGeometriTulen {
                 set4D.add(val); 
                 let sub1 = val.substring(0, 3);
                 let sub2 = val.substring(1, 4);
-                list3DWithSource.push({ num: sub1, source: namaPola });
-                list3DWithSource.push({ num: sub2, source: namaPola });
+                
+                if (sub1.includes(active2D)) {
+                    list3DWithSource.push({ num: sub1, source: namaPola });
+                }
+                if (sub2.includes(active2D)) {
+                    list3DWithSource.push({ num: sub2, source: namaPola });
+                }
             }
         });
+
+        if(list3DWithSource.length === 0) {
+            Object.values(trajektoriMap).forEach(val => {
+                if(val.length >= 3) list3DWithSource.push({ num: val.substring(0, 3), source: "Trajektori Asas" });
+            });
+        }
 
         let unik3D = new Map();
         list3DWithSource.forEach(item => {
             if(!unik3D.has(item.num)) unik3D.set(item.num, item.source);
         });
 
-        let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 5); 
-        let arr4D = Array.from(set4D).slice(0, 5); 
+        // HAD KETAT: MAKSIMUM HANYA 3 PILIHAN UTAMA SAHAJA
+        let arr3D = Array.from(unik3D, ([num, source]) => ({num, source})).slice(0, 3); 
+        let arr4D = Array.from(set4D).slice(0, 3); 
 
         if(gunaCermin) {
             golden1D = this.getMirror(golden1D);
@@ -234,21 +251,21 @@ class MesinGeometriTulen {
             keputusan2D: arr2D,
             keputusan3D: arr3D,
             keputusan4D: arr4D,
-            polaObj: trajektoriMap
+            polaObj: trajektoriMap,
+            active2D: active2D
         };
     }
 }
 
-const enjin360 = new MesinGeometriTulen();
+const enjinFokus = new MesinFokusTiga();
+let globalState = { num1: '', num2: '', history: '', mirror: true };
 
 function getPolaColor(nama) {
     if(nama.includes("Pepenjuru")) return "#2b6cb0";
     if(nama.includes("L ")) return "#38a169";
-    if(nama.includes("T ")) return "#dd6b20";
-    if(nama.includes("Z ")) return "#805ad5";
-    if(nama.includes("Y ")) return "#e53e3e";
-    if(nama.includes("O ")) return "#d69e2e";
-    return "#4a5568";
+    if(nama.includes("Gelung")) return "#d69e2e";
+    if(nama.includes("Baris") || nama.includes("Lajur")) return "#dd6b20";
+    return "#805ad5";
 }
 
 function highlightMatrix(digits, color) {
@@ -274,63 +291,80 @@ function highlightMatrix(digits, color) {
     });
 }
 
-function janaAnalisisPenuh() {
-    try {
-        const num1 = document.getElementById('num1').value.trim();
-        const num2 = document.getElementById('num2').value.trim();
-        const historyRaw = document.getElementById('history').value.trim();
-        const gunaCermin = document.getElementById('useMirror').checked;
-        
-        if (num1.length < 3) {
-            alert("Sila masukkan Nombor Asas Cabutan minimum 3 digit.");
-            return;
-        }
+function select2DAndRefresh(d2Value) {
+    let hasil = enjinFokus.jana(globalState.num1, globalState.num2, globalState.history, globalState.mirror, d2Value);
+    renderHasil(hasil);
+    highlightMatrix(d2Value, '#2b6cb0');
+}
 
-        let hasil = enjin360.jana(num1, num2, historyRaw, gunaCermin);
-        
-        let h = "";
-        for (let r = 0; r < 4; r++) {
-            h += "<tr>";
-            for (let c = 0; c < 4; c++) {
-                h += `<td class="matrix-cell">${hasil.matrix[r][c]}</td>`;
-            }
-            h += "</tr>";
+function renderHasil(hasil) {
+    let h = "";
+    for (let r = 0; r < 4; r++) {
+        h += "<tr>";
+        for (let c = 0; c < 4; c++) {
+            h += `<td class="matrix-cell">${hasil.matrix[r][c]}</td>`;
         }
-        document.getElementById('matrixTable').innerHTML = h;
-        
-        document.getElementById('golden-1d').innerText = hasil.golden1D;
-        document.getElementById('hot-no').innerText = hasil.hot;
-        document.getElementById('cool-no').innerText = hasil.cool;
-        document.getElementById('missing-no').innerText = hasil.missing;
-        
-        document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => `<div class="number-tag" style="background:#2b6cb0;" onclick="highlightMatrix('${n}', '#2b6cb0')">${n}</div>`).join('');
-        
-        let html3D = "";
+        h += "</tr>";
+    }
+    document.getElementById('matrixTable').innerHTML = h;
+    
+    document.getElementById('golden-1d').innerText = hasil.golden1D;
+    document.getElementById('hot-no').innerText = hasil.hot;
+    document.getElementById('cool-no').innerText = hasil.cool;
+    document.getElementById('missing-no').innerText = hasil.missing;
+    
+    document.getElementById('out-2d').innerHTML = hasil.keputusan2D.map(n => {
+        let isSelected = (n === hasil.active2D);
+        let bgStyle = isSelected ? "background:#1a365d; border: 2px solid #63b3ed;" : "background:#2b6cb0;";
+        return `<div class="number-tag" style="${bgStyle}" onclick="select2DAndRefresh('${n}')" title="Klik untuk pilih 2D ini">${n}</div>`;
+    }).join('');
+    
+    let html3D = "";
+    if(hasil.keputusan3D.length === 0) {
+        html3D = `<span style="font-size:13px; color:#e53e3e; font-weight:bold;">Tiada 3D sepadan. Sila cuba 2D lain di atas.</span>`;
+    } else {
         hasil.keputusan3D.forEach(item => {
             let c = getPolaColor(item.source);
             html3D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${item.num}', '${c}')">
                 ${item.num}
             </div>`;
         });
-        document.getElementById('out-3d').innerHTML = html3D;
-        
-        let html4D = "";
-        let raw4DArray = [];
-        hasil.keputusan4D.forEach(num => {
-            raw4DArray.push(num);
-            let c = "#805ad5"; 
-            for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
-                if(nilai === num) {
-                    c = getPolaColor(nama);
-                    break;
-                }
+    }
+    document.getElementById('out-3d').innerHTML = html3D;
+    
+    let html4D = "";
+    let raw4DArray = [];
+    hasil.keputusan4D.forEach(num => {
+        raw4DArray.push(num);
+        let c = "#805ad5"; 
+        for (let [nama, nilai] of Object.entries(hasil.polaObj)) {
+            if(nilai === num) {
+                c = getPolaColor(nama);
+                break;
             }
-            html4D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${num}', '${c}')">${num}</div>`;
-        });
-        document.getElementById('out-4d').innerHTML = html4D;
-        document.getElementById('out-4d').setAttribute('data-raw', raw4DArray.join(', '));
+        }
+        html4D += `<div class="number-tag" style="background:${c};" onclick="highlightMatrix('${num}', '${c}')">${num}</div>`;
+    });
+    document.getElementById('out-4d').innerHTML = html4D;
+    document.getElementById('out-4d').setAttribute('data-raw', raw4DArray.join(', '));
+    
+    document.getElementById('hasil').style.display = 'block';
+}
+
+function janaAnalisisPenuh() {
+    try {
+        globalState.num1 = document.getElementById('num1').value.trim();
+        globalState.num2 = document.getElementById('num2').value.trim();
+        globalState.history = document.getElementById('history').value.trim();
+        globalState.mirror = document.getElementById('useMirror').checked;
         
-        document.getElementById('hasil').style.display = 'block';
+        if (globalState.num1.length < 3) {
+            alert("Sila masukkan Nombor Asas Cabutan minimum 3 digit.");
+            return;
+        }
+
+        let hasil = enjinFokus.jana(globalState.num1, globalState.num2, globalState.history, globalState.mirror);
+        renderHasil(hasil);
         highlightMatrix('', '#fff');
 
     } catch (err) {
