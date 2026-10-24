@@ -25,7 +25,6 @@
     .matrix-table { width: 100%; margin: 15px 0; border-collapse: collapse; font-size: 24px; font-weight: bold; background: #fff; text-align: center; }
     .matrix-table td { border: 2px solid #4a5568; padding: 12px; width: 25%; background: #fff; text-align: center; transition: all 0.3s; position: relative; }
     .matrix-table tr:first-child td { background-color: #e2e8f0; }
-    .highlight-box { background-color: #fff4cd !important; color: #d56404; }
     .result-box { margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
     .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; margin-top: 10px; }
     .number-tag { background: #2d3748; color: #fff; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 15px; letter-spacing: 1px; }
@@ -44,7 +43,7 @@
 
 <div class="container">
     <h2>Mesin Matriks Multi-Operator Pro</h2>
-    <p class="subtitle">Analisis Titik Persamaan Geometri & Trajektori Result Lepas</p>
+    <p class="subtitle">Analisis Titik Persamaan Geometri Carta</p>
 
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran :</label>
@@ -67,7 +66,7 @@
 
     <div class="input-group">
         <label for="history">Sejarah Cabutan Lepas (Paste Result):</label>
-        <textarea id="history" rows="3" placeholder="Paste result lepas di sini... (Cth: 183, 4346)"></textarea>
+        <textarea id="history" rows="3" placeholder="Paste result lepas di sini..."></textarea>
     </div>
 
     <div class="checkbox-group">
@@ -78,7 +77,7 @@
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaKeputusan()">Bina Carta & Analisa Titik Persamaan</button>
+        <button class="btn-jana" onclick="janaKeputusan()">Bina Carta & Analisa</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
@@ -89,14 +88,14 @@
         </div>
 
         <div class="result-box">
-            <p style="margin:0;"><strong>Digit Titik Persamaan Utama (Common Intersection):</strong> <span id="master-key" class="key-tag"></span>
+            <p style="margin:0;"><strong>Digit Titik Persamaan Utama:</strong> <span id="master-key" class="key-tag"></span>
             <span id="node-badge" class="node-badge"></span></p>
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Teras Analisis Carta (Tanpa Tapisan Rawak)</p>
-            💎 3D Muktamad (Titik Persamaan): <span style="color:#d63031; font-weight:bold;" id="a3d"></span><br>
-            🎯 Target Utama 4D iBox: <strong id="s40" style="font-size: 19px; color: #805ad5;"></strong>
+            <p style="margin:0; font-weight:bold; color: #1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Teras Sasaran Tepat</p>
+            💎 3D Muktamad (Fokus Utama): <span style="color:#d63031; font-weight:bold; font-size: 17px;" id="a3d"></span><br>
+            🎯 Target Utama 4D: <strong id="s40" style="font-size: 19px; color: #805ad5;"></strong>
         </div>
 
         <div class="result-box" style="border-left-color: #2b6cb0;">
@@ -110,7 +109,7 @@
         </div>
 
         <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Proyeksi 4D iBox Penuh</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
+            <p style="margin:0;"><strong>Proyeksi 4D iBox</strong> <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button></p>
             <div id="out-4d" class="number-grid"></div>
         </div>
 
@@ -176,7 +175,7 @@ class MesinMatriksPro {
         let matrix = this.binaMatrix4x4(nomborAsas, str2);
         let polaMap = this.ekstrakPolaMatrix(matrix);
         
-        // --- PENGESANAN TITIK PERSAMAAN (COMMON INTERSECTION) DARI SEMUA POLA ---
+        // Pengesanan titik persamaan (common intersection) merentasi laluan geometri
         let freqMap = {};
         Object.values(polaMap).forEach(p => {
             let val = p.v;
@@ -190,19 +189,18 @@ class MesinMatriksPro {
             });
         });
 
-        // Kesan trajektori dari result lepas untuk pengesahan silang
+        // Selaraskan dengan trajektori result lepas secara organik
         if(sejarahCabutan && sejarahCabutan.length > 0) {
             sejarahCabutan.forEach(res => {
                 let digits = res.toString().split('');
                 digits.forEach(d => {
                     if(freqMap[d] !== undefined) {
-                        freqMap[d] += 2; // Berikan pemberat organik jika digit wujud dalam result lepas
+                        freqMap[d] += 2;
                     }
                 });
             });
         }
 
-        // Susun digit mengikut titik persamaan tertinggi merentasi carta & result lepas
         let sortedCommon = Object.keys(freqMap).sort((a,b) => freqMap[b] - freqMap[a]);
 
         let solidCore3D = this.sortCombo(sortedCommon.slice(0, 3).join(''));
@@ -216,7 +214,6 @@ class MesinMatriksPro {
         set3D.add(solidCore3D);
         set4D.add(target4D);
 
-        // Masukkan semua laluan geometri secara langsung tanpa tapisan luar
         Object.values(polaMap).forEach(p => {
             let val = p.v;
             if(val.length >= 2) set2D.add(this.sortCombo(val.substring(0, 2)));
@@ -236,9 +233,9 @@ class MesinMatriksPro {
             tunjang: sortedCommon,
             solidCore3D: solidCore3D,
             target4D: target4D,
-            keputusan2D: Array.from(set2D).slice(0, 8),
-            keputusan3DMuktamad: Array.from(set3D).slice(0, 8),
-            keputusan4D: Array.from(set4D).slice(0, 8),
+            keputusan2D: Array.from(set2D).slice(0, 6),
+            keputusan3DMuktamad: [solidCore3D, ...Array.from(set3D).slice(0, 3)],
+            keputusan4D: Array.from(set4D).slice(0, 6),
             polaObj: polaMap
         };
     }
