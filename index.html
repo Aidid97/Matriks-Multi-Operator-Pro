@@ -198,17 +198,16 @@ class MesinMatriksPro {
             rawdata: rawData
         };
     }
-
     kiraTrajektori(sejarahCabutan, operator) {
         let skor = [];
         let maxLen = sejarahCabutan.length;
-        let l3 = Math.min(3, maxLen);
-        let l5 = Math.min(5, maxLen);
-        let l15 = Math.min(15, maxLen);
-
-        let t3 = sejarahCabutan.slice(0, l3).join('');
-        let t5 = sejarahCabutan.slice(0, l5).join('');
-        let t15 = sejarahCabutan.slice(0, l15).join('');
+        let len3 = Math.min(3, maxLen);
+        let len5 = Math.min(5, maxLen);
+        let len15 = Math.min(15, maxLen);    
+    
+        
+    
+        
 
         let w_micro = 0.5;
         let w_velocity = 0.5;
@@ -220,21 +219,29 @@ class MesinMatriksPro {
         } else if (operator === 'toto') {
             w_micro = 0.75; w_velocity = 0.4;
         }
- for (let i = 0; i <= 9; i++) {
-            let d = i.toString();
-            let f_mikro = l3 > 0 ? (t3.split(d).length - 1) : 0;
-            let c_t5 = l5 > 0 ? (t5.split(d).length - 1) : 0;
-            let c_t15 = l15 > 0 ? (t15.split(d).length - 1) : 0;
+      let len3 = Math.min(3, maxLen);
+        let len5 = Math.min(5, maxLen);
+        let len15 = Math.min(15, maxLen);
 
-            let vel5 = l5 > 0 ? (c_t5 / l5) : 0;
-            let vel15 = l15 > 0 ? (c_t15 / l15) : 0;
+        let t3 = sejarahCabutan.slice(0, len3).join('');
+        let t5 = sejarahCabutan.slice(0, len5).join('');
+        let t15 = sejarahCabutan.slice(0, len15).join('');
+
+        for (let i = 0; i <= 9; i++) {
+            let d = i.toString();
+            let f_mikro = len3 > 0 ? (t3.split(d).length - 1) : 0;
+            let c_t5 = len5 > 0 ? (t5.split(d).length - 1) : 0;
+            let c_t15 = len15 > 0 ? (t15.split(d).length - 1) : 0;
+
+            let vel5 = len5 > 0 ? (c_t5 / len5) : 0;
+            let vel15 = len15 > 0 ? (c_t15 / len15) : 0;
             let halaju = vel5 - vel15;
 
             skor.push({ digit: d, skor: (w_micro * f_mikro) + (w_velocity * halaju) });
         }
-        return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);
-    }    
-        
+        return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);  
+          
+            
         
 
         
