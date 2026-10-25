@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mesin Matriks Multi-Operator Pro</title>
+<title>Mesin Matriks Multi-Operator Pro (360 Darjah & Time Anchor)</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 580px; width: 100%; }
@@ -31,7 +31,6 @@
     .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin-top: 10px; }
     .number-tag { background: #2d3748; color: #ffffff; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 15px; letter-spacing: 1px; }
     .key-tag { color: #dd6b20; font-weight: bold; font-size: 17px; font-family: monospace; }
-    .anchor-tag { color: #2b6cb0; }
     .badge-node { display: inline-block; padding: 3px 8px; background: #4a5568; color: white; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; margin-left: 5px; }
     .strategy-box { background: #edf2f7; padding: 15px; border-radius: 6px; border-left: 5px solid #0d6efd; line-height: 1.6; margin-top: 10px; }
     .hot-num { font-weight: bold; color: #b02a37; font-size: 17px; }
@@ -47,7 +46,7 @@
 
 <div class="container">
     <h2>Mesin Matriks Multi-Operator Pro</h2>
-    <p class="subtitle">Penjanaan Presisi Tinggi (SportsToto, Magnum 4D & GD Lotto)</p>
+    <p class="subtitle">Mod Bacaan 360 Darjah & Formula Tarikh Harian (Time Anchor)</p>
     
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran :</label>
@@ -64,8 +63,8 @@
     </div>
 
     <div class="input-group">
-        <label for="num2">Nombor Induk / Dasar 2 (Contoh: 8040) :</label>
-        <input type="text" id="num2" maxlength="4" placeholder="0000">
+        <label for="num2">Nombor Induk / Dasar 2 (Time Anchor Tarikh Cth: 2510) :</label>
+        <input type="text" id="num2" maxlength="4" placeholder="2510">
     </div>
 
     <div class="input-group">
@@ -76,29 +75,29 @@
     <div class="checkbox-group">
         <label style="cursor: pointer;">
             <input type="checkbox" id="useMirror" checked>
-            Aktifkan Formula Cermin (0 = 5, 1 = 6, 2 = 7, 3 = 8, 4 = 9)
+            Aktifkan Formula Cermin & Bayangan 360° (+5 Shadow Index)
         </label>
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaKeputusan()">Bina Carta & Analisa</button>
+        <button class="btn-jana" onclick="janaKeputusan()">Bina Carta 360° & Analisa</button>
         <button class="btn-reset" onclick="resetBorang()">Reset</button>
     </div>
 
     <div id="hasil" style="display: none;">
         <div class="result-box" style="border-left-color: #4a5568;">
-            <p style="margin:0; font-weight:bold; font-size:13px; color:#2d3748;">🔲 Visual Matriks 4x4 (Pola Dynamic Grid)</p>
-            <p style="font-size:11px; color:#718096; margin-top:2px; margin-bottom:8px;">*Kotak Kuning = Kotak Pelengkap Muktamad. Bingkai Merah/Biru = Ekstraksi Active Path.</p>
+            <p style="margin:0; font-weight:bold; font-size:13px; color:#2d3748;">🔲 Visual Matriks 4x4 (Pusat Bacaan 360°)</p>
+            <p style="font-size:11px; color:#718096; margin-top:2px; margin-bottom:8px;">*Kotak Kuning = Titik Persilangan Anchor. Bingkai Merah/Biru = Ekstraksi 360°.</p>
             <table class="matrix-table" id="matrixTable"></table>
         </div>
 
         <div class="result-box">
             <p style="margin:0;"><strong>Kunci Matriks Dominan:</strong> <span id="master-key" class="key-tag"></span> <span id="mode-badge" class="badge-node"></span></p>
-            <p style="margin-top: 5px; margin-bottom: 0; font-size: 13px; color: #2d3748;"><strong>Digit Pivot Utama (Mean Reversion):</strong> <span id="pivot-keys" style="font-weight:bold;"></span></p>
+            <p style="margin-top: 5px; margin-bottom: 0; font-size: 13px; color: #2d3748;"><strong>Digit Pivot & Digit Hilang (Shadow):</strong> <span id="pivot-keys" style="font-weight:bold;"></span></p>
         </div>
 
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom:1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Strategy Core: 3D Muktamad & 1D Pelengkap (Priority Fallback)</p>
+            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom:1px solid #cbd5e0; padding-bottom:5px; margin-bottom:8px;">🎯 Strategy Core: 3D Muktamad 360° & Pelengkap</p>
             <span>🔥 1D Dominan (Hot): <span class="hot-num" id="hid"></span></span><br>
             <span>🧩 2D Tunjang: <span class="missing-num" id="h2d"></span></span><br>
             <hr style="border-top:1px dashed #cbd5e0; margin:6px 0;">
@@ -112,7 +111,7 @@
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Proyeksi 3D Muktamad (Solid Core)</strong> <button class="btn-kocok" onclick="salin('out-3d')">Salin 3D</button></p>
+            <p style="margin:0;"><strong>Proyeksi 3D Muktamad 360°</strong> <button class="btn-kocok" onclick="salin('out-3d')">Salin 3D</button></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
@@ -122,7 +121,7 @@
         </div>
 
         <div class="result-box" style="background: #ffffff; border-left-color: #198754;">
-            <p style="margin:0; font-weight:bold; color:#198754;">✂️ Pengekstrakan Pola Matriks Visual</p>
+            <p style="margin:0; font-weight:bold; color:#198754;">✂️ Pengekstrakan Pusingan 360° Matriks</p>
             <div class="pattern-grid">
                 <div class="pattern-box" style="background:#fff5f5;">
                     <span class="pattern-sumber" id="src2D">-</span>
@@ -135,11 +134,11 @@
                     <span class="pattern-value" id="val3D" style="color:#0d6efd;">-</span>
                 </div>
             </div>
-            <button class="btn-kocok" style="float:none; width:100%; margin-top:10px;" onclick="kocokPolaVisual()">Kocok & Tunjuk Path Matriks</button>
+            <button class="btn-kocok" style="float:none; width:100%; margin-top:10px;" onclick="kocokPolaVisual()">Putar & Tunjuk Path 360°</button>
         </div>
 
         <div class="result-box" style="border-left-color: #4a5568;">
-            <p style="margin:0; font-weight:bold;">📊 Peta Visual Matriks (Utama & Tambahan)</p>
+            <p style="margin:0; font-weight:bold;">📊 Peta Visual Matriks 360° (Utama, Bayangan & Songsang)</p>
             <div class="pattern-grid" id="gridPola"></div>
         </div>
     </div>
@@ -152,27 +151,33 @@ class MesinMatriksPro {
             '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
             '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
         };
+        this.SHADOW_MAP = {
+            '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
+            '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
+        };
     }
 
     sortCombo(teksNombor) {
-        if (!teksNombor) {
-            return '';
-        }
+        if (!teksNombor) return '';
         return teksNombor.split('').sort().join('');
     }
 
     getMirror(teksNombor) {
-        if (!teksNombor) {
-            return '';
-        }
+        if (!teksNombor) return '';
         return teksNombor.split('').map(aksara => this.MIRROR_MAP[aksara] || aksara).join('');
     }
 
+    getShadow(teksNombor) {
+        if (!teksNombor) return '';
+        return teksNombor.split('').map(aksara => {
+            let num = parseInt(aksara);
+            return ((num + 5) % 10).toString();
+        }).join('');
+    }
+
     binaMatrix4x4(nomborPertama, nomborKedua) {
-        let gabunganNombor = (nomborPertama + (nomborKedua || '8040')).replace(/[^0-9]/g, '');
-        if (gabunganNombor.length < 4) {
-            gabunganNombor = '3594';
-        }
+        let gabunganNombor = (nomborPertama + (nomborKedua || '2510')).replace(/[^0-9]/g, '');
+        if (gabunganNombor.length < 4) gabunganNombor = '7043'; // Default Time Anchor Tarikh
         
         let barisAsas = gabunganNombor.substring(0, 4).split('').map(Number);
         let matriksLengkap = [barisAsas];
@@ -189,20 +194,16 @@ class MesinMatriksPro {
     }
 
     uraiAkar(nomborAsas) {
-        if (!nomborAsas) {
-            nomborAsas = '0000';
-        }
-        
+        if (!nomborAsas) nomborAsas = '2510';
         let senaraiDigit = nomborAsas.split('').map(Number);
-        let jumlahKeseluruhan = senaraiDigit.reduce((nilaiTerkumpul, nilaiSemasa) => (nilaiTerkumpul || 0) + (nilaiSemasa || 0), 0);
+        let jumlahKeseluruhan = senaraiDigit.reduce((a, b) => (a || 0) + (b || 0), 0);
         let teksJumlah = jumlahKeseluruhan.toString();
         let digitJumlah = teksJumlah.split('').map(Number);
 
-        let cabangTambahan = digitJumlah.reduce((nilaiTerkumpul, nilaiSemasa) => (nilaiTerkumpul || 0) + (nilaiSemasa || 0), 0);
+        let cabangTambahan = digitJumlah.reduce((a, b) => (a || 0) + (b || 0), 0);
         let cabangTolakan = digitJumlah.length > 1 ? Math.abs(digitJumlah[0] - digitJumlah[1]) : digitJumlah[0];
 
         let dataMentah = nomborAsas + teksJumlah + cabangTambahan.toString() + cabangTolakan.toString();
-        
         return {
             akar: jumlahKeseluruhan,
             cabangTolak: cabangTolakan.toString(),
@@ -225,339 +226,222 @@ class MesinMatriksPro {
         let pemberatMikro = 0.5;
         let pemberatHalaju = 0.5;
 
-        // Pemberat (Weights) khusus untuk setiap pengendali pasaran
         if (namaOperator === 'gdlotto') {
-            pemberatMikro = 0.7; 
-            pemberatHalaju = 0.4;
+            pemberatMikro = 0.7; pemberatHalaju = 0.4;
         } else if (namaOperator === 'magnum') {
-            pemberatMikro = 0.55; 
-            pemberatHalaju = 0.45;
+            pemberatMikro = 0.55; pemberatHalaju = 0.45;
         } else if (namaOperator === 'toto') {
-            pemberatMikro = 0.75; 
-            pemberatHalaju = 0.4;
+            pemberatMikro = 0.45; pemberatHalaju = 0.70; // Dioptimumkan untuk Toto
         }
 
-        for (let kiraanDigit = 0; kiraanDigit <= 9; kiraanDigit++) {
-            let rentetanDigit = kiraanDigit.toString();
-            
-            let frekuensiMikro = ukuranTiga > 0 ? (rentetanTiga.split(rentetanDigit).length - 1) : 0;
-            let frekuensiSederhana = ukuranLima > 0 ? (rentetanLima.split(rentetanDigit).length - 1) : 0;
-            let frekuensiLama = ukuranLimaBelas > 0 ? (rentetanLimaBelas.split(rentetanDigit).length - 1) : 0;
+        for (let i = 0; i <= 9; i++) {
+            let d = i.toString();
+            let f_mikro = ukuranTiga > 0 ? (rentetanTiga.split(d).length - 1) : 0;
+            let c_t5 = ukuranLima > 0 ? (rentetanLima.split(d).length - 1) : 0;
+            let c_t15 = ukuranLimaBelas > 0 ? (rentetanLimaBelas.split(d).length - 1) : 0;
 
-            let kelajuanSederhana = ukuranLima > 0 ? (frekuensiSederhana / ukuranLima) : 0;
-            let kelajuanLama = ukuranLimaBelas > 0 ? (frekuensiLama / ukuranLimaBelas) : 0;
-            let jurangKelajuan = kelajuanSederhana - kelajuanLama;
+            let vel5 = ukuranLima > 0 ? (c_t5 / ukuranLima) : 0;
+            let vel15 = ukuranLimaBelas > 0 ? (c_t15 / ukuranLimaBelas) : 0;
+            let halaju = vel5 - vel15;
 
-            let jumlahMarkah = (pemberatMikro * frekuensiMikro) + (pemberatHalaju * jurangKelajuan);
-            senaraiSkor.push({ digitSasaran: rentetanDigit, markahAkhir: jumlahMarkah });
+            senaraiSkor.push({ digit: d, skor: (pemberatMikro * f_mikro) + (pemberatHalaju * halaju) });
         }
-        
-        senaraiSkor.sort((objekA, objekB) => objekB.markahAkhir - objekA.markahAkhir || Math.random() - 0.5);
-        return senaraiSkor.map(itemRekod => itemRekod.digitSasaran);
+        return senaraiSkor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);
     }
 
-    ekstrakPolaMatrix(petaMatriks) {
+    ekstrakPolaMatrix360(m) {
+        // Pusingan Penuh 360 Darjah: Mendatar, Menegak, Pepenjuru, Zig-Zag, dan Terbalik (Songsang)
         return {
-            "Pola L": { nilaiVisual: `${petaMatriks[0][0]}${petaMatriks[1][0]}${petaMatriks[2][0]}${petaMatriks[2][1]}`, koordinat: [[0,0],[1,0],[2,0],[2,1]] },
-            "Pola T": { nilaiVisual: `${petaMatriks[0][0]}${petaMatriks[0][1]}${petaMatriks[0][2]}${petaMatriks[1][1]}`, koordinat: [[0,0],[0,1],[0,2],[1,1]] },
-            "Pola Y": { nilaiVisual: `${petaMatriks[0][0]}${petaMatriks[0][2]}${petaMatriks[1][1]}${petaMatriks[2][1]}`, koordinat: [[0,0],[0,2],[1,1],[2,1]] },
-            "Pola O": { nilaiVisual: `${petaMatriks[1][1]}${petaMatriks[1][2]}${petaMatriks[2][1]}${petaMatriks[2][2]}`, koordinat: [[1,1],[1,2],[2,1],[2,2]] },
-            "Pepenjuru 1": { nilaiVisual: `${petaMatriks[0][0]}${petaMatriks[1][1]}${petaMatriks[2][2]}${petaMatriks[3][3]}`, koordinat: [[0,0],[1,1],[2,2],[3,3]] },
-            "Pepenjuru 2": { nilaiVisual: `${petaMatriks[0][3]}${petaMatriks[1][2]}${petaMatriks[2][1]}${petaMatriks[3][0]}`, koordinat: [[0,3],[1,2],[2,1],[3,0]] },
-            "Zig Kiri": { nilaiVisual: `${petaMatriks[0][0]}${petaMatriks[1][1]}${petaMatriks[2][0]}${petaMatriks[3][1]}`, koordinat: [[0,0],[1,1],[2,0],[3,1]] },
-            "Zig Kanan": { nilaiVisual: `${petaMatriks[0][3]}${petaMatriks[1][2]}${petaMatriks[2][3]}${petaMatriks[3][2]}`, koordinat: [[0,3],[1,2],[2,3],[3,2]] }
+            "Pola L (Normal)": { v: `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`, c: [[0,0],[1,0],[2,0],[2,1]] },
+            "Pola L (Songsang)": { v: `${m[3][3]}${m[2][3]}${m[1][3]}${m[1][2]}`, c: [[3,3],[2,3],[1,3],[1,2]] },
+            "Pola T (Normal)": { v: `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`, c: [[0,0],[0,1],[0,2],[1,1]] },
+            "Pola T (Songsang)": { v: `${m[3][3]}${m[3][2]}${m[3][1]}${m[2][2]}`, c: [[3,3],[3,2],[3,1],[2,2]] },
+            "Pola Y (Normal)": { v: `${m[0][0]}${m[0][2]}${m[1][1]}${m[2][1]}`, c: [[0,0],[0,2],[1,1],[2,1]] },
+            "Pola Y (Songsang)": { v: `${m[3][3]}${m[3][1]}${m[2][2]}${m[1][2]}`, c: [[3,3],[3,1],[2,2],[1,2]] },
+            "Pola O (Tengah)": { v: `${m[1][1]}${m[1][2]}${m[2][1]}${m[2][2]}`, c: [[1,1],[1,2],[2,1],[2,2]] },
+            "Pepenjuru 1 (Kiri-Kanan)": { v: `${m[0][0]}${m[1][1]}${m[2][2]}${m[3][3]}`, c: [[0,0],[1,1],[2,2],[3,3]] },
+            "Pepenjuru 2 (Kanan-Kiri)": { v: `${m[0][3]}${m[1][2]}${m[2][1]}${m[3][0]}`, c: [[0,3],[1,2],[2,1],[3,0]] },
+            "Zig-Zag Kiri (360°)": { v: `${m[0][0]}${m[1][1]}${m[2][0]}${m[3][1]}`, c: [[0,0],[1,1],[2,0],[3,1]] },
+            "Zig-Zag Kanan (360°)": { v: `${m[0][3]}${m[1][2]}${m[2][3]}${m[3][2]}`, c: [[0,3],[1,2],[2,3],[3,2]] },
+            "Putaran 180° Bawah": { v: `${m[3][0]}${m[3][1]}${m[3][2]}${m[3][3]}`, c: [[3,0],[3,1],[3,2],[3,3]] }
         };
     }
 
-    cariPelengkapEmasPro(kombinasiTigaD, dataSumbanganAkar, senaraiPivotSejuk) {
-        let senaraiPelengkap = [];
-        
-        if (kombinasiTigaD.includes(dataSumbanganAkar.cabangTolak)) {
-            senaraiPelengkap.push(dataSumbanganAkar.cabangTolak);
-        }
-        
-        if (senaraiPivotSejuk && senaraiPivotSejuk.length > 0 && kombinasiTigaD.includes(senaraiPivotSejuk[0])) {
-            senaraiPelengkap.push(senaraiPivotSejuk[0]);
-        }
-        
-        kombinasiTigaD.split('').forEach(digitTunggal => {
-            let digitCermin = this.MIRROR_MAP[digitTunggal];
-            if (digitCermin && !kombinasiTigaD.includes(digitCermin) && dataSumbanganAkar.rawdata.includes(digitCermin)) {
-                senaraiPelengkap.push(digitCermin);
-            }
-        });
-        
-        if (senaraiPivotSejuk) {
-            senaraiPivotSejuk.slice(1).forEach(digitPivot => {
-                if (kombinasiTigaD.includes(digitPivot)) {
-                    senaraiPelengkap.push(digitPivot);
-                }
-            });
-        }
-        
-        return [...new Set(senaraiPelengkap)];
-    }
+    jana(num1, num2, sejarah, gunaCermin, operator) {
+        let matrix = this.binaMatrix4x4(num1, num2);
+        let dataAkar = this.uraiAkar(num1);
+        let trajektori = this.kiraTrajektori(sejarah, operator);
 
-    jana(nomborAsasLengkap, nomborAsasTambahan, sejarahCabutanSistem, statusCermin, jenisOperator) {
-        let sahGDLotto = (jenisOperator === 'gdlotto');
-        let sahMagnum = (jenisOperator === 'magnum');
+        let hotDigits = trajektori.slice(0, 4);
+        let coldPivot = trajektori.slice(-4);
 
-        let matriksKeputusan = this.binaMatrix4x4(nomborAsasLengkap, nomborAsasTambahan);
-        let dataAkarLengkap = this.uraiAkar(nomborAsasLengkap);
-        let senaraiTrajektori = this.kiraTrajektori(sejarahCabutanSistem, jenisOperator);
+        let hot1D = hotDigits[0] || '0';
+        let hot2D_pair = (hotDigits[0] || '0') + (hotDigits[1] || '1');
 
-        let digitPanas = senaraiTrajektori.slice(0, 4);
-        let pivotSejuk = senaraiTrajektori.slice(-4);
-
-        let hasilSatuDPanas = digitPanas[0] || '0';
-        let pasanganDuaDPanas = (digitPanas[0] || '0') + (digitPanas[1] || '1');
-
-        let himpunanDuaD = new Set();
-        for (let indeksPertama = 0; indeksPertama < digitPanas.length; indeksPertama++) {
-            for (let indeksKedua = indeksPertama + 1; indeksKedua < digitPanas.length; indeksKedua++) {
-                himpunanDuaD.add(this.sortCombo(digitPanas[indeksPertama] + digitPanas[indeksKedua]));
+        let anchors2D = new Set();
+        for (let i = 0; i < hotDigits.length; i++) {
+            for (let j = i + 1; j < hotDigits.length; j++) {
+                anchors2D.add(this.sortCombo(hotDigits[i] + hotDigits[j]));
             }
         }
-        
-        if (statusCermin) {
-            digitPanas.forEach(digitSemasa => {
-                if (this.MIRROR_MAP[digitSemasa]) {
-                    himpunanDuaD.add(this.sortCombo(digitSemasa + this.MIRROR_MAP[digitSemasa]));
-                }
+        if (gunaCermin) {
+            hotDigits.forEach(d => {
+                let cerminD = this.getMirror(d);
+                anchors2D.add(this.sortCombo(d + cerminD));
             });
         }
-        
-        let tatasusunanDuaD = Array.from(himpunanDuaD).slice(0, 15);
+        let array2D = Array.from(anchors2D).slice(0, 15);
 
-        let tigaDUtama = this.sortCombo(digitPanas.slice(0, 3).join(''));
-        let terasPepejalTigaD = tigaDUtama;
-        
-        if (statusCermin && dataAkarLengkap.rawdata.includes(this.MIRROR_MAP[digitPanas[0]])) {
-            terasPepejalTigaD = tigaDUtama.replace(digitPanas[0], this.MIRROR_MAP[digitPanas[0]]);
+        let primary3D = this.sortCombo(hotDigits.slice(0, 3).join(''));
+        let solidCore3D = primary3D;
+        if (gunaCermin) {
+            solidCore3D = this.getShadow(primary3D.substring(0, 2)) + primary3D[2];
         }
 
-        let tatasusunanTigaDMuktamad = [terasPepejalTigaD];
-        if (sahGDLotto && pivotSejuk.length > 0) {
-            let alternatifTigaD = this.sortCombo(digitPanas[0] + digitPanas[1] + pivotSejuk[0]);
-            tatasusunanTigaDMuktamad = [terasPepejalTigaD, alternatifTigaD].filter((nilaiSaring, indeksSaring, senaraiSaring) => senaraiSaring.indexOf(nilaiSaring) === indeksSaring);
-        }
+        let array3DMuktamad = [solidCore3D, this.getMirror(solidCore3D), this.getShadow(solidCore3D)];
+        array3DMuktamad = [...new Set(array3DMuktamad)].slice(0, 5);
 
-        let himpunanEmpatD = new Set();
-        let senaraiSatuDEmas = [];
-
-        tatasusunanTigaDMuktamad.forEach(komboTigaDSemasa => {
-            let pelengkapKemas = this.cariPelengkapEmasPro(komboTigaDSemasa, dataAkarLengkap, pivotSejuk);
-            if (pelengkapKemas.length > 0) {
-                senaraiSatuDEmas.push(...pelengkapKemas);
-            }
-            pelengkapKemas.forEach(digitPelengkap => {
-                himpunanEmpatD.add(this.sortCombo(komboTigaDSemasa + digitPelengkap));
-            });
+        let set4D = new Set();
+        array3DMuktamad.forEach(k3 => {
+            let p1 = dataAkar.cabangTolak;
+            set4D.add(this.sortCombo(k3 + p1));
+            if (coldPivot.length > 0) set4D.add(this.sortCombo(k3 + coldPivot[0]));
         });
 
-        let satuDEmasTunggal = dataAkarLengkap.cabangTolak || '0';
-        if (terasPepejalTigaD.includes(satuDEmasTunggal) && pivotSejuk.length > 0) {
-            satuDEmasTunggal = pivotSejuk[0];
-        }
-        
-        if (terasPepejalTigaD.includes(satuDEmasTunggal) && senaraiSatuDEmas.length > 0) {
-            satuDEmasTunggal = senaraiSatuDEmas.find(digitDicari => !terasPepejalTigaD.includes(digitDicari)) || '2';
-        }
-
-        let sasaranAkhirEmpatD = this.sortCombo(terasPepejalTigaD + satuDEmasTunggal);
-        if (sasaranAkhirEmpatD.length < 4) {
-            sasaranAkhirEmpatD = sasaranAkhirEmpatD.padEnd(4, '0');
-        }
+        let target4D = this.sortCombo(solidCore3D + dataAkar.cabangTolak);
+        if (target4D.length < 4) target4D = target4D.padEnd(4, '0');
 
         return {
-            matrix: matriksKeputusan,
-            tunjang: digitPanas,
-            pivot: pivotSejuk,
-            hot1D: hasilSatuDPanas,
-            hot2DPair: pasanganDuaDPanas,
-            solidCore3D: terasPepejalTigaD,
-            golden1D: satuDEmasTunggal,
-            target4D: sasaranAkhirEmpatD,
-            keputusan2D: tatasusunanDuaD,
-            keputusan3DMuktamad: tatasusunanTigaDMuktamad,
-            keputusan4D: Array.from(himpunanEmpatD).slice(0, 8),
-            polaObj: this.ekstrakPolaMatrix(matriksKeputusan)
+            matrix: matrix,
+            tunjang: hotDigits,
+            pivot: coldPivot,
+            hot1D: hot1D,
+            hot2DPair: hot2D_pair,
+            solidCore3D: solidCore3D,
+            golden1D: dataAkar.cabangTolak,
+            target4D: target4D,
+            keputusan2D: array2D,
+            keputusan3DMuktamad: array3DMuktamad,
+            keputusan4D: Array.from(set4D).slice(0, 8),
+            polaObj: this.ekstrakPolaMatrix360(matrix)
         };
     }
 }
 
-function janaUnjuran4DAkhir(matriksStruktur, tigaDMuktamadUtama, satuDDominanSenarai, pivotUtamaSenarai) {
-    let tatasusunanTigaD = Array.isArray(tigaDMuktamadUtama) ? tigaDMuktamadUtama : tigaDMuktamadUtama.toString().split('').map(Number);
-    let petakKuning = [
-        matriksStruktur[0][0], matriksStruktur[0][1],
-        matriksStruktur[1][0], matriksStruktur[1][1]
-    ];
-    let senaraiUnikPetakKuning = [...new Set(petakKuning)];
-    let senaraiCalonSatuDEmas = senaraiUnikPetakKuning.filter(digitTapis => !tatasusunanTigaD.includes(digitTapis));
-    let senaraiAkhirSatuDEmas = [];
-
-    if (senaraiCalonSatuDEmas.length > 0) {
-        senaraiAkhirSatuDEmas = senaraiCalonSatuDEmas;
-    } else {
-        let senaraiCalonDominan = satuDDominanSenarai.filter(digitTapis => !tatasusunanTigaD.includes(digitTapis));
-        if (senaraiCalonDominan.length > 0) {
-            senaraiAkhirSatuDEmas = senaraiCalonDominan;
-        } else {
-            senaraiAkhirSatuDEmas = pivotUtamaSenarai;
-        }
-    }
-
-    let unjuranBentukIBox = senaraiAkhirSatuDEmas.map(digitEmasTerpilih => {
-        return tatasusunanTigaD.join('') + digitEmasTerpilih.toString();
+function lukisJadual(matrix) {
+    const table = document.getElementById('matrixTable');
+    table.innerHTML = '';
+    matrix.forEach((row, rIdx) => {
+        let tr = document.createElement('tr');
+        row.forEach((val, cIdx) => {
+            let td = document.createElement('td');
+            td.innerText = val;
+            td.id = `c-${rIdx}-${cIdx}`;
+            if (rIdx < 2 && cIdx < 2) td.classList.add('highlight-box');
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
     });
-    
-    return unjuranBentukIBox;
 }
 
-window.janaUnjuran4DAkhir = janaUnjuran4DAkhir;
+function tunjukSenarai(elementId, dataArray) {
+    const container = document.getElementById(elementId);
+    container.innerHTML = '';
+    dataArray.forEach(item => {
+        let div = document.createElement('div');
+        div.className = 'number-tag';
+        div.innerText = item;
+        container.appendChild(div);
+    });
+}
 
-const enjin = new MesinMatriksPro();
 let globalHasil = null;
 
-function lukisJadual(matriksUntukDilukis, parameterSatuD, parameterTigaD) {
-    const elemenJadual = document.getElementById('matrixTable');
-    elemenJadual.innerHTML = '';
-    
-    matriksUntukDilukis.forEach((barisNombor, indeksBaris) => {
-        let elemenBaris = document.createElement('tr');
-        
-        barisNombor.forEach((nilaiNombor, indeksLajur) => {
-            let elemenSel = document.createElement('td');
-            elemenSel.innerText = nilaiNombor;
-            elemenSel.id = `c-${indeksBaris}-${indeksLajur}`;
-            
-            if (indeksBaris < 2 && indeksLajur < 2) {
-                elemenSel.classList.add('highlight-box');
-            }
-            elemenBaris.appendChild(elemenSel);
-        });
-        elemenJadual.appendChild(elemenBaris);
-    });
-}
-
-function tunjukSenarai(idElemenKontena, tatasusunanData) {
-    const elemenKontena = document.getElementById(idElemenKontena);
-    elemenKontena.innerHTML = '';
-    
-    tatasusunanData.forEach(itemData => {
-        let elemenDiv = document.createElement('div');
-        elemenDiv.className = 'number-tag';
-        elemenDiv.innerText = itemData;
-        elemenKontena.appendChild(elemenDiv);
-    });
-}
-
 function kocokPolaVisual() {
-    if (!globalHasil || !globalHasil.polaObj) {
-        return;
-    }
-    
-    let objekPolaEkstrak = globalHasil.polaObj;
-    let senaraiKunciPola = Object.keys(objekPolaEkstrak);
-    
-    if (senaraiKunciPola.length === 0) {
-        return;
+    if (!globalHasil || !globalHasil.polaObj) return;
+    let pobji = globalHasil.polaObj;
+    let keys = Object.keys(pobji);
+    if (keys.length === 0) return;
+
+    let gunaCermin = document.getElementById('useMirror').checked;
+    document.querySelectorAll('td').forEach(td => td.classList.remove('highlight-3d', 'highlight-2d'));
+
+    let k3 = keys[Math.floor(Math.random() * keys.length)];
+    let d3 = pobji[k3];
+    let v3 = d3.v;
+    let c3 = d3.c;
+    let l3 = k3;
+
+    if (gunaCermin && Math.random() > 0.5) {
+        v3 = enjin.getShadow(v3);
+        l3 += " (Shadow 360°)";
     }
 
-    let statusSemakCermin = document.getElementById('useMirror').checked;
-    
-    document.querySelectorAll('td').forEach(elemenSel => {
-        elemenSel.classList.remove('highlight-3d', 'highlight-2d');
+    let k2 = keys[Math.floor(Math.random() * keys.length)];
+    let d2 = pobji[k2];
+    let v2 = d2.v.substring(0, 2);
+    let c2 = d2.c.slice(0, 2);
+    let l2 = k2;
+
+    document.getElementById('src3D').innerText = `Pola 360°: (${l3}) [${d3.v}]`;
+    document.getElementById('val3D').innerText = v3;
+    document.getElementById('src2D').innerText = `Pola 360°: (${l2}) [${d2.v}]`;
+    document.getElementById('val2D').innerText = v2;
+
+    c3.forEach(c => {
+        let el = document.getElementById(`c-${c[0]}-${c[1]}`);
+        if (el) el.classList.add('highlight-3d');
     });
 
-    let kunciTigaD = senaraiKunciPola[Math.floor(Math.random() * senaraiKunciPola.length)];
-    let dataPolaTigaD = objekPolaEkstrak[kunciTigaD];
-    let nilaiTigaD = dataPolaTigaD.nilaiVisual.substring(0, 3);
-    let koordinatTigaD = dataPolaTigaD.koordinat.slice(0, 3);
-    let labelKunciTigaD = kunciTigaD;
-
-    if (statusSemakCermin && Math.random() > 0.5) {
-        nilaiTigaD = enjin.getMirror(nilaiTigaD);
-        labelKunciTigaD += " (Cermin)";
-    }
-
-    let kunciDuaD = senaraiKunciPola[Math.floor(Math.random() * senaraiKunciPola.length)];
-    let dataPolaDuaD = objekPolaEkstrak[kunciDuaD];
-    let nilaiDuaD = dataPolaDuaD.nilaiVisual.substring(0, 2);
-    let koordinatDuaD = dataPolaDuaD.koordinat.slice(0, 2);
-    let labelKunciDuaD = kunciDuaD;
-
-    if (statusSemakCermin && Math.random() > 0.5) {
-        nilaiDuaD = enjin.getMirror(nilaiDuaD);
-        labelKunciDuaD += " (Cermin)";
-    }
-
-    document.getElementById('src3D').innerText = `Pola: ${labelKunciTigaD} [${dataPolaTigaD.nilaiVisual}]`;
-    document.getElementById('val3D').innerText = nilaiTigaD;
-    
-    document.getElementById('src2D').innerText = `Pola: ${labelKunciDuaD} [${dataPolaDuaD.nilaiVisual}]`;
-    document.getElementById('val2D').innerText = nilaiDuaD;
-
-    koordinatTigaD.forEach(titikKoordinat => {
-        let elemenJadual = document.getElementById(`c-${titikKoordinat[0]}-${titikKoordinat[1]}`);
-        if (elemenJadual) {
-            elemenJadual.classList.add('highlight-3d');
-        }
-    });
-
-    koordinatDuaD.forEach(titikKoordinat => {
-        let elemenJadual = document.getElementById(`c-${titikKoordinat[0]}-${titikKoordinat[1]}`);
-        if (elemenJadual) {
-            elemenJadual.classList.add('highlight-2d');
-        }
+    c2.forEach(c => {
+        let el = document.getElementById(`c-${c[0]}-${c[1]}`);
+        if (el) el.classList.add('highlight-2d');
     });
 }
 
-function renderPolaGrid(objekDataPola, pamerCermin) {
-    let rentetanHTML = "";
-    
-    for (let [namaKunci, dataStrukturPola] of Object.entries(objekDataPola)) {
-        let nilaiSemasa = pamerCermin ? ('Cermin: ' + enjin.getMirror(dataStrukturPola.nilaiVisual)) : dataStrukturPola.nilaiVisual;
-        
-        rentetanHTML += `<div class="pattern-box">
-            <span class="pattern-sumber">${namaKunci}</span>
-            <span class="pattern-name">Nilai Asal</span>
-            <span class="pattern-value">${nilaiSemasa}</span>
-        </div>`;
+function renderPolaGrid(pObj, gunaCermin) {
+    let h = "";
+    for (let [n, d] of Object.entries(pObj)) {
+        let valDisp = gunaCermin ? `Shadow: ${enjin.getShadow(d.v)}` : d.v;
+        h += `<div class="pattern-box">` +
+             `<span class="pattern-sumber">${n}</span>` +
+             `<span class="pattern-name">Nilai 360°</span>` +
+             `<span class="pattern-value">${valDisp}</span>` +
+             `</div>`;
     }
-    
-    document.getElementById('gridPola').innerHTML = rentetanHTML;
+    document.getElementById('gridPola').innerHTML = h;
 }
+
+const enjin = new MesinMatriksPro();
 
 function janaKeputusan() {
     try {
-        const inputNomborSatu = document.getElementById('num1').value.trim();
-        const inputNomborDua = document.getElementById('num2').value.trim();
-        const teksSejarahMentah = document.getElementById('history').value.trim();
-        const ketetapanGunaCermin = document.getElementById('useMirror').checked;
-        const pilihanOperator = document.getElementById('operator').value;
+        const str1 = document.getElementById('num1').value.trim();
+        const str2 = document.getElementById('num2').value.trim();
+        const historyRaw = document.getElementById('history').value.trim();
+        const gunaCermin = document.getElementById('useMirror').checked;
+        const operator = document.getElementById('operator').value;
 
-        if (inputNomborSatu.length < 3) {
+        if (str1.length < 3) {
             alert("Sila masukkan Nombor Induk 1 yang valid (minimum 3 digit).");
             return;
         }
 
-        let formatSejarahCabutan = teksSejarahMentah.match(/\b\d{4}\b/g) || [];
-        if (formatSejarahCabutan.length < 3) {
-            formatSejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055"];
+        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
+        if (sejarahCabutan.length < 3) {
+            sejarahCabutan = ["6298", "6271", "0637", "2951", "6575", "5702", "6043", "8070"];
         }
 
-        globalHasil = enjin.jana(inputNomborSatu, inputNomborDua, formatSejarahCabutan, ketetapanGunaCermin, pilihanOperator);
-        
+        globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin, operator);
         if (!globalHasil || !globalHasil.matrix) {
-            throw new Error("Gagal menjana struktur matriks.");
+            throw new Error("Gagal menjana struktur matriks 360°.");
         }
 
-        lukisJadual(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
+        lukisJadual(globalHasil.matrix);
 
         document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
         document.getElementById('pivot-keys').innerText = globalHasil.pivot.join(', ');
-        document.getElementById('mode-badge').innerText = pilihanOperator.toUpperCase();
+        document.getElementById('mode-badge').innerText = operator.toUpperCase() + " (360° ACTIVE)";
 
         document.getElementById('hid').innerText = globalHasil.hot1D;
         document.getElementById('h2d').innerText = globalHasil.hot2DPair;
@@ -569,13 +453,13 @@ function janaKeputusan() {
         tunjukSenarai('out-3d', globalHasil.keputusan3DMuktamad);
         tunjukSenarai('out-4d', globalHasil.keputusan4D);
 
-        renderPolaGrid(globalHasil.polaObj, ketetapanGunaCermin);
+        renderPolaGrid(globalHasil.polaObj, gunaCermin);
         kocokPolaVisual();
 
         document.getElementById('hasil').style.display = 'block';
-    } catch (ralatSistem) {
-        console.error("Ralat Mesin Matriks:", ralatSistem);
-        alert("Sistem terhalang (Crash dipintas). Sila semak input semula.\nRalat: " + ralatSistem.message);
+    } catch (err) {
+        console.error("Ralat Mesin Matriks 360:", err);
+        alert("Sistem terhalang: " + err.message);
     }
 }
 
@@ -587,57 +471,14 @@ function resetBorang() {
     globalHasil = null;
 }
 
-function salin(idPilihan) {
-    const elemen = document.getElementById(idPilihan);
-    if (!elemen) return;
-
-    // Cari semua tag nombor di dalam elemen grid 
-    const susunanNombor = elemen.querySelectorAll('.number-tag');
-    let teksUntukDisalin = "";
-
-    if (susunanNombor.length > 0) {
-        // Susun nombor-nombor di dalam grid dengan kemas (guna koma)
-        let senarai = [];
-        susunanNombor.forEach(kotak => {
-            if (kotak.innerText.trim() !== "") {
-                senarai.push(kotak.innerText.trim());
-            }
-        });
-        teksUntukDisalin = senarai.join(', ');
-    } else {
-        // Jika ia hanya teks biasa
-        teksUntukDisalin = elemen.innerText.trim();
+function salin(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const tags = el.querySelectorAll('.number-tag');
+    let txt = Array.from(tags).map(t => t.innerText).join(', ');
+    if (txt) {
+        navigator.clipboard.writeText(txt).then(() => alert("Berjaya disalin: " + txt)).catch(e => console.log("Gagal salin", e));
     }
-
-    if (!teksUntukDisalin) {
-        alert("Tiada data untuk disalin.");
-        return;
-    }
-
-    // Laksana fungsi salin menyokong Local File & HTTPS
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(teksUntukDisalin)
-            .then(() => alert("Berjaya disalin:\n" + teksUntukDisalin))
-            .catch(() => salinCaraLama(teksUntukDisalin));
-    } else {
-        salinCaraLama(teksUntukDisalin);
-    }
-}
-
-// Fallback jika Clipboard API disekat
-function salinCaraLama(teks) {
-    const textarea = document.createElement('textarea');
-    textarea.value = teks;
-    textarea.style.position = 'fixed'; // Elak skrin melompat ke bawah
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-        document.execCommand('copy');
-        alert("Berjaya disalin:\n" + teks);
-    } catch (err) {
-        alert("Gagal menyalin secara automatik. Sila salin manual:\n\n" + teks);
-    }
-    document.body.removeChild(textarea);
 }
 </script>
 </body>
