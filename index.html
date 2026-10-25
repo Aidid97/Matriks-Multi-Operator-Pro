@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +11,7 @@
     .input-group { margin-bottom: 15px; text-align: left; }
     label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
     input[type="text"], textarea, select { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; font-family: monospace; }
-    textarea { focus: outline: none; border-color: #3182ce; resize: vertical; }
+    textarea { outline: none; border-color: #3182ce; resize: vertical; }
     .checkbox-group { text-align: left; margin: 10px 0; font-size: 13px; font-weight: 600; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
     .btn-group { display: flex; gap: 10px; margin-top: 15px; }
     button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
@@ -135,7 +134,7 @@
                     <span class="pattern-value" id="val3D" style="color:#0d6efd;">-</span>
                 </div>
             </div>
-            <button class="btn-kocok" style="float:none; width:100%; margin-top:10px;" onclick="kocokPolaVisual()">Kocok & Tunjuk Path Matriks</button><button class="btn-jana" style="width:100%; margin-bottom:10px; padding:12px; font-weight:bold; cursor:pointer;" onclick="jana()">Bina Carta & Analisa</button>
+            <button class="btn-kocok" style="float:none; width:100%; margin-top:10px;" onclick="kocokPolaVisual()">Kocok & Tunjuk Path Matriks</button>
         </div>
 
         <div class="result-box" style="border-left-color: #4a5568;">
@@ -198,13 +197,19 @@ class MesinMatriksPro {
             rawdata: rawData
         };
     }
+
     kiraTrajektori(sejarahCabutan, operator) {
         let skor = [];
         let maxLen = sejarahCabutan.length;
         let len3 = Math.min(3, maxLen);
         let len5 = Math.min(5, maxLen);
-        let len15 = Math.min(15, maxLen);    
-         let w_micro = 0.5;
+        let len15 = Math.min(15, maxLen);
+
+        let t3 = sejarahCabutan.slice(0, len3).join('');
+        let t5 = sejarahCabutan.slice(0, len5).join('');
+        let t15 = sejarahCabutan.slice(0, len15).join('');
+
+        let w_micro = 0.5;
         let w_velocity = 0.5;
 
         if (operator === 'gdlotto') {
@@ -214,13 +219,6 @@ class MesinMatriksPro {
         } else if (operator === 'toto') {
             w_micro = 0.75; w_velocity = 0.4;
         }
-      let len3 = Math.min(3, maxLen);
-        let len5 = Math.min(5, maxLen);
-        let len15 = Math.min(15, maxLen);
-
-        let t3 = sejarahCabutan.slice(0, len3).join('');
-        let t5 = sejarahCabutan.slice(0, len5).join('');
-        let t15 = sejarahCabutan.slice(0, len15).join('');
 
         for (let i = 0; i <= 9; i++) {
             let d = i.toString();
@@ -234,10 +232,10 @@ class MesinMatriksPro {
 
             skor.push({ digit: d, skor: (w_micro * f_mikro) + (w_velocity * halaju) });
         }
-        return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);  
-        
-    
-        ekstrakPolaMatrix(m) {
+        return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);
+    }
+
+    ekstrakPolaMatrix(m) {
         return {
             "Pola L": { v: `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`, c: [[0,0],[1,0],[2,0],[2,1]] },
             "Pola T": { v: `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`, c: [[0,0],[0,1],[0,2],[1,1]] },
@@ -380,78 +378,55 @@ window.janaUnjuran4DAkhir = janaUnjuran4DAkhir;
 const enjin = new MesinMatriksPro();
 let globalHasil = null;
 
-function janaKeputusan() {
-    try {
-        const str1 = document.getElementById('num1').value.trim();
-        const str2 = document.getElementById('num2').value.trim();
-        const historyRaw = document.getElementById('history').value.trim();
-        const gunaCermin = document.getElementById('useMirror').checked;
-        const operator = document.getElementById('operator').value;
+function lukisJadual(matrix, hot1D, solidCore3D) {
+    const table = document.getElementById('matrixTable');
+    table.innerHTML = '';
+    matrix.forEach((row, rIdx) => {
+        let tr = document.createElement('tr');
+        row.forEach((val, cIdx) => {
+            let td = document.createElement('td');
+            td.innerText = val;
+            td.id = `c-${rIdx}-${cIdx}`;
+            if (rIdx < 2 && cIdx < 2) {
+                td.classList.add('highlight-box');
+            }
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+}
 
-        if (str1.length < 3) {
-            alert("Sila masukkan Nombor Induk 1 yang valid (minimum 3 digit).");
-            return;
+function highlightStrategyBox(m, hot1D, solid3D) {
+    document.querySelectorAll('td').forEach(td => td.className = "");
+    let found = false;
+    let targetNum = parseInt(hot1D);
+    if (isNaN(targetNum)) return;
+
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            let block = [m[r][c], m[r][c + 1], m[r + 1][c], m[r + 1][c + 1]];
+            if (block.includes(targetNum)) {
+                [`c-${r}-${c}`, `c-${r}-${c+1}`, `c-${r+1}-${c}`, `c-${r+1}-${c+1}`].forEach(id => {
+                    let el = document.getElementById(id);
+                    if (el) el.classList.add('highlight-box');
+                });
+                found = true;
+                break;
+            }
         }
-
-        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
-        if (sejarahCabutan.length < 3) {
-            sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055"];
-        }
-
-        globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin, operator);
-        if (!globalHasil || !globalHasil.matrix) {
-            throw new Error("Gagal menjana struktur matriks.");
-        }
-
-        lukisJadual(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
-
-        document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
-        document.getElementById('pivot-keys').innerText = globalHasil.pivot.join(', ');
-        document.getElementById('mode-badge').innerText = operator.toUpperCase();
-
-        document.getElementById('hid').innerText = `${globalHasil.hot1D} & (${globalHasil.hot2DPair})`;
-        document.getElementById('h2d').innerText = globalHasil.keputusan2D.slice(0, 3).join(' / ');
-        document.getElementById('a3d').innerText = globalHasil.solidCore3D;
-        document.getElementById('p1d').innerText = globalHasil.golden1D;
-        document.getElementById('s4d').innerText = globalHasil.target4D;
-
-        document.getElementById('out-2d').innerHTML = globalHasil.keputusan2D.map(n => `<div class="number-tag anchor-tag">${n}</div>`).join('');
-        document.getElementById('out-3d').innerHTML = globalHasil.keputusan3DMuktamad.map(n => `<div class="number-tag" style="background:#dd6b20;">${n}</div>`).join('');
-        document.getElementById('out-4d').innerHTML = globalHasil.keputusan4D.map(n => `<div class="number-tag" style="background:#805ad5;">${n}</div>`).join('');
-
-        renderPolaGrid(globalHasil.polaObj, gunaCermin);
-        kocokPolaVisual();
-
-        document.getElementById('hasil').style.display = 'block';
-
-    } catch (err) {
-        console.error("Ralat Mesin Matriks:", err);
-        alert("Sistem terhalang (Crash dipintas). Sila semak input semula.\nRalat: " + err.message);
+        if (found) break;
     }
 }
 
-function lukisJadual(m, hot1D, solid3D) {
-    let h = "";
-    for (let r = 0; r < 4; r++) {
-        h += "<tr>";
-        for (let c = 0; c < 4; c++) {
-            h += `<td id="c-${r}-${c}">${(m[r][c] || 0)}</td>`;
-        }
-        h += "</tr>";
-    }
-    document.getElementById('matrixTable').innerHTML = h;
-}
-
-function renderPolaGrid(pObj, gunaCermin) {
-    let h = "";
-    for (let [n, d] of Object.entries(pObj)) {
-        h += `<div class="pattern-box">
-            <span class="pattern-sumber">${n}</span>
-            <span class="pattern-name">Nilai Asal</span>
-            <span class="pattern-value">${gunaCermin ? 'Cermin: ' + enjin.getMirror(d.v) : d.v}</span>
-        </div>`;
-    }
-    document.getElementById('gridPola').innerHTML = h;
+function tunjukSenarai(elementId, dataArray) {
+    const container = document.getElementById(elementId);
+    container.innerHTML = '';
+    dataArray.forEach(item => {
+        let div = document.createElement('div');
+        div.className = 'number-tag';
+        div.innerText = item;
+        container.appendChild(div);
+    });
 }
 
 function kocokPolaVisual() {
@@ -485,9 +460,9 @@ function kocokPolaVisual() {
         l2 += " (Cermin)";
     }
 
-    document.getElementById('src3D').innerText = `Pola: ${l3} [${d3.v}]`;
+    document.getElementById('src3D').innerText = `Pola: (${l3}) [${d3.v}]`;
     document.getElementById('val3D').innerText = v3;
-    document.getElementById('src2D').innerText = `Pola: ${l2} [${d2.v}]`;
+    document.getElementById('src2D').innerText = `Pola: (${l2}) [${d2.v}]`;
     document.getElementById('val2D').innerText = v2;
 
     c3.forEach(c => {
@@ -499,6 +474,68 @@ function kocokPolaVisual() {
         let el = document.getElementById(`c-${c[0]}-${c[1]}`);
         if (el) el.classList.add('highlight-2d');
     });
+}
+
+function renderPolaGrid(pObj, gunaCermin) {
+    let h = "";
+    for (let [n, d] of Object.entries(pObj)) {
+        h += `<div class="pattern-box">` +
+             `<span class="pattern-sumber">${n}</span>` +
+             `<span class="pattern-name">Nilai Asal</span>` +
+             `<span class="pattern-value">${gunaCermin ? 'Cermin: ' + enjin.getMirror(d.v) : d.v}</span>` +
+             `</div>`;
+    }
+    document.getElementById('gridPola').innerHTML = h;
+}
+
+function janaKeputusan() {
+    try {
+        const str1 = document.getElementById('num1').value.trim();
+        const str2 = document.getElementById('num2').value.trim();
+        const historyRaw = document.getElementById('history').value.trim();
+        const gunaCermin = document.getElementById('useMirror').checked;
+        const operator = document.getElementById('operator').value;
+
+        if (str1.length < 3) {
+            alert("Sila masukkan Nombor Induk 1 yang valid (minimum 3 digit).");
+            return;
+        }
+
+        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
+        if (sejarahCabutan.length < 3) {
+            sejarahCabutan = ["1508", "5241", "6336", "2203", "4065", "2464", "0431", "2182", "2275", "9055"];
+        }
+
+        globalHasil = enjin.jana(str1, str2, sejarahCabutan, gunaCermin, operator);
+        if (!globalHasil || !globalHasil.matrix) {
+            throw new Error("Gagal menjana struktur matriks.");
+        }
+
+        lukisJadual(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
+        highlightStrategyBox(globalHasil.matrix, globalHasil.hot1D, globalHasil.solidCore3D);
+
+        document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
+        document.getElementById('pivot-keys').innerText = globalHasil.pivot.join(', ');
+        document.getElementById('mode-badge').innerText = operator.toUpperCase();
+
+        document.getElementById('hid').innerText = globalHasil.hot1D;
+        document.getElementById('h2d').innerText = globalHasil.hot2DPair;
+        document.getElementById('a3d').innerText = globalHasil.solidCore3D;
+        document.getElementById('p1d').innerText = globalHasil.golden1D;
+        document.getElementById('s4d').innerText = globalHasil.target4D;
+
+        tunjukSenarai('out-2d', globalHasil.keputusan2D);
+        tunjukSenarai('out-3d', globalHasil.keputusan3DMuktamad);
+        tunjukSenarai('out-4d', globalHasil.keputusan4D);
+
+        renderPolaGrid(globalHasil.polaObj, gunaCermin);
+        kocokPolaVisual();
+
+        document.getElementById('hasil').style.display = 'block';
+    } catch (err) {
+        console.error("Ralat Mesin Matriks:", err);
+        alert("Sistem terhalang (Crash dipintas). Sila semak input semula.\nRalat: " + err.message);
+    }
 }
 
 function resetBorang() {
@@ -520,26 +557,4 @@ function salin(id) {
 }
 </script>
 </body>
-</html> 
-
-       
-          
-            
-        
-
-        
-            
-        
-    
-        
-            
-
-            
-            
-            
-
-                 
-
-
-
-   
+</html>
