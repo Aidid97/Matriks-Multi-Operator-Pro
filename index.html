@@ -204,12 +204,7 @@ class MesinMatriksPro {
         let len3 = Math.min(3, maxLen);
         let len5 = Math.min(5, maxLen);
         let len15 = Math.min(15, maxLen);    
-    
-        
-    
-        
-
-        let w_micro = 0.5;
+         let w_micro = 0.5;
         let w_velocity = 0.5;
 
         if (operator === 'gdlotto') {
@@ -240,14 +235,9 @@ class MesinMatriksPro {
             skor.push({ digit: d, skor: (w_micro * f_mikro) + (w_velocity * halaju) });
         }
         return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);  
-          
-            
         
-
-        
-            
-        
-     ekstrakPolaMatrix(m) {
+    
+        ekstrakPolaMatrix(m) {
         return {
             "Pola L": { v: `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`, c: [[0,0],[1,0],[2,0],[2,1]] },
             "Pola T": { v: `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`, c: [[0,0],[0,1],[0,2],[1,1]] },
@@ -530,7 +520,17 @@ function salin(id) {
 }
 </script>
 </body>
-</html>
+</html> 
+
+       
+          
+            
+        
+
+        
+            
+        
+    
         
             
 
