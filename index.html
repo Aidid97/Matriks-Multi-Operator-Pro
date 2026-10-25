@@ -220,8 +220,7 @@ class MesinMatriksPro {
         } else if (operator === 'toto') {
             w_micro = 0.75; w_velocity = 0.4;
         }
-
-        for (let i = 0; i <= 9; i++) {
+ for (let i = 0; i <= 9; i++) {
             let d = i.toString();
             let f_mikro = l3 > 0 ? (t3.split(d).length - 1) : 0;
             let c_t5 = l5 > 0 ? (t5.split(d).length - 1) : 0;
@@ -234,9 +233,14 @@ class MesinMatriksPro {
             skor.push({ digit: d, skor: (w_micro * f_mikro) + (w_velocity * halaju) });
         }
         return skor.sort((a, b) => b.skor - a.skor || Math.random() - 0.5).map(x => x.digit);
-    }
+    }    
+        
+        
 
-    ekstrakPolaMatrix(m) {
+        
+            
+        
+     ekstrakPolaMatrix(m) {
         return {
             "Pola L": { v: `${m[0][0]}${m[1][0]}${m[2][0]}${m[2][1]}`, c: [[0,0],[1,0],[2,0],[2,1]] },
             "Pola T": { v: `${m[0][0]}${m[0][1]}${m[0][2]}${m[1][1]}`, c: [[0,0],[0,1],[0,2],[1,1]] },
@@ -520,3 +524,15 @@ function salin(id) {
 </script>
 </body>
 </html>
+        
+            
+
+            
+            
+            
+
+                 
+
+
+
+   
