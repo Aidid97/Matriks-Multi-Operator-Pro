@@ -586,20 +586,6 @@ function resetBorang() {
     document.getElementById('hasil').style.display = 'none';
     globalHasil = null;
 }
-document.getElementById('hasil').style.display = 'block';
-    } catch (ralatSistem) {
-        console.error("Ralat Mesin Matriks:", ralatSistem);
-        alert("Sistem terhalang (Crash dipintas). Sila semak input semula.\nRalat: " + ralatSistem.message);
-    }
-} // Pastikan ada kurungan penutup ini untuk fungsi janaKeputusan utama
-
-function resetBorang() {
-    document.getElementById('num1').value = '';
-    document.getElementById('num2').value = '';
-    document.getElementById('history').value = '';
-    document.getElementById('hasil').style.display = 'none';
-    globalHasil = null;
-}
 
 function salin(idPilihan) {
     const elemen = document.getElementById(idPilihan);
@@ -656,4 +642,3 @@ function salinCaraLama(teks) {
 </script>
 </body>
 </html>
-
