@@ -87,7 +87,6 @@
     </div>
 
     <div id="hasil" style="display: none;">
-        <!-- KOTAK MATRIKS 4x4 DIKEKALKAN SEPENUHNYA DI SINI -->
         <div class="result-box" style="border-left-color: #4a5568;">
             <p style="margin:0; font-weight:bold; font-size:13px; color:#2d3748;" id="info-pintu-header">🔲 Visual Matriks 4x4 (Kesinambungan Pintu)</p>
             <p style="font-size:11px; color:#718096; margin-top:2px; margin-bottom:8px;">*Kotak Kuning = Titik Persilangan Utama. Bingkai Merah/Biru = Ekstraksi Laluan 360°.</p>
@@ -227,11 +226,14 @@ class MesinMatriksPro {
         let rentetanLima = sejarahCabutan.slice(0, ukuranLima).join('');
         let rentetanLimaBelas = sejarahCabutan.slice(0, ukuranLimaBelas).join('');
 
-        let pemberatMikro = 0.45;
-        let pemberatHalaju = 0.70;
+        // Pemberat khusus diselaraskan kembali termasuk untuk SportsToto (toto)
+        let pemberatMikro = 0.50;
+        let pemberatHalaju = 0.50;
 
-        if (namaOperator === 'gdlotto') {
-            pemberatMikro = 0.7; pemberatHalaju = 0.4;
+        if (namaOperator === 'toto') {
+            pemberatMikro = 0.65; pemberatHalaju = 0.35; // Pemberat khusus SportsToto
+        } else if (namaOperator === 'gdlotto') {
+            pemberatMikro = 0.70; pemberatHalaju = 0.30;
         } else if (namaOperator === 'magnum') {
             pemberatMikro = 0.55; pemberatHalaju = 0.45;
         }
@@ -402,35 +404,27 @@ function renderPolaGrid(pObj, gunaCermin) {
 
 function janaKeputusan() {
     try {
-        const nilaiTarikh = document.getElementById('tarikhCabutan').value;
-        const noDraw = document.getElementById('drawNo').value.trim();
+        const op = document.getElementById('operator').value;
+        const drawNo = document.getElementById('drawNo').value.trim();
+        const tarikh = document.getElementById('tarikhCabutan').value;
         const historyRaw = document.getElementById('history').value.trim();
         const gunaCermin = document.getElementById('useMirror').checked;
-        const operator = document.getElementById('operator').value;
 
-        if (!nilaiTarikh) {
-            alert("Sila pilih tarikh cabutan.");
-            return;
-        }
+        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || ["6298", "6271", "0637", "2951", "6575"];
 
-        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || [];
-        if (sejarahCabutan.length < 3) {
-            sejarahCabutan = ["6298", "6271", "0637", "2951", "6575"];
-        }
+        globalHasil = enjin.jana(tarikh, drawNo, sejarahCabutan, gunaCermin, op);
 
-        globalHasil = enjin.jana(nilaiTarikh, noDraw, sejarahCabutan, gunaCermin, operator);
         if (!globalHasil || !globalHasil.matrix) {
-            throw new Error("Gagal menjana matriks pintu.");
+            throw new Error("Gagal menjana struktur matriks.");
         }
 
         lukisJadual(globalHasil.matrix);
 
-        document.getElementById('info-pintu-header').innerText = `🔲 Visual Matriks Pintu: ${operator.toUpperCase()} (Draw: ${noDraw || 'Auto'})`;
+        document.getElementById('info-pintu-header').innerText = `🔲 Visual Matriks 4x4 (${op.toUpperCase()} - Draw: ${drawNo || 'Auto'})`;
         document.getElementById('master-key').innerText = globalHasil.tunjang.join(' - ');
         document.getElementById('missing-keys').innerText = globalHasil.digitHilang.join(', ');
-        document.getElementById('mode-badge').innerText = operator.toUpperCase() + " LOCKED";
-
-        document.getElementById('hid').innerText = globalHasil.hot1D;
+        
+        document.getElementById('hid').innerText = `${globalHasil.hot1D} & (${globalHasil.tunjang[1] || '-'})`;
         document.getElementById('h2d').innerText = globalHasil.hot2DPair;
         document.getElementById('a3d').innerText = globalHasil.solidCore3D;
         document.getElementById('p1d').innerText = globalHasil.golden1D;
@@ -445,7 +439,7 @@ function janaKeputusan() {
 
         document.getElementById('hasil').style.display = 'block';
     } catch (err) {
-        console.error("Ralat Pintu:", err);
+        console.error("Ralat Mesin Matriks:", err);
         alert("Sistem terhalang: " + err.message);
     }
 }
@@ -460,10 +454,9 @@ function resetBorang() {
 function salin(id) {
     const el = document.getElementById(id);
     if (!el) return;
-    const tags = el.querySelectorAll('.number-tag');
-    let txt = Array.from(tags).map(t => t.innerText).join(', ');
-    if (txt) {
-        navigator.clipboard.writeText(txt).then(() => alert("Berjaya disalin untuk pintu ini: " + txt)).catch(e => console.log("Gagal", e));
+    let textToCopy = Array.from(el.querySelectorAll('.number-tag')).map(n => n.innerText).join(', ');
+    if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => alert("Berjaya disalin: " + textToCopy));
     }
 }
 </script>
