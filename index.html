@@ -586,21 +586,49 @@ function resetBorang() {
     document.getElementById('hasil').style.display = 'none';
     globalHasil = null;
 }
-
 function salin(idPilihan) {
-    const elemenDisalin = document.getElementById(idPilihan);
-    if (!elemenDisalin) return;
+    // 1. Cari elemen berdasarkan ID (contoh: 'out-4d')
+    const elemen = document.getElementById(idPilihan);
     
-    const senaraiTagNombor = elemenDisalin.querySelectorAll('.number-tag');
-    let teksTerkumpul = Array.from(senaraiTagNombor).map(tagSemasa => tagSemasa.innerText).join(', ');
-    
-    if (teksTerkumpul) {
-        navigator.clipboard.writeText(teksTerkumpul).then(() => {
-            alert("Berjaya disalin: " + teksTerkumpul);
-        }).catch(ralatSalinan => {
-            console.log("Gagal salin", ralatSalinan);
-        });
+    if (!elemen) {
+        console.error("Ralat: Elemen '" + idPilihan + "' tidak dijumpai.");
+        alert("Sistem gagal mencari data untuk disalin.");
+        return;
     }
+
+    // 2. Ekstrak teks (nombor) dari dalam elemen tersebut
+    const teksUntukDisalin = elemen.innerText || elemen.textContent;
+
+    if (!teksUntukDisalin || teksUntukDisalin.trim() === "") {
+        alert("Tiada nombor atau data untuk disalin.");
+        return;
+    }
+
+    // 3. Salin ke clipboard menggunakan navigator.clipboard
+    navigator.clipboard.writeText(teksUntukDisalin.trim())
+        .then(() => {
+            // Notifikasi jika berjaya
+            alert("Berjaya disalin:\n" + teksUntukDisalin.trim());
+        })
+        .catch(ralat => {
+            // Notifikasi jika pelayar (browser) menghalang akses clipboard
+            console.error("Gagal menyalin teks:", ralat);
+            
+            // Fallback (cara lama) jika Clipboard API disekat
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = teksUntukDisalin.trim();
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert("Berjaya disalin (mod alternatif):\n" + teksUntukDisalin.trim());
+            } catch (ralatAlternatif) {
+                alert("Sistem gagal menyalin teks. Sila salin secara manual.");
+            }
+        });
+}
+
 }
 </script>
 </body>
