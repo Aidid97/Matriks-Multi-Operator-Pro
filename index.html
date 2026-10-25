@@ -159,7 +159,7 @@ class MesinMatriksPro {
     }
 
     getMirror(str) {
-        return (str || '').split('').map(c => this.MIRROR_MAP[c] || c).join('');
+        return (str || '').split('').map(d => this.MIRROR_MAP[d] || d).join('');
     }
 
     binaMatrix4x4(str1, str2) {
