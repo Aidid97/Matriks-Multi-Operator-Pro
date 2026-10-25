@@ -586,50 +586,74 @@ function resetBorang() {
     document.getElementById('hasil').style.display = 'none';
     globalHasil = null;
 }
-function salin(idPilihan) {
-    // 1. Cari elemen berdasarkan ID (contoh: 'out-4d')
-    const elemen = document.getElementById(idPilihan);
-    
-    if (!elemen) {
-        console.error("Ralat: Elemen '" + idPilihan + "' tidak dijumpai.");
-        alert("Sistem gagal mencari data untuk disalin.");
-        return;
+document.getElementById('hasil').style.display = 'block';
+    } catch (ralatSistem) {
+        console.error("Ralat Mesin Matriks:", ralatSistem);
+        alert("Sistem terhalang (Crash dipintas). Sila semak input semula.\nRalat: " + ralatSistem.message);
     }
+} // Pastikan ada kurungan penutup ini untuk fungsi janaKeputusan utama
 
-    // 2. Ekstrak teks (nombor) dari dalam elemen tersebut
-    const teksUntukDisalin = elemen.innerText || elemen.textContent;
-
-    if (!teksUntukDisalin || teksUntukDisalin.trim() === "") {
-        alert("Tiada nombor atau data untuk disalin.");
-        return;
-    }
-
-    // 3. Salin ke clipboard menggunakan navigator.clipboard
-    navigator.clipboard.writeText(teksUntukDisalin.trim())
-        .then(() => {
-            // Notifikasi jika berjaya
-            alert("Berjaya disalin:\n" + teksUntukDisalin.trim());
-        })
-        .catch(ralat => {
-            // Notifikasi jika pelayar (browser) menghalang akses clipboard
-            console.error("Gagal menyalin teks:", ralat);
-            
-            // Fallback (cara lama) jika Clipboard API disekat
-            try {
-                const textarea = document.createElement('textarea');
-                textarea.value = teksUntukDisalin.trim();
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert("Berjaya disalin (mod alternatif):\n" + teksUntukDisalin.trim());
-            } catch (ralatAlternatif) {
-                alert("Sistem gagal menyalin teks. Sila salin secara manual.");
-            }
-        });
+function resetBorang() {
+    document.getElementById('num1').value = '';
+    document.getElementById('num2').value = '';
+    document.getElementById('history').value = '';
+    document.getElementById('hasil').style.display = 'none';
+    globalHasil = null;
 }
 
+function salin(idPilihan) {
+    const elemen = document.getElementById(idPilihan);
+    if (!elemen) return;
+
+    // Cari semua tag nombor di dalam elemen grid 
+    const susunanNombor = elemen.querySelectorAll('.number-tag');
+    let teksUntukDisalin = "";
+
+    if (susunanNombor.length > 0) {
+        // Susun nombor-nombor di dalam grid dengan kemas (guna koma)
+        let senarai = [];
+        susunanNombor.forEach(kotak => {
+            if (kotak.innerText.trim() !== "") {
+                senarai.push(kotak.innerText.trim());
+            }
+        });
+        teksUntukDisalin = senarai.join(', ');
+    } else {
+        // Jika ia hanya teks biasa
+        teksUntukDisalin = elemen.innerText.trim();
+    }
+
+    if (!teksUntukDisalin) {
+        alert("Tiada data untuk disalin.");
+        return;
+    }
+
+    // Laksana fungsi salin menyokong Local File & HTTPS
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(teksUntukDisalin)
+            .then(() => alert("Berjaya disalin:\n" + teksUntukDisalin))
+            .catch(() => salinCaraLama(teksUntukDisalin));
+    } else {
+        salinCaraLama(teksUntukDisalin);
+    }
+}
+
+// Fallback jika Clipboard API disekat
+function salinCaraLama(teks) {
+    const textarea = document.createElement('textarea');
+    textarea.value = teks;
+    textarea.style.position = 'fixed'; // Elak skrin melompat ke bawah
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        alert("Berjaya disalin:\n" + teks);
+    } catch (err) {
+        alert("Gagal menyalin secara automatik. Sila salin manual:\n\n" + teks);
+    }
+    document.body.removeChild(textarea);
 }
 </script>
 </body>
 </html>
+
