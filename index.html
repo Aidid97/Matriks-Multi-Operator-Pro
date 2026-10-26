@@ -542,7 +542,8 @@ function janaKeputusan() {
         const historyRaw = document.getElementById('history').value.trim();
         const gunaCermin = document.getElementById('useMirror').checked;
 
-        let sejarahCabutan = historyRaw.match(/\b\d{4}\b/g) || ["6298", "6271", "0637", "2951"];
+        let sejarahCabutan = (historyRaw.match(/\d{4}/g) || []).map(num => num.trim()).filter(num => num.length === 4);
+if (sejarahCabutan.length === 0) sejarahCabutan = ["6298", "6271", "0637", "2951"];
 
         globalHasil = enjin.jana(tarikh, drawNo, sejarahCabutan, gunaCermin, op);
 
