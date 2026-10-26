@@ -344,7 +344,7 @@ if (namaOperator === 'toto') {
         };
     }
 
-    jana(nilaiTarikh, noDraw, sejarah, gunaCermin, operator) {
+    ana(nilaiTarikh, noDraw, sejarah, gunaCermin, operator) {
         let matrix4x4 = this.janaMatriksDraw(noDraw);
         let matrix3x3 = this.janaMatriks3x3Tarikh(nilaiTarikh);
         
@@ -352,9 +352,9 @@ if (namaOperator === 'toto') {
         let angkaHidup = this.kiraAngkaHidupDenganPemberat(sejarah, digitHilang, operator);
 
         // 1D Options
-        let pilihan1D = angkaHidup.slice(0, 6); // Ambil Top 6
+        let pilihan1D = angkaHidup.slice(0, 6); 
         
-        // 2D Options (kombinasi angka hidup)
+        // 2D Options
         let set2D = new Set();
         for (let i = 0; i < pilihan1D.length; i++) {
             for (let j = i + 1; j < pilihan1D.length; j++) {
@@ -363,23 +363,38 @@ if (namaOperator === 'toto') {
         }
         let array2D = Array.from(set2D).slice(0, 10);
 
-        // 3D Options
-        let solidCore3D = this.sortCombo(pilihan1D.slice(0, 3).join(''));
-        let root3D = solidCore3D;
-        if (gunaCermin) {
-            root3D = this.getShadow(solidCore3D.substring(0, 2)) + solidCore3D[2];
+        // --- EKSTRAKSI 3D DIRECT DARI POLA MATRIKS 4x4 (UNTUK TOTO & GD LOTTO) ---
+        let polaMap = this.ekstrakPolaMatrix360(matrix4x4);
+        let set3DDirect = new Set();
+
+        // Ekstrak kombinasi 3D dari semua laluan visual matriks
+        for (let key in polaMap) {
+            let str4 = polaMap[key].v; 
+            let combo3D1 = this.sortCombo(str4.substring(0, 3));
+            let combo3D2 = this.sortCombo(str4.substring(1, 4));
+            
+            if (!combo3D1.split('').some(d => digitHilang.includes(d))) set3DDirect.add(combo3D1);
+            if (!combo3D2.split('').some(d => digitHilang.includes(d))) set3DDirect.add(combo3D2);
         }
 
-        let array3DMuktamad = [solidCore3D, this.getMirror(solidCore3D), root3D];
-        array3DMuktamad = [...new Set(array3DMuktamad)];
+        // 3D Solid Core
+        let solidCore3D = this.sortCombo(pilihan1D.slice(0, 3).join(''));
+        if (gunaCermin) {
+            solidCore3D = this.getShadow(solidCore3D.substring(0, 2)) + solidCore3D[2];
+        }
+
+        let array3DMuktamad = Array.from(set3DDirect).slice(0, 8); 
+        if(!array3DMuktamad.includes(solidCore3D)) array3DMuktamad.unshift(solidCore3D);
 
         // 4D Options
         let set4D = new Set();
-        let luckyDigit = pilihan1D[3] || pilihan1D[0]; // Pelengkap 4D
+        let luckyDigit = pilihan1D[3] || pilihan1D[0];
         
         array3DMuktamad.forEach(k3 => {
-            pilihan1D.slice(2,5).forEach(dPelengkap => {
-                set4D.add(this.sortCombo(k3 + dPelengkap));
+            pilihan1D.slice(0, 4).forEach(dPelengkap => {
+                if(!k3.includes(dPelengkap)) {
+                    set4D.add(this.sortCombo(k3 + dPelengkap));
+                }
             });
         });
 
@@ -397,7 +412,7 @@ if (namaOperator === 'toto') {
             keputusan2D: array2D,
             keputusan3DMuktamad: array3DMuktamad,
             keputusan4D: Array.from(set4D).slice(0, 12),
-            polaObj: this.ekstrakPolaMatrix360(matrix4x4)
+            polaObj: polaMap
         };
     }
 }
