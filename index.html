@@ -285,19 +285,25 @@ class MesinMatriksPro {
         let rentetanTiga = sejarahCabutan.slice(0, ukuranTiga).join('');
         let rentetanLima = sejarahCabutan.slice(0, ukuranLima).join('');
         let rentetanLimaBelas = sejarahCabutan.slice(0, ukuranLimaBelas).join('');
-
+     
         let pemberatMikro = 0.50;
-        let pemberatHalaju = 0.50;
+let pemberatHalaju = 0.50;
 
-        if (namaOperator === 'toto') {
-            pemberatMikro = 0.7; pemberatHalaju = 0.4;
-        } else if (namaOperator === 'gdlotto') {
-            pemberatMikro = 0.70; pemberatHalaju = 0.40;
-        } else if (namaOperator === 'magnum') {
-            pemberatMikro = 0.65; pemberatHalaju = 0.45;
-        }
-
-        for (let i = 0; i <= 9; i++) {
+if (namaOperator === 'toto') {
+    // Toto: 3x seminggu. 3 cabutan = 1 kitaran penuh mingguan.
+    // Pemberat mikro dinaikkan drastik untuk menangkap tren minggu semasa.
+    pemberatMikro = 0.85; 
+    pemberatHalaju = 0.20; 
+} else if (namaOperator === 'gdlotto') {
+    // GD Lotto: Setiap hari. Momentum harian pantas.
+    pemberatMikro = 0.70; 
+    pemberatHalaju = 0.40;
+} else if (namaOperator === 'magnum') {
+    pemberatMikro = 0.65; 
+    pemberatHalaju = 0.45;
+}    
+        
+            for (let i = 0; i <= 9; i++) {
             let d = i.toString();
             // Jika angka tu mati/hilang dari carta, abaikan (skor -1)
             if (digitMati.includes(d)) {
@@ -530,3 +536,13 @@ function salin(id) {
 </script>
 </body>
 </html>
+
+        
+            
+        
+            
+        
+
+        
+
+   
