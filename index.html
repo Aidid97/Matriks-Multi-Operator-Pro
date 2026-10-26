@@ -274,7 +274,46 @@ class MesinMatriksPro {
         }
         return digitHilang;
     }
+janaMatriks3x3Tarikh(nilaiTarikh) {
+        let dArr = nilaiTarikh ? nilaiTarikh.split('-') : ['2026','10','25'];
+        if(dArr.length !== 3) dArr = ['2026','10','25'];
+        let YYYY = dArr[0];
+        let YY = YYYY.substring(2);
+        let MM = dArr[1];
+        let DD = dArr[2];
 
+        let r1_1 = (parseInt(DD[0] || 0) + parseInt(DD[1] || 0)) % 10; 
+        let r1_2 = (parseInt(YY[0] || 0) + parseInt(YY[1] || 0)) % 10; 
+        let r1_3 = (parseInt(DD[0] || 0) + parseInt(MM[0] || 0) + parseInt(YY[1] || 0)) % 10; 
+
+        let r2_1 = parseInt(MM[0] || 0);
+        let r2_2 = parseInt(MM[1] || 0);
+        let mInt = parseInt(MM);
+        
+        if (mInt >= 1 && mInt <= 9) {
+            let pecahan = mInt / 8;
+            let pecStr = pecahan.toString().split('.')[1] || "0";
+            let sumAkar = 0;
+            for (let char of pecStr) sumAkar += parseInt(char);
+            r2_1 = sumAkar % 10; 
+            r2_2 = mInt; 
+        }
+        let r2_3 = parseInt(YY[1] || 0); 
+
+        let dateNum = parseInt(DD + MM + YY); 
+        let bahagiStr = (dateNum / 8).toString(); 
+        let decPart = bahagiStr.includes('.') ? bahagiStr.split('.')[1] : "00";
+        
+        let r3_1 = parseInt(bahagiStr.charAt(0) || 0); 
+        let r3_2 = parseInt(decPart.charAt(0) || 0);   
+        let r3_3 = parseInt(decPart.charAt(1) || r3_2); 
+
+        return [
+            [r1_1, r1_2, r1_3],
+            [r2_1, r2_2, r2_3],
+            [r3_1, r3_2, r3_3]
+        ];
+    }
     kiraAngkaHidupDenganPemberat(sejarahCabutan, digitMati, namaOperator) {
         let senaraiSkor = [];
         let panjangMaksimum = sejarahCabutan.length;
