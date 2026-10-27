@@ -293,7 +293,7 @@ class MesinMatriksPro {
         let trajektori = this.kiraTrajektori(sejarahCabutan, operator);
         
         // Panggil Formula Anjakan Baru
-        let anjakanData = this.kiraTrajektoriAnjakan(sejarahCabutan);
+        let anjakanData = this.kiraTrajektoriAnjakan(sejarahCabutan, operator, gunaCermin);
 
         let set4x4 = new Set(matrix4x4.flat());
         let set3x3 = new Set(matrix3x3.flat());
