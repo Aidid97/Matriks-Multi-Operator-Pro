@@ -147,7 +147,6 @@ function sortCombo(str) {
     return (str || '').split('').sort().join('');
 }
 
-// CARTA 3X3 BERDASARKAN DRAW INDUK (Strict 1 digit per kotak, tolak 1 ke bawah)
 function binaMatriks3x3Induk(drawStr) {
     if (!drawStr || drawStr.length < 3) drawStr = "6205";
     let baseDigits = drawStr.split('').map(Number);
@@ -157,7 +156,6 @@ function binaMatriks3x3Induk(drawStr) {
     return [r1, r2, r3];
 }
 
-// CARTA 4X4 BERASARKAN NOMBOR DRAW (Tolak 1 ke bawah)
 function binaMatriks4x4Draw(drawStr) {
     if (!drawStr || drawStr.length < 4) drawStr = "6204";
     let baseRow = drawStr.substring(0, 4).split('').map(Number);
@@ -233,12 +231,10 @@ function kiraTrajektoriAnjakan(sortedPemberat) {
     return { paksi: paksiKekal, sasaran: sasaranSisipan, janaan4D: Array.from(janaan4D).slice(0, 6) };
 }
 
-// FUNGSI UTAMA ANALISIS & PERSILANGAN HIDUP
 function janaKeputusanToto() {
     let drawStr = document.getElementById('num1').value.trim();
     let drawIndukStr = document.getElementById('drawInduk').value.trim();
     let historyRaw = document.getElementById('history').value.trim();
-    let useMirror = document.getElementById('useMirror').checked;
 
     if (drawStr.length !== 4 || isNaN(drawStr)) { alert("Nombor draw 4x4 mesti 4 digit."); return; }
 
@@ -258,7 +254,6 @@ function janaKeputusanToto() {
 
     if(persilanganEmas.length === 0) persilanganEmas = anjakanData.sasaran;
 
-    // JANA 2D & 3D HIDUP DARI TITIK PERSAMAAN (INTERSECT) & MASTER KEY
     let basePool = persilanganEmas.length >= 2 ? persilanganEmas : hotDigits;
     let d2_1 = sortCombo(basePool[0] + basePool[1]);
     let d2_2 = sortCombo(basePool[0] + (basePool[2] || hotDigits[1]));
