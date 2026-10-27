@@ -37,7 +37,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
 <div class="container">
     <h2>Matriks Sports Toto Pro</h2>
-    <p class="subtitle">Edisi Carta 3x3 Induk & Carta 4x4 Draw (Sempurna Diperbetulkan)</p>
+    <p class="subtitle">Edisi Sultan 360° (Dual-Chart Verified Sharp 3D)</p>
 
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran:</label>
@@ -97,7 +97,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
         <div class="strategy-box">
             <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom: 5px; margin-bottom: 8px;">🔄 Kunci Persilangan Emas (4x4 ∩ 3x3)</p>
             🔑 <b>Master Key (Trajektori Panas):</b> <span id="master-key" style="color: #e53e3e; font-weight: bold;"></span><br>
-            🔗 <b>Titik Persamaan (4x4 ∩ 3x3):</b> <span id="intersection-key" style="color: #2b6cb0; font-weight: bold;"></span><br>
+            🔗 <b>Titik Persamaan (Kedua-dua Carta):</b> <span id="intersection-key" style="color: #2b6cb0; font-weight: bold;"></span><br>
             🎯 <b>Target 4D Toto (Solid):</b> <strong id="s4d" style="font-size:19px; color:#805ad5;"></strong>
         </div>
 
@@ -115,7 +115,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Projeksi 3D Sharp Core</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin</button></p>
+            <p style="margin:0;"><strong>Projeksi 3D Sharp (Wajib Wujud Kedua-dua Carta)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin</button></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
@@ -204,7 +204,6 @@ function binaMatriks4x4(seedStr) {
     return matrixK1;
 }
 
-// PEMBETULAN INDEKS POLA VISUAL KHAS UNTUK MATRIKS 4X4 UTAMA
 function ekstrakPolaMatrix(matrix) {
     return {
         "Pola L (Biasa)": `${matrix[0][0]}${matrix[1][0]}${matrix[2][0]}${matrix[2][1]}`,
@@ -283,20 +282,36 @@ function janaKeputusanToto() {
 
     let set4x4 = new Set(matrixK1.flat());
     let set3x3 = new Set(matrix3x3.flat());
+    
+    // Titik Persamaan Wajib (Angka yang wujud dalam KEDUA-DUA carta 4x4 DAN 3x3)
     let persilanganEmas = Array.from(set4x4).filter(d => set3x3.has(d)).map(String);
 
     let sortedPemberat = kiraPemberatToto(sejarahCabutan);
     let anjakanData = kiraTrajektoriAnjakan(sortedPemberat);
     let hotDigits = anjakanData.paksi;
 
-    if (persilanganEmas.length === 0) persilanganEmas = anjakanData.sasaran;
+    if (persilanganEmas.length === 0) {
+        persilanganEmas = anjakanData.sasaran;
+    }
 
-    let solidCore3D = sortCombo(hotDigits.slice(0, 3).join(''));
-    let d2_1 = sortCombo(hotDigits[0] + hotDigits[1]);
-    let d2_2 = sortCombo(hotDigits[0] + hotDigits[2]);
+    // PEMBINAAN 3D SHARP: Diambil strictly daripada nombor yang bertindih/wujud di kedua-dua carta disokong hot digits
+    let validPool = [...persilanganEmas, ...hotDigits];
+    let uniquePool = Array.from(new Set(validPool));
+
+    let c1 = uniquePool[0] || '0';
+    let c2 = uniquePool[1] || uniquePool[0] || '1';
+    let c3 = uniquePool[2] || uniquePool[1] || '2';
+    let c4 = uniquePool[3] || uniquePool[0] || '3';
+
+    let core3D_1 = sortCombo(c1 + c2 + c3);
+    let core3D_2 = sortCombo(c1 + c2 + c4);
+    let core3D_3 = sortCombo(c2 + c3 + c4);
+
+    let d2_1 = sortCombo(c1 + c2);
+    let d2_2 = sortCombo(c1 + c3);
     
-    let t4_1 = sortCombo(solidCore3D + (persilanganEmas[0] || '0'));
-    let t4_2 = sortCombo(solidCore3D + (anjakanData.sasaran[0] || '1'));
+    let t4_1 = sortCombo(core3D_1 + c4);
+    let t4_2 = sortCombo(core3D_2 + c1);
 
     lukisJadual4x4(matrixK1, 'matrixTable');
     lukisJadual3x3(matrix3x3, 'matrix3x3Table');
@@ -310,8 +325,10 @@ function janaKeputusanToto() {
     document.getElementById('anjakan-sasaran').innerText = anjakanData.sasaran.join(', ');
     tunjukSenarai('out-anjakan-4d', anjakanData.janaan4D);
 
-    tunjukSenarai('out-2d', [d2_1, d2_2, sortCombo(hotDigits[1]+hotDigits[2])]);
-    tunjukSenarai('out-3d', [solidCore3D, sortCombo(d2_1 + (persilanganEmas[0] || '3')), sortCombo(d2_2 + anjakanData.sasaran[0])]);
+    tunjukSenarai('out-2d', [d2_1, d2_2, sortCombo(c2 + c3)]);
+    
+    // PAPARAN 3D SHARP YANG SAHIH WUJUD PADA KEDUA-DUA CARTA
+    tunjukSenarai('out-3d', [core3D_1, core3D_2, core3D_3]);
     
     let output4D = [t4_1, t4_2];
     if (anjakanData.janaan4D[0]) output4D.push(sortCombo(anjakanData.janaan4D[0]));
