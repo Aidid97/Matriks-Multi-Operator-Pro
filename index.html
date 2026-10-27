@@ -177,20 +177,39 @@ class MesinMatriksPro {
     }
 
     binaMatriks3x3Tarikh(tglStr) {
-        let digits = (tglStr || "20261026").replace(/[^0-9]/g, '');
-        if (digits.length < 3) digits = "26102026";
-        let arr = digits.split('').map(Number);
-        let matrix = [];
-        let idx = 0;
-        for (let r = 0; r < 3; r++) {
-            let row = [];
-            for (let c = 0; c < 3; c++) {
-                row.push(arr[idx % arr.length]);
-                idx++;
-            }
-            matrix.push(row);
+        // Jika tiada tarikh dimasukkan, guna tarikh hari ini
+        if (!tglStr) {
+            let harini = new Date();
+            tglStr = harini.toISOString().split('T')[0]; // Format YYYY-MM-DD
         }
-        return matrix;
+        
+        // Pecahkan tarikh kepada komponen
+        let parts = tglStr.split('-');
+        let tahun = parts[0] || "2026";
+        let bulan = parts[1] || "10";
+        let hari = parts[2] || "17";
+
+        // Baris 1: Paksi Hari
+        let d1 = parseInt(hari[0]);
+        let d2 = parseInt(hari[1]);
+        let d3 = (d1 + d2) % 10;
+
+        // Baris 2: Paksi Bulan
+        let m1 = parseInt(bulan[0]);
+        let m2 = parseInt(bulan[1]);
+        let m3 = (m1 + m2) % 10;
+
+        // Baris 3: Paksi Tahun (Ambil 2 digit terakhir)
+        let y1 = parseInt(tahun[2] || "0");
+        let y2 = parseInt(tahun[3] || "0");
+        let y3 = (y1 + y2) % 10;
+
+        // Kembalikan susunan grid 3x3 yang tulen
+        return [
+            [d1, d2, d3],
+            [m1, m2, m3],
+            [y1, y2, y3]
+        ];
     }
 
     uraiAkar(nomborAsas) {
