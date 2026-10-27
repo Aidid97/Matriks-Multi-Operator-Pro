@@ -300,11 +300,15 @@ function janaKeputusanToto() {
 
     if(persilanganEmas.length === 0) persilanganEmas = anjakanData.sasaran;
 
+    // Penapisan diperketat untuk sasaran Pod utama
+    let poolUtama = persilanganEmas.length > 0 ? persilanganEmas : hotDigits;
+    let solidCore3D = sortCombo(hotDigits.slice(0, 3).join(''));
+    
     let d2_1 = sortCombo(hotDigits[0] + hotDigits[1]);
     let d2_2 = sortCombo(hotDigits[0] + hotDigits[2]);
-    let target3D = sortCombo(hotDigits.join(''));
-    let t4_1 = sortCombo(target3D + persilanganEmas[0]);
-    let t4_2 = sortCombo(target3D + anjakanData.sasaran[0]);
+    
+    let t4_1 = sortCombo(solidCore3D + (poolUtama[0] || '0'));
+    let t4_2 = sortCombo(solidCore3D + (anjakanData.sasaran[0] || '1'));
 
     lukisJadual(matrixK1, 'matrixTable');
     lukisJadual(matrix3x3, 'matrix3x3Table');
@@ -319,7 +323,7 @@ function janaKeputusanToto() {
     tunjukSenarai('out-anjakan-4d', anjakanData.janaan4D);
 
     tunjukSenarai('out-2d', [d2_1, d2_2, sortCombo(hotDigits[1]+hotDigits[2])]);
-    tunjukSenarai('out-3d', [target3D, sortCombo(d2_1 + persilanganEmas[0]), sortCombo(d2_2 + anjakanData.sasaran[0])]);
+    tunjukSenarai('out-3d', [solidCore3D, sortCombo(d2_1 + (poolUtama[0] || '3')), sortCombo(d2_2 + anjakanData.sasaran[0])]);
     
     let output4D = [t4_1, t4_2];
     if (anjakanData.janaan4D[0]) output4D.push(sortCombo(anjakanData.janaan4D[0]));
