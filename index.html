@@ -37,7 +37,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
 <div class="container">
     <h2>Matriks Sports Toto Pro</h2>
-    <p class="subtitle">Edisi Carta 3x3 Induk & Carta 4x4 Draw (Tolak 1)</p>
+    <p class="subtitle">Edisi Carta 3x3 Induk & Carta 4x4 Draw (Formula Cermin Elak Berulang)</p>
 
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran:</label>
@@ -55,7 +55,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
     <div class="input-group">
         <label for="num1">2. Nombor Draw Harini 4x4 (Cth: 6204):</label>
-        <input type="text" id="num1" maxlength="4" placeholder="Cth: 6204">
+        <input type="text" id="num1" placeholder="Cth: 6204">
     </div>
 
     <div class="input-group">
@@ -85,7 +85,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
         </div>
 
         <div class="result-box" style="border-left-color: #0d6efd; background: #f0f7ff;">
-            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta Tarikh Induk 3x3</p>
+            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta Tarikh Induk 3x3 (Formula Cermin Aktif)</p>
             <table class="matrix-table" id="matrix3x3Table"></table>
         </div>
 
@@ -159,6 +159,7 @@ function sortCombo(str) {
     return (str || '').split('').sort().join('');
 }
 
+// FUNGSI CARTA 3X3 INDUK DENGAN FORMULA CERMIN ELAK NOMBOR SAMA BERULANG
 function binaMatriks3x3Induk(drawStr) {
     if (!drawStr || drawStr.length < 3) drawStr = "6205";
     let baseDigits = drawStr.split('').map(Number);
@@ -167,7 +168,26 @@ function binaMatriks3x3Induk(drawStr) {
     let r2 = r1.map(val => (val - 1 + 10) % 10);
     let r3 = r2.map(val => (val - 1 + 10) % 10);
 
-    return [r1, r2, r3];
+    let rawGrid = [...r1, ...r2, ...r3];
+    let mirrorMap = {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'};
+    let seen = new Set();
+    let finalGrid = [];
+
+    rawGrid.forEach(num => {
+        let val = num;
+        while (seen.has(val)) {
+            val = parseInt(mirrorMap[val.toString()] || val);
+            if (seen.has(val)) val = (val + 1) % 10;
+        }
+        seen.add(val);
+        finalGrid.push(val);
+    });
+
+    return [
+        [finalGrid[0], finalGrid[1], finalGrid[2]],
+        [finalGrid[3], finalGrid[4], finalGrid[5]],
+        [finalGrid[6], finalGrid[7], finalGrid[8]]
+    ];
 }
 
 function binaMatriks4x4(seedStr) {
