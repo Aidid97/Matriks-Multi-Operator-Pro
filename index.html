@@ -37,7 +37,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
 <div class="container">
     <h2>Matriks Sports Toto Pro</h2>
-    <p class="subtitle">Edisi Carta 3x3 Induk & Carta 4x4 Draw (Formula Cermin Elak Berulang)</p>
+    <p class="subtitle">Edisi Carta 3x3 Induk & Carta 4x4 Draw (Sempurna Diperbetulkan)</p>
 
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran:</label>
@@ -85,7 +85,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
         </div>
 
         <div class="result-box" style="border-left-color: #0d6efd; background: #f0f7ff;">
-            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta Tarikh Induk 3x3 (Formula Cermin Aktif)</p>
+            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta Tarikh Induk 3x3</p>
             <table class="matrix-table" id="matrix3x3Table"></table>
         </div>
 
@@ -159,7 +159,6 @@ function sortCombo(str) {
     return (str || '').split('').sort().join('');
 }
 
-// FUNGSI CARTA 3X3 INDUK DENGAN FORMULA CERMIN ELAK NOMBOR SAMA BERULANG
 function binaMatriks3x3Induk(drawStr) {
     if (!drawStr || drawStr.length < 3) drawStr = "6205";
     let baseDigits = drawStr.split('').map(Number);
@@ -205,6 +204,7 @@ function binaMatriks4x4(seedStr) {
     return matrixK1;
 }
 
+// PEMBETULAN INDEKS POLA VISUAL KHAS UNTUK MATRIKS 4X4 UTAMA
 function ekstrakPolaMatrix(matrix) {
     return {
         "Pola L (Biasa)": `${matrix[0][0]}${matrix[1][0]}${matrix[2][0]}${matrix[2][1]}`,
