@@ -40,7 +40,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
 <div class="container">
     <h2>Mesin Matriks Sports Toto Pro</h2>
-    <p class="subtitle">Edisi Carta 3x3 Tarikh & Carta 4x4 Nombor Draw (Tolak 1)</p>
+    <p class="subtitle">Edisi Carta 3x3 Induk & Carta 4x4 Draw (Tolak 1)</p>
 
     <div class="input-group">
         <label for="operator">Pilih Operator / Pasaran:</label>
@@ -52,7 +52,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
     </div>
 
     <div class="input-group">
-        <label for="tarikhCabutan">1. Tarikh Cabutan (Auto-Jana Carta 3x3 Tarikh):</label>
+        <label for="tarikhCabutan">1. Tarikh Cabutan:</label>
         <input type="date" id="tarikhCabutan">
     </div>
 
@@ -62,7 +62,12 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
     </div>
 
     <div class="input-group">
-        <label for="history">3. Sejarah Cabutan Toto Lepas (Pemberat 0.55/0.35):</label>
+        <label for="drawInduk">3. Nombor Draw Induk 3x3 (Cth: 6205):</label>
+        <input type="text" id="drawInduk" maxlength="3" value="6205" placeholder="Cth: 6205">
+    </div>
+
+    <div class="input-group">
+        <label for="history">4. Sejarah Cabutan Toto Lepas (Pemberat 0.55/0.35):</label>
         <textarea id="history" rows="3" placeholder="Paste result lepas Toto di sini...&#10;Contoh: 6204, 1289, 7890, 2337..."></textarea>
     </div>
 
@@ -86,9 +91,9 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
             <table class="matrix-table" id="matrixTable"></table>
         </div>
 
-        <!-- Matriks 3x3 Tarikh (Strict 1 digit per kotak) -->
+        <!-- Matriks 3x3 Induk (Strict 1 digit per kotak) -->
         <div class="result-box" style="border-left-color: #0d6efd; background: #f0f7ff;">
-            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta 3x3 Tarikh (Berasaskan Akar Tarikh - Tolak 1)</p>
+            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta 3x3 Induk (Tolak 1)</p>
             <table class="matrix-table" id="matrix3x3Table"></table>
         </div>
 
@@ -100,27 +105,27 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
         <!-- Analisis Persilangan Emas -->
         <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom: 5px; margin-bottom: 8px;">🔄 Kunci Persilangan Emas (4x4 ∩ 3x3 Tarikh)</p>
+            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom: 5px; margin-bottom: 8px;">🔄 Kunci Persilangan Emas (4x4 ∩ 3x3)</p>
             🔑 <b>Master Key (Trajektori Panas):</b> <span id="master-key" style="color: #e53e3e; font-weight: bold;"></span><br>
-            🔗 <b>Titik Persamaan (4x4 ∩ 3x3 Tarikh):</b> <span id="intersection-key" style="color: #2b6cb0; font-weight: bold;"></span><br>
+            🔗 <b>Titik Persamaan (Intersects):</b> <span id="intersection-key" style="color: #2b6cb0; font-weight: bold;"></span><br>
             🎯 <b>Target 4D Toto (Solid):</b> <strong id="s4d" style="font-size:19px; color:#805ad5;"></strong>
         </div>
 
         <div class="anjakan-box">
-            <p style="margin:0; font-weight:bold; color:#b7791f; font-size:14px; border-bottom: 1px solid #f6e05e; padding-bottom: 5px; margin-bottom: 8px;">🚀 Formula Trajektori Anjakan (Blok Toto)</p>
+            <p style="margin:0; font-weight:bold; color:#b7791f; font-size:14px; border-bottom: 1px solid #f6e05e; padding-bottom: 5px; margin-bottom: 8px;">🚀 Formula Trajektori Anjakan & Titik Persamaan</p>
             ⚓ <b>Paksi Kekal (Anchor Blok):</b> <span id="anjakan-paksi" style="color: #2d3748; font-weight: 800; font-family: monospace; font-size: 16px;"></span><br>
             🧩 <b>Digit Sisipan (Target Sejuk):</b> <span id="anjakan-sasaran" style="color: #e53e3e; font-weight: bold; font-size: 15px;"></span><br>
-            <p style="margin: 10px 0 5px 0; font-size: 12px; font-weight: bold;">Janaan 4D Anjakan:</p>
+            <p style="margin: 10px 0 5px 0; font-size: 12px; font-weight: bold;">Janaan 4D Anjakan Bersandarkan Persilangan:</p>
             <div id="out-anjakan-4d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #38a169;">
-            <p style="margin:0;"><strong>2D Anchor Solid</strong> <button class="btn-copy" onclick="salin('out-2d')">Salin</button></p>
+            <p style="margin:0;"><strong>2D Anchor Solid (Dari Titik Persamaan)</strong> <button class="btn-copy" onclick="salin('out-2d')">Salin</button></p>
             <div id="out-2d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Projeksi 3D Sharp Core</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin</button></p>
+            <p style="margin:0;"><strong>Projeksi 3D Sharp Core (Dari Titik Persamaan)</strong> <button class="btn-copy" onclick="salin('out-3d')">Salin</button></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
@@ -142,21 +147,13 @@ function sortCombo(str) {
     return (str || '').split('').sort().join('');
 }
 
-// CARTA 3X3 BERASARKAN AKAR TARIKH (Strict 1 digit per kotak, tolak 1 ke bawah)
-function binaMatriks3x3Tarikh(tglVal) {
-    if (!tglVal) tglVal = new Date().toISOString().split('T')[0];
-    let parts = tglVal.split('-');
-    let day = parts[2] || '27';
-    let month = parts[1] || '10';
-
-    let d1 = parseInt(day[0]) % 10;
-    let d2 = parseInt(day[1] || '0') % 10;
-    let d3 = parseInt(month[1] || '0') % 10;
-
-    let r1 = [d1, d2, d3];
+// CARTA 3X3 BERDASARKAN DRAW INDUK (Strict 1 digit per kotak, tolak 1 ke bawah)
+function binaMatriks3x3Induk(drawStr) {
+    if (!drawStr || drawStr.length < 3) drawStr = "6205";
+    let baseDigits = drawStr.split('').map(Number);
+    let r1 = [baseDigits[0] || 0, baseDigits[1] || 0, baseDigits[2] || 0];
     let r2 = r1.map(val => (val - 1 + 10) % 10);
     let r3 = r2.map(val => (val - 1 + 10) % 10);
-
     return [r1, r2, r3];
 }
 
@@ -207,7 +204,6 @@ function kiraPemberatToto(sejarahCabutan) {
     let t3 = sejarahCabutan.slice(0, 3).join('');
     let t5 = sejarahCabutan.slice(0, 5).join('');
     let t15 = sejarahCabutan.slice(0, 15).join('');
-    
     let w_micro = 0.55; 
     let w_velocity = 0.35;
 
@@ -216,11 +212,9 @@ function kiraPemberatToto(sejarahCabutan) {
         let f_mikro = t3 ? (t3.split(d).length - 1) : 0;
         let c_t5 = t5 ? (t5.split(d).length - 1) : 0;
         let c_t15 = t15 ? (t15.split(d).length - 1) : 0;
-        
         let vel5 = t5 ? (c_t5 / 5) : 0;
         let vel15 = t15 ? (c_t15 / 15) : 0;
         let halaju = vel5 - vel15;
-        
         skor.push({ digit: d, skorAkhir: (w_micro * f_mikro) + (w_velocity * halaju) });
     }
     return skor.sort((a, b) => b.skorAkhir - a.skorAkhir).map(x => x.digit);
@@ -239,10 +233,12 @@ function kiraTrajektoriAnjakan(sortedPemberat) {
     return { paksi: paksiKekal, sasaran: sasaranSisipan, janaan4D: Array.from(janaan4D).slice(0, 6) };
 }
 
+// FUNGSI UTAMA ANALISIS & PERSILANGAN HIDUP
 function janaKeputusanToto() {
     let drawStr = document.getElementById('num1').value.trim();
-    let tglVal = document.getElementById('tarikhCabutan').value;
+    let drawIndukStr = document.getElementById('drawInduk').value.trim();
     let historyRaw = document.getElementById('history').value.trim();
+    let useMirror = document.getElementById('useMirror').checked;
 
     if (drawStr.length !== 4 || isNaN(drawStr)) { alert("Nombor draw 4x4 mesti 4 digit."); return; }
 
@@ -250,10 +246,10 @@ function janaKeputusanToto() {
     let sejarahCabutan = matchHasil ? matchHasil.map(num => num.trim()) : [];
 
     let matrix4x4 = binaMatriks4x4Draw(drawStr);
-    let matrix3x3Tarikh = binaMatriks3x3Tarikh(tglVal);
+    let matrix3x3Induk = binaMatriks3x3Induk(drawIndukStr);
 
     let set4x4 = new Set(matrix4x4.flat());
-    let set3x3 = new Set(matrix3x3Tarikh.flat());
+    let set3x3 = new Set(matrix3x3Induk.flat());
     let persilanganEmas = Array.from(set4x4).filter(d => set3x3.has(d)).map(String);
 
     let sortedPemberat = kiraPemberatToto(sejarahCabutan);
@@ -262,15 +258,27 @@ function janaKeputusanToto() {
 
     if(persilanganEmas.length === 0) persilanganEmas = anjakanData.sasaran;
 
-    let solidCore3D = sortCombo(hotDigits.slice(0, 3).join(''));
-    let d2_1 = sortCombo(hotDigits[0] + hotDigits[1]);
-    let d2_2 = sortCombo(hotDigits[0] + hotDigits[2]);
-    
-    let t4_1 = sortCombo(solidCore3D + (persilanganEmas[0] || '0'));
-    let t4_2 = sortCombo(solidCore3D + (anjakanData.sasaran[0] || '1'));
+    // JANA 2D & 3D HIDUP DARI TITIK PERSAMAAN (INTERSECT) & MASTER KEY
+    let basePool = persilanganEmas.length >= 2 ? persilanganEmas : hotDigits;
+    let d2_1 = sortCombo(basePool[0] + basePool[1]);
+    let d2_2 = sortCombo(basePool[0] + (basePool[2] || hotDigits[1]));
+    let d2_3 = sortCombo((basePool[1] || hotDigits[0]) + (basePool[2] || hotDigits[2]));
+
+    let solidCore3D_1 = sortCombo(basePool[0] + basePool[1] + (basePool[2] || hotDigits[2]));
+    let solidCore3D_2 = sortCombo(basePool[0] + (basePool[2] || hotDigits[1]) + (basePool[3] || hotDigits[2]));
+
+    let t4_1 = sortCombo(solidCore3D_1 + (basePool[3] || persilanganEmas[0] || '0'));
+    let t4_2 = sortCombo(solidCore3D_2 + (anjakanData.sasaran[0] || '1'));
+
+    let anjakan4DList = new Set();
+    basePool.forEach(d1 => {
+        anjakanData.sasaran.forEach(d2 => {
+            anjakan4DList.add(sortCombo(basePool[0] + d1 + d2 + (basePool[1] || '0')));
+        });
+    });
 
     lukisJadual4x4(matrix4x4, 'matrixTable');
-    lukisJadual3x3(matrix3x3Tarikh, 'matrix3x3Table');
+    lukisJadual3x3(matrix3x3Induk, 'matrix3x3Table');
     renderPolaGrid(ekstrakPolaMatrix(matrix4x4));
     
     document.getElementById('master-key').innerText = hotDigits.join(' / ');
@@ -279,10 +287,10 @@ function janaKeputusanToto() {
 
     document.getElementById('anjakan-paksi').innerText = anjakanData.paksi.join(' - ');
     document.getElementById('anjakan-sasaran').innerText = anjakanData.sasaran.join(', ');
-    tunjukSenarai('out-anjakan-4d', anjakanData.janaan4D);
+    tunjukSenarai('out-anjakan-4d', Array.from(anjakan4DList).slice(0, 6));
 
-    tunjukSenarai('out-2d', [d2_1, d2_2, sortCombo(hotDigits[1]+hotDigits[2])]);
-    tunjukSenarai('out-3d', [solidCore3D, sortCombo(d2_1 + (persilanganEmas[0] || '3')), sortCombo(d2_2 + anjakanData.sasaran[0])]);
+    tunjukSenarai('out-2d', [d2_1, d2_2, d2_3]);
+    tunjukSenarai('out-3d', [solidCore3D_1, solidCore3D_2, sortCombo(d2_1 + (basePool[2] || '3'))]);
     
     let output4D = [t4_1, t4_2];
     if (anjakanData.janaan4D[0]) output4D.push(sortCombo(anjakanData.janaan4D[0]));
