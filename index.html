@@ -311,9 +311,28 @@ class MesinMatriksPro {
             }
         }
         let keputusan2D = Array.from(anchors2D).slice(0, 10);
+        let top2DPairs = [
+            hotDigits[0] + (hotDigits[1] || '0'), // Pasangan dominan 1 (Cth: 28)
+            hotDigits[0] + (hotDigits[2] || '1')  // Pasangan dominan 2 (Cth: 27)
+        ];
+        
+        let poolPelengkap = intersectionDigits.length > 0 ? intersectionDigits : anjakanData.sasaran;
+        let set3DMuktamad = new Set();
+        
+        top2DPairs.forEach(pair => {
+            // 1. Kahwinkan 2D dengan top 2 digit dari Persilangan Emas / Sisipan
+            poolPelengkap.slice(0, 2).forEach(p => {
+                if (!pair.includes(p)) set3DMuktamad.add(this.sortCombo(pair + p));
+            });
+            // 2. Kekalkan formasi trajektori 3 digit panas sebagai backup
+            if (hotDigits[2] && !pair.includes(hotDigits[2])) {
+                set3DMuktamad.add(this.sortCombo(pair + hotDigits[2]));
+            }
+        });
 
-        let solidCore3D = this.sortCombo(hotDigits.slice(0, 3).join(''));
-        let target4D = this.sortCombo(solidCore3D + (dataAkar.cabangTolak || '0')).padEnd(4, '0');
+        let array3DMuktamad = Array.from(set3DMuktamad).slice(0, 4); // Keluarkan 4 unjuran 3D terbaik
+        let solidCore3D = array3DMuktamad[0] || this.sortCombo(hotDigits.slice(0, 3).join(''));
+        let target4D = this.sortCombo(solidCore3D + (dataAkar.cabangTolak || coldPivot[0] || '0')).padEnd(4, '0');
 
         return {
             matrix: matrix4x4,
@@ -322,11 +341,12 @@ class MesinMatriksPro {
             intersectionKey: intersectionKeyStr,
             target4D: target4D,
             keputusan2D: keputusan2D,
-            keputusan3DMuktamad: [solidCore3D, this.sortCombo(hotDigits[0] + hotDigits[1] + coldPivot[0])],
+            keputusan3DMuktamad: array3DMuktamad, // Guna tatasusunan 3D yang telah diperbetulkan
             keputusan4D: [target4D, this.sortCombo(solidCore3D + (coldPivot[0] || '1'))],
             polaObj: this.ekstrakPolaMatrix(matrix4x4),
             anjakanObj: anjakanData
         };
+        
     }
 }
 
