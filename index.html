@@ -175,41 +175,73 @@ class MesinMatriksPro {
         }
         return matrix;
     }
-
     binaMatriks3x3Tarikh(tglStr) {
-        // Jika tiada tarikh dimasukkan, guna tarikh hari ini
         if (!tglStr) {
             let harini = new Date();
-            tglStr = harini.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            tglStr = harini.toISOString().split('T')[0];
         }
-        
-        // Pecahkan tarikh kepada komponen
+
         let parts = tglStr.split('-');
-        let tahun = parts[0] || "2026";
-        let bulan = parts[1] || "10";
-        let hari = parts[2] || "17";
+        let yStr = parts[0].substring(2, 4); 
+        let mStr = parts[1];                 
+        let dStr = parts[2];                 
 
-        // Baris 1: Paksi Hari
-        let d1 = parseInt(hari[0]);
-        let d2 = parseInt(hari[1]);
-        let d3 = (d1 + d2) % 10;
+        let y = parseInt(yStr);
+        let m = parseInt(mStr);
+        let d = parseInt(dStr);
 
-        // Baris 2: Paksi Bulan
-        let m1 = parseInt(bulan[0]);
-        let m2 = parseInt(bulan[1]);
-        let m3 = (m1 + m2) % 10;
+        const campurDigit = (num) => String(num).split('').reduce((a, b) => a + parseInt(b), 0);
+        const mirrorMap = {'0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'};
 
-        // Baris 3: Paksi Tahun (Ambil 2 digit terakhir)
-        let y1 = parseInt(tahun[2] || "0");
-        let y2 = parseInt(tahun[3] || "0");
-        let y3 = (y1 + y2) % 10;
+        // --- PENGIRAAN ASAS MANUAL ---
+        let r1_c1 = campurDigit(Math.abs(y - m)); 
+        let r1_c2 = campurDigit(Math.abs(d - m)); 
+        let r1_c3 = campurDigit(y);               
 
-        // Kembalikan susunan grid 3x3 yang tulen
-        return [
-            [d1, d2, d3],
-            [m1, m2, m3],
-            [y1, y2, y3]
+        let r2_c1 = campurDigit(d);               
+        let r2_c2 = parseInt(mStr[0]);            
+        let r2_c3 = parseInt(mStr[1] || 0);       
+
+        let r3_c1 = Math.abs(10 - r1_c3);         
+        let r3_c2 = Math.abs(10 - campurDigit(m)); 
+        let r3_c3 = Math.abs(10 - r2_c1);         
+
+        let rawGrid = [
+            r1_c1, r1_c2, r1_c3,
+            r2_c1, r2_c2, r2_c3,
+            r3_c1, r3_c2, r3_c3
         ];
+
+        let seen = new Set();
+        let finalGrid = [];
+        let missingDigits = [];
+        let allDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+        rawGrid.forEach(num => {
+            let val = num;
+            while (seen.has(val)) {
+                val = parseInt(mirrorMap[val.toString()]);
+                if (seen.has(val)) {
+                    val = (val + 1) % 10;
+                }
+            }
+            seen.add(val);
+            finalGrid.push(val);
+        });
+
+        allDigits.forEach(num => {
+            if (!seen.has(num)) missingDigits.push(num);
+        });
+
+        this.lastMissingDigits = missingDigits;
+
+        return [
+            [finalGrid[0], finalGrid[1], finalGrid[2]],
+            [finalGrid[3], finalGrid[4], finalGrid[5]],
+            [finalGrid[6], finalGrid[7], finalGrid[8]]
+        ];
+    }
+   
     }
 
     uraiAkar(nomborAsas) {
