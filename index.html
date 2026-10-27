@@ -60,7 +60,7 @@ button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14
 
     <div class="input-group">
         <label for="drawInduk">3. Nombor Draw Induk 3x3 (Cth: 6205):</label>
-        <input type="text" id="drawInduk" maxlength="4" placeholder="Cth: 6205" value="6205">
+        <input type="text" id="drawInduk" placeholder="Cth: 6205" value="6205">
     </div>
 
     <div class="input-group">
@@ -160,7 +160,7 @@ function sortCombo(str) {
 }
 
 function binaMatriks3x3Induk(drawStr) {
-    if (!drawStr || drawStr.length < 4) drawStr = "6205";
+    if (!drawStr || drawStr.length < 3) drawStr = "6205";
     let baseDigits = drawStr.split('').map(Number);
     
     let r1 = [baseDigits[0] || 0, baseDigits[1] || 0, baseDigits[2] || 0];
@@ -253,7 +253,7 @@ function janaKeputusanToto() {
     let historyRaw = document.getElementById('history').value.trim();
 
     if (seedStr.length !== 4 || isNaN(seedStr)) { alert("Nombor draw harini 4x4 mesti 4 digit."); return; }
-    if (drawIndukStr.length !== 4 || isNaN(drawIndukStr)) { alert("Nombor draw induk 3x3 mesti 4 digit."); return; }
+    if (drawIndukStr.length < 3 || isNaN(drawIndukStr)) { alert("Nombor draw induk 3x3 sekurang-kurangnya 3 digit."); return; }
 
     let matchHasil = historyRaw.match(/\d{4}/g);
     let sejarahCabutan = matchHasil ? matchHasil.map(num => num.trim()) : [];
