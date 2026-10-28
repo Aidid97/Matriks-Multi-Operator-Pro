@@ -3,22 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matrix Protocol Engine</title>
+    <title>Matrix Digit Hub</title>
     <style>
       :root {
-        --bg: #0b1220;
-        --panel: #101827;
-        --panel-2: #111f33;
-        --card: #17233a;
-        --line: #2e3d59;
-        --text: #e5edf9;
-        --muted: #9aa8c3;
-        --blue: #60a5fa;
-        --green: #34d399;
-        --gold: #fbbf24;
-        --red: #f87171;
-        --purple: #a78bfa;
-        --shadow: rgba(0, 0, 0, 0.3);
+        --bg: #07131f;
+        --bg-2: #0d1d2e;
+        --panel: #102238;
+        --panel-2: #172c45;
+        --line: #35557d;
+        --text: #edf4ff;
+        --muted: #9fb2d0;
+        --green: #69f0c7;
+        --green-2: #2ce6b2;
+        --blue: #7ec6ff;
+        --shadow: rgba(0, 0, 0, 0.28);
       }
 
       * { box-sizing: border-box; }
@@ -26,241 +24,204 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background: linear-gradient(180deg, var(--bg), #111827);
+        background: linear-gradient(180deg, var(--bg), var(--bg-2));
         color: var(--text);
         font-family: Arial, sans-serif;
-        padding: 24px;
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 18px;
       }
 
-      .app {
-        width: min(1100px, 100%);
-        background: rgba(16, 24, 39, 0.9);
+      .phone {
+        width: min(430px, 100%);
+        min-height: 100vh;
+        background: rgba(9, 19, 31, 0.95);
         border: 1px solid var(--line);
-        border-radius: 20px;
-        padding: 22px;
-        box-shadow: 0 20px 50px var(--shadow);
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 18px 40px var(--shadow);
       }
 
       .topbar {
+        background: rgba(17, 30, 44, 0.9);
+        border-bottom: 1px solid var(--line);
+        padding: 12px 14px 10px;
+      }
+
+      .row {
         display: flex;
+        gap: 10px;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        margin-bottom: 18px;
       }
 
-      .title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .date-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-end;
-        gap: 10px;
-      }
-
-      .date-box {
+      .field {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        min-width: 170px;
+        gap: 5px;
+        flex: 1;
       }
 
-      .date-box label {
-        font-size: 0.7rem;
+      .field label {
+        font-size: 0.56rem;
         color: var(--muted);
-        text-transform: uppercase;
         letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
-      .date-box input {
-        background: #0a1426;
-        color: var(--text);
+      .field input {
+        width: 100%;
+        background: #0a1627;
         border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px 12px;
-        outline: none;
-      }
-
-      .seed-box {
-        background: #0a1426;
         color: var(--text);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px 12px;
-        width: 170px;
+        border-radius: 8px;
+        padding: 8px 10px;
         outline: none;
+        font-size: 0.88rem;
       }
 
-      .button {
-        border: none;
-        background: linear-gradient(135deg, var(--blue), var(--purple));
-        color: white;
-        padding: 12px 18px;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 0.15s ease, opacity 0.15s ease;
+      .field input:focus {
+        border-color: var(--green);
       }
-
-      .button:hover { transform: translateY(-1px); opacity: 0.97; }
-      .button:active { transform: translateY(0); }
 
       .content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
-      }
-
-      .panel {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        overflow: hidden;
-      }
-
-      .panel-header {
-        background: var(--panel-2);
-        border-bottom: 1px solid var(--line);
-        padding: 12px 14px;
-        font-size: 0.76rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--muted);
-      }
-
-      .matrix {
-        display: grid;
-        gap: 8px;
         padding: 14px;
       }
 
-      .matrix-4x4 { grid-template-columns: repeat(4, minmax(90px, 1fr)); }
-      .matrix-3x3 { grid-template-columns: repeat(3, minmax(90px, 1fr)); }
+      .panel {
+        background: rgba(17, 34, 52, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        margin-bottom: 16px;
+      }
+
+      .panel-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 12px 18px 8px;
+      }
+
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 10px;
+        padding: 12px 14px 16px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 10px;
+        padding: 12px 14px 16px;
+      }
 
       .cell {
-        min-height: 78px;
-        border-radius: 12px;
-        background: linear-gradient(180deg, #101d32, #0a1426);
+        min-height: 92px;
+        background: linear-gradient(180deg, #11263f, #0d1d2e);
         border: 1px solid var(--line);
+        border-radius: 14px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 4px;
-        text-align: center;
         padding: 8px;
       }
 
-      .tag {
-        font-size: 0.52rem;
+      .cell-tag {
+        font-size: 0.58rem;
         color: var(--muted);
-        letter-spacing: 0.08em;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
       }
 
-      .number {
-        font-size: 1.28rem;
-        font-weight: 700;
+      .cell-value {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
         color: var(--green);
       }
 
-      .status-bar {
-        margin-top: 18px;
-        background: var(--panel);
+      .engine-box {
+        background: rgba(18, 35, 58, 0.9);
         border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 14px 16px;
-        min-height: 150px;
+        border-radius: 18px;
+        padding: 14px 16px 16px;
       }
 
-      .status-title {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 8px;
-      }
-
-      .final-text {
-        display: grid;
-        gap: 6px;
-        line-height: 1.6;
-        font-size: 0.95rem;
+      .engine-box .line {
+        font-size: 1.05rem;
+        margin: 6px 0;
         color: var(--text);
       }
 
-      .candidate {
-        margin-top: 14px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        background: rgba(52, 211, 153, 0.08);
-        font-weight: 700;
+      .engine-box .line strong {
         color: var(--green);
-        font-size: 1rem;
       }
 
-      @media (max-width: 760px) {
-        .content { grid-template-columns: 1fr; }
-        .matrix-4x4, .matrix-3x3 { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
+      .final-box {
+        margin-top: 12px;
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.12));
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 18px;
+        text-align: center;
+        font-weight: 900;
+        font-size: clamp(1.2rem, 4vw, 2.2rem);
+        color: var(--green);
+      }
+
+      @media (max-width: 420px) {
+        .grid-4, .grid-3 { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
       }
     </style>
   </head>
   <body>
-    <div class="app">
+    <div class="phone">
       <div class="topbar">
-        <div class="title">Protocol Matrix Engine</div>
-
-        <div class="date-row">
-          <div class="date-box">
-            <label for="startDate">Tarikh Mula</label>
+        <div class="row">
+          <div class="field">
+            <label for="startDate">Tarikh</label>
             <input id="startDate" type="date" />
           </div>
 
-          <div class="date-box">
-            <label for="matrixSeed4x4">Seed 4x4</label>
-            <input id="matrixSeed4x4" class="seed-box" type="text" placeholder="6204" value="" />
+          <div class="field">
+            <label for="matrixSeed4x4">4x4</label>
+            <input id="matrixSeed4x4" type="text" maxlength="4" placeholder="6205" />
           </div>
 
-          <div class="date-box">
-            <label for="matrixSeed3x3">Seed 3x3</label>
-            <input id="matrixSeed3x3" class="seed-box" type="text" placeholder="620" value="" />
+          <div class="field">
+            <label for="matrixSeed3x3">3x3</label>
+            <input id="matrixSeed3x3" type="text" maxlength="3" placeholder="165" />
           </div>
-
-          <button class="button" id="generateBtn">Generate</button>
         </div>
       </div>
 
       <div class="content">
         <div class="panel">
-          <div class="panel-header">Matrix 4x4</div>
-          <div class="matrix matrix-4x4" id="matrix4x4"></div>
+          <div class="panel-title">MATRIX 4X4</div>
+          <div id="matrix4x4" class="grid-4"></div>
         </div>
 
         <div class="panel">
-          <div class="panel-header">Matrix 3x3</div>
-          <div class="matrix matrix-3x3" id="matrix3x3"></div>
+          <div class="panel-title">MATRIX 3X3</div>
+          <div id="matrix3x3" class="grid-3"></div>
         </div>
-      </div>
 
-      <div class="status-bar">
-        <div class="status-title">Engine Status</div>
-        <div class="final-text" id="finalStatus"></div>
-      </div>
+        <div class="panel">
+          <div class="panel-title">SHADOW 3X3</div>
+          <div id="shadow3x3" class="grid-3"></div>
+        </div>
 
-      <div class="candidate">
-        Final Candidate: <span id="finalCandidate">--</span>
+        <div class="engine-box">
+          <div class="line"><strong>Seed 4x4:</strong> <span id="seed4Text">--</span></div>
+          <div class="line"><strong>Seed 3x3:</strong> <span id="seed3Text">--</span></div>
+          <div class="final-box">Final Candidate: <span id="finalCandidate">--</span></div>
+        </div>
       </div>
     </div>
 
@@ -305,6 +266,10 @@
         return getAutoSeedFromDate(dateValue, mode);
       }
 
+      function normalizeSeed(seed, length) {
+        return sanitizeDigits(seed, length).padStart(length, '0').slice(0, length);
+      }
+
       function buildMatrix4x4(seed) {
         const digits = digitsOf(seed, 4);
         const matrix = [digits.slice()];
@@ -331,167 +296,75 @@
         return matrix;
       }
 
-      function matrixSum(matrix) {
-        return matrix.flat().reduce((sum, value) => sum + value, 0);
-      }
-
-      function getFrequency(results) {
-        const map = new Map();
-        for (const value of results) {
-          const digits = digitsOf(value, 4);
-          for (const digit of digits) {
-            map.set(digit, (map.get(digit) || 0) + 1);
+      function buildShadow3x3(seed) {
+        const digits = digitsOf(seed, 3);
+        const matrix = [digits.slice()];
+        for (let r = 1; r < 3; r++) {
+          const row = [];
+          for (let c = 0; c < 3; c++) {
+            row.push((matrix[r - 1][c] + 5) % 10);
           }
+          matrix.push(row);
         }
-        return map;
+        return matrix;
       }
 
-      function computeGeometry(seed4, seed3) {
-        const variants = new Set();
-        const digits4 = String(seed4).split('');
-        const digits3 = String(seed3).split('');
-
-        for (const arr of [digits4, digits3]) {
-          variants.add(arr.slice().reverse().join(''));
-          if (arr.length >= 2) {
-            const swapped = [...arr];
-            [swapped[0], swapped[1]] = [swapped[1], swapped[0]];
-            variants.add(swapped.join(''));
-          }
-        }
-
-        const values = [...variants].filter(Boolean);
-        const mirror = values.length > 0 ? values[0] : '000';
-
-        return {
-          label: values.length > 0 ? `Mirror / Geometry OK (${mirror})` : 'Geometry neutral',
-          score: values.length * 10
-        };
-      }
-
-      function computeTrajectory(dateValue, seed4, seed3) {
-        const raw = dateValue || new Date().toISOString().split('T')[0];
-        const [year, month, day] = raw.split('-');
-        const yy = Number(String(year || '2026').slice(-2));
-        const mm = Number(month || '1');
-        const dd = Number(day || '1');
-
-        const total = yy + mm + dd;
-        const seedTotal = digitsOf(seed4, 4).reduce((sum, v) => sum + v, 0) + digitsOf(seed3, 3).reduce((sum, v) => sum + v, 0);
-        const delta = (total - seedTotal) % 10;
-
-        return {
-          label: delta >= 5 ? 'Trajectory upward' : 'Trajectory stable',
-          score: delta + 1
-        };
-      }
-
-      function computeWeightedScore({ freqMap, matrix4x4, matrix3x3, geometry, trajectory }) {
-        const sortedDigits = [...freqMap.entries()].sort((a, b) => b[1] - a[1]);
-        const topDigit = sortedDigits[0] ? sortedDigits[0][0] : 0;
-        const score =
-          (sortedDigits[0]?.[1] ?? 0) * 2.2 +
-          matrix4x4 * 0.8 +
-          matrix3x3 * 1.0 +
-          geometry.score * 0.9 +
-          trajectory.score * 1.4;
-
-        let label = 'Medium zone';
-        if (score >= 90) label = 'High priority zone';
-        else if (score >= 70) label = 'Strong signal';
-        else if (score >= 50) label = 'Watch zone';
-
-        return { label, score, topDigit };
-      }
-
-      function renderMatrix(targetId, matrix) {
+      function renderGrid(targetId, matrix) {
         const target = document.getElementById(targetId);
         if (!target) return;
-
         target.innerHTML = '';
+
         matrix.forEach((row, rowIndex) => {
-          row.forEach((cellValue, colIndex) => {
+          row.forEach((value, colIndex) => {
             const cell = document.createElement('div');
             cell.className = 'cell';
 
             const tag = document.createElement('div');
-            tag.className = 'tag';
+            tag.className = 'cell-tag';
             tag.textContent = `${rowIndex + 1}:${colIndex + 1}`;
 
-            const number = document.createElement('div');
-            number.className = 'number';
-            number.textContent = String(cellValue);
+            const num = document.createElement('div');
+            num.className = 'cell-value';
+            num.textContent = String(value);
 
             cell.appendChild(tag);
-            cell.appendChild(number);
+            cell.appendChild(num);
             target.appendChild(cell);
           });
         });
       }
 
-      function renderProtocol() {
+      function render() {
         const dateValue = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
-        const seed4 = resolveSeed('matrixSeed4x4', '4x4', dateValue);
-        const seed3 = resolveSeed('matrixSeed3x3', '3x3', dateValue);
+        const seed4 = normalizeSeed(resolveSeed('matrixSeed4x4', '4x4', dateValue), 4);
+        const seed3 = normalizeSeed(resolveSeed('matrixSeed3x3', '3x3', dateValue), 3);
 
         const matrix4x4 = buildMatrix4x4(seed4);
         const matrix3x3 = buildMatrix3x3(seed3);
-        const freqMap = getFrequency([seed4, seed3]);
-        const matrix4Score = matrixSum(matrix4x4);
-        const matrix3Score = matrixSum(matrix3x3);
-        const geometry = computeGeometry(seed4, seed3);
-        const trajectory = computeTrajectory(dateValue, seed4, seed3);
-        const weighted = computeWeightedScore({
-          freqMap,
-          matrix4x4: matrix4Score,
-          matrix3x3: matrix3Score,
-          geometry,
-          trajectory
-        });
+        const shadow3x3 = buildShadow3x3(seed3);
 
-        renderMatrix('matrix4x4', matrix4x4);
-        renderMatrix('matrix3x3', matrix3x3);
+        renderGrid('matrix4x4', matrix4x4);
+        renderGrid('matrix3x3', matrix3x3);
+        renderGrid('shadow3x3', shadow3x3);
 
-        const status = document.getElementById('finalStatus');
-        if (status) {
-          status.innerHTML = `
-            <div><strong>Seed 4x4:</strong> ${seed4}</div>
-            <div><strong>Seed 3x3:</strong> ${seed3}</div>
-            <div><strong>Top digit:</strong> ${weighted.topDigit}</div>
-            <div><strong>Matrix 4x4:</strong> ${matrix4Score}</div>
-            <div><strong>Matrix 3x3:</strong> ${matrix3Score}</div>
-            <div><strong>Geometry:</strong> ${geometry.label}</div>
-            <div><strong>Trajectory:</strong> ${trajectory.label}</div>
-            <div><strong>Weighted rank:</strong> ${weighted.label}</div>
-            <div><strong>Score:</strong> ${weighted.score.toFixed(2)}</div>
-          `;
-        }
-
-        const finalCandidate = document.getElementById('finalCandidate');
-        if (finalCandidate) {
-          finalCandidate.textContent = `${seed4} / ${seed3}`;
-        }
-      }
-
-      function setDefaultDates() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').value = today;
+        document.getElementById('seed4Text').textContent = seed4;
+        document.getElementById('seed3Text').textContent = seed3;
+        document.getElementById('finalCandidate').textContent = `${seed4} / ${seed3}`;
       }
 
       document.addEventListener('DOMContentLoaded', () => {
-        setDefaultDates();
-
-        const generateBtn = document.getElementById('generateBtn');
-        if (generateBtn) {
-          generateBtn.addEventListener('click', renderProtocol);
-        }
-
         const startDate = document.getElementById('startDate');
-        if (startDate) {
-          startDate.addEventListener('change', renderProtocol);
-        }
+        const seed4 = document.getElementById('matrixSeed4x4');
+        const seed3 = document.getElementById('matrixSeed3x3');
 
-        renderProtocol();
+        const today = new Date().toISOString().split('T')[0];
+        if (startDate && !startDate.value) startDate.value = today;
+
+        startDate.addEventListener('change', render);
+        seed4.addEventListener('input', render);
+        seed3.addEventListener('input', render);
+
+        render();
       });
     </script>
   </body>
