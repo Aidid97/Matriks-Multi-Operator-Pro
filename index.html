@@ -1,347 +1,239 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matriks Sports Toto Pro - 360° Full Edition</title>
-<style>
-:root {
-    --bg: #f0f2f5;
-    --panel: #ffffff;
-    --text: #1c1e21;
-    --muted: #718096;
-    --border: #cbd5e0;
-    --brand: #e53e3e;
-    --brand-dark: #c53030;
-    --dark: #2d3748;
-    --blue: #2b6cb0;
-    --green: #198754;
-    --gold: #b7791f;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matrix Protocol Engine</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --line: #374151;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --blue: #60a5fa;
+      --green: #34d399;
+      --gold: #fbbf24;
+      --red: #f87171;
+      --purple: #c084fc;
+      --soft: #dbeafe;
+    }
 
-* { box-sizing: border-box; }
-body {
-    margin: 0;
-    padding: 15px;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-}
-.container {
-    background: var(--panel);
-    width: min(100%, 580px);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-h2 {
-    margin: 0 0 5px;
-    text-align: center;
-    color: #1a365d;
-}
-p.subtitle {
-    margin: 0 0 20px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: bold;
-}
-.input-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 13px;
-    font-weight: 600;
-}
-input[type="text"], input[type="date"], input[type="url"], select, textarea {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 15px;
-    font-family: monospace;
-}
-textarea {
-    font-size: 13px;
-    resize: vertical;
-    min-height: 84px;
-}
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--brand);
-}
-.checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.checkbox-row input {
-    width: 20px;
-    height: 20px;
-    margin: 0;
-}
-.checkbox-row label {
-    margin-bottom: 0;
-    cursor: pointer;
-}
-.btn-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-button {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-.btn-jana {
-    background: var(--brand);
-    color: white;
-}
-.btn-jana:hover { background: var(--brand-dark); }
-.btn-reset {
-    background: #4a5568;
-    color: white;
-}
-.btn-copy {
-    background: #38a169;
-    color: white;
-    font-size: 11px;
-    padding: 4px 8px;
-    float: right;
-    border-radius: 4px;
-}
-.result-box {
-    margin-top: 15px;
-    padding: 15px;
-    background: #f8fafc;
-    border-left: 4px solid var(--brand);
-    border-radius: 6px;
-    text-align: left;
-}
-.number-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 6px;
-    margin-top: 10px;
-}
-.number-tag {
-    background: var(--dark);
-    color: white;
-    padding: 8px 0;
-    text-align: center;
-    border-radius: 6px;
-    font-weight: bold;
-    font-family: monospace;
-    font-size: 15px;
-    letter-spacing: 1px;
-}
-.strategy-box {
-    margin-top: 10px;
-    background: #edf2f7;
-    padding: 15px;
-    border-left: 5px solid var(--blue);
-    border-radius: 6px;
-    line-height: 1.6;
-    text-align: left;
-}
-.anjakan-box {
-    margin-top: 15px;
-    background: #fffff0;
-    border-left: 5px solid var(--gold);
-    padding: 15px;
-    border-radius: 6px;
-}
-.pattern-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-}
-.pattern-box {
-    display: flex;
-    flex-direction: column;
-    background: white;
-    padding: 8px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    text-align: center;
-}
-.pattern-sumber {
-    margin-bottom: 5px;
-    padding: 3px;
-    background: var(--dark);
-    border-radius: 4px;
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-}
-.pattern-value {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--brand);
-    letter-spacing: 2px;
-}
-.matrix-table {
-    width: 100%;
-    margin: 15px 0;
-    border-collapse: collapse;
-    background: #fff;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-}
-.matrix-table td {
-    border: 2px solid var(--dark);
-    padding: 12px;
-    transition: all 0.3s ease;
-}
+    * { box-sizing: border-box; }
 
-@media (max-width: 480px) {
     body {
-        padding: 10px;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0b1220, #111827);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
-    .container {
-        padding: 14px;
+
+    .app {
+      width: min(1100px, 100%);
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     }
-    h2 {
-        font-size: 24px;
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
     }
-    .btn-group {
-        flex-direction: column;
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
     }
-    button {
-        width: 100%;
+
+    .date-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
     }
-    .pattern-grid {
-        grid-template-columns: 1fr;
+
+    .date-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 180px;
     }
-    .matrix-table {
-        font-size: 18px;
+
+    .date-box label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
-    .matrix-table td {
-        padding: 8px;
+
+    .date-box input {
+      background: #0b1220;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      outline: none;
     }
-    .number-tag {
-        font-size: 13px;
+
+    .button {
+      border: none;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: white;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
-    .result-box,
-    .strategy-box,
-    .anjakan-box {
-        padding: 12px;
+
+    .button:hover { transform: translateY(-1px); opacity: 0.96; }
+    .button:active { transform: translateY(0); }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
     }
-}
-</style>
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: #0b1220;
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .matrix {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .matrix-4x4 { grid-template-columns: repeat(4, minmax(100px, 1fr)); }
+    .matrix-3x3 { grid-template-columns: repeat(3, minmax(100px, 1fr)); }
+
+    .cell {
+      min-height: 78px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #111827, #0f172a);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      gap: 4px;
+      color: var(--text);
+    }
+
+    .tag {
+      font-size: 0.54rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .word {
+      font-size: 0.8rem;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: 0.05em;
+    }
+
+    .status-bar {
+      margin-top: 18px;
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      min-height: 120px;
+    }
+
+    .status-title {
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .final-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+
+    @media (max-width: 760px) {
+      .content { grid-template-columns: 1fr; }
+      .matrix-4x4, .matrix-3x3 { grid-template-columns: repeat(2, minmax(110px, 1fr)); }
+    }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <div class="topbar">
+      <div class="title">PROTOKOL ANALISIS MATRIK</div>
 
-<div class="container">
-    <h2>Matriks Sports Toto Pro</h2>
-    <p class="subtitle">Edisi Sultan 360° (Dual-Chart Verified Sharp 3D)</p>
-
-    <div class="input-group">
-        <label for="operator">Pilih Operator / Pasaran:</label>
-        <select id="operator">
-            <option value="SportsToto">SportsToto (Mod Kestabilan Trajektori)</option>
-            <option value="Magnum">Magnum 4D</option>
-            <option value="DaMaCai">Da Ma Cai 1+3D</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label for="tarikhCabutan">1. Tarikh Cabutan:</label>
-        <input type="date" id="tarikhCabutan">
-    </div>
-
-    <div class="input-group">
-        <label for="num1">2. Nombor Draw Harini 4x4 (Cth: 6204):</label>
-        <input type="text" id="num1" placeholder="Cth: 6204">
-    </div>
-
-    <div class="input-group">
-        <label for="drawInduk">3. Nombor Draw Induk 3x3 (Cth: 6205):</label>
-        <input type="text" id="drawInduk" placeholder="Cth: 6205" value="6205">
-    </div>
-
-    <div class="input-group">
-        <label for="history">4. Sejarah Cabutan Toto Lepas (Manual / Optional):</label>
-        <textarea id="history" rows="3" placeholder="Paste result lepas Toto di sini...&#10;Contoh: 6204, 1289, 7890, 2337..."></textarea>
-    </div>
-
-    <div class="input-group">
-        <label for="resultSource">5. URL JSON Result Luaran (Optional):</label>
-        <input type="url" id="resultSource" placeholder="https://example.com/results.json">
-    </div>
-
-    <div class="input-group checkbox-row">
-        <input type="checkbox" id="formulaCermin" checked>
-        <label for="formulaCermin">Aktifkan Formula Cermin / Indeks Bayangan (+5)</label>
-    </div>
-
-    <div class="btn-group">
-        <button id="btnJana" class="btn-jana" type="button">Jana Analisis Penuh</button>
-        <button id="btnReset" class="btn-reset" type="button">Reset</button>
-    </div>
-
-    <div id="hasil" style="display: none;">
-        <div class="result-box" style="border-left-color: #4a5568;">
-            <p style="margin:0; font-weight: bold; font-size: 13px;">📊 Carta Matriks 4x4 (Paksi Utama)</p>
-            <table class="matrix-table" id="matrixTable"></table>
+      <div class="date-row">
+        <div class="date-box">
+          <label for="startDate">Tarikh Mula</label>
+          <input id="startDate" type="date" />
         </div>
 
-        <div class="result-box" style="border-left-color: #0d6efd; background: #f0f7ff;">
-            <p style="margin:0; font-weight: bold; font-size: 13px;">📅 Carta Tarikh Induk 3x3</p>
-            <table class="matrix-table" id="matrix3x3Table"></table>
+        <div class="date-box">
+          <label for="endDate">Tarikh Tamat</label>
+          <input id="endDate" type="date" />
         </div>
 
-        <div class="result-box" style="background: #f0fff4; border-left-color: #198754;">
-            <p style="margin:0;font-weight:bold; color:#198754;">🎯 10 Pola Visual 360° (L, T, Y, O, ZigZag)</p>
-            <div class="pattern-grid" id="gridPola"></div>
-        </div>
-
-        <div class="strategy-box">
-            <p style="margin:0; font-weight:bold; color:#1a365d; font-size:14px; border-bottom: 1px solid #cbd5e0; padding-bottom: 5px; margin-bottom: 8px;">🔄 Kunci Persilangan Emas (4x4 ∩ 3x3)</p>
-            🔑 <b>Master Key (Trajektori Panas):</b> <span id="master-key" style="color: #e53e3e; font-weight: bold;"></span><br>
-            🔗 <b>Titik Persamaan (Kedua-dua Carta):</b> <span id="intersection-key" style="color: #2b6cb0; font-weight: bold;"></span><br>
-            🎯 <b>Target 4D Toto (Solid):</b> <strong id="s4d" style="font-size:19px; color:#805ad5;"></strong>
-        </div>
-
-        <div class="anjakan-box">
-            <p style="margin:0; font-weight:bold; color:#b7791f; font-size:14px; border-bottom: 1px solid #f6e05e; padding-bottom: 5px; margin-bottom: 8px;">🚀 Formula Trajektori Anjakan (Blok Dinamik)</p>
-            ⚓ <b>Paksi Kekal (Anchor Blok):</b> <span id="anjakan-paksi" style="color: #2d3748; font-weight: 800; font-family: monospace; font-size: 16px;"></span><br>
-            🧩 <b>Digit Sisipan (Target Sejuk):</b> <span id="anjakan-sasaran" style="color: #e53e3e; font-weight: bold; font-size: 15px;"></span><br>
-            <p style="margin: 10px 0 5px 0; font-size: 12px; font-weight: bold;">Janaan 4D Anjakan:</p>
-            <div id="out-anjakan-4d" class="number-grid"></div>
-        </div>
-
-        <div class="result-box" style="border-left-color: #38a169;">
-            <p style="margin:0;"><strong>2D Anchor Solid</strong> <button class="btn-copy" type="button" data-copy="out-2d">Salin</button></p>
-            <div id="out-2d" class="number-grid"></div>
-        </div>
-
-        <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Projeksi 3D Sharp (Wajib Wujud Kedua-dua Carta)</strong> <button class="btn-copy" type="button" data-copy="out-3d">Salin</button></p>
-            <div id="out-3d" class="number-grid"></div>
-        </div>
-
-        <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Projeksi 4D i-Box Toto</strong> <button class="btn-copy" type="button" data-copy="out-4d">Salin</button></p>
-            <div id="out-4d" class="number-grid"></div>
-        </div>
+        <button class="button" id="generateBtn">Generate</button>
+      </div>
     </div>
-</div>
 
-<script src="app.js" defer></script>
+    <div class="content">
+      <div class="panel">
+        <div class="panel-header">Carta Matrix 4x4</div>
+        <div class="matrix matrix-4x4" id="matrix4x4"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Carta Matrix 3x3</div>
+        <div class="matrix matrix-3x3" id="matrix3x3"></div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-title">Status Protokol</div>
+      <div class="final-text" id="finalStatus">Menunggu analisis...</div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
 </body>
 </html>
