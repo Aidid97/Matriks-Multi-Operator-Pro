@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('tarikhCabutan');
     const btnJana = document.getElementById('btnJana');
     const btnReset = document.getElementById('btnReset');
+    const btnScan = document.getElementById('btnScanBulan');
 
     if (dateInput) {
         const today = new Date().toISOString().split('T')[0];
@@ -16,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnReset) {
         btnReset.addEventListener('click', resetBorang);
+    }
+
+    if (btnScan) {
+        btnScan.addEventListener('click', () => janaRingkasanBulan());
     }
 
     document.querySelectorAll('.btn-copy').forEach((button) => {
@@ -87,12 +92,7 @@ function dateGuide(dateStr) {
     const mSum = sumDigits(monthValue);
     const ySum = sumDigits(year2);
 
-    const root = [
-        dSum % 10,
-        mSum % 10,
-        (dSum + mSum + ySum) % 10
-    ].map(String);
-
+    const root = [dSum % 10, mSum % 10, (dSum + mSum + ySum) % 10].map(String);
     const row1 = [...root];
     const row2 = row1.map((v) => String((Number(v) - 1 + 10) % 10));
     const row3 = row2.map((v) => String((Number(v) - 1 + 10) % 10));
@@ -135,16 +135,102 @@ function scanMonthPattern(year, monthIndex) {
             row2: guide.row2.join(''),
             row3: guide.row3.join(''),
             shadow: guide.shadow.join(''),
-            mirror: guide.mirror.join('')
+            mirror: guide.mirror.join(''),
+            day: dateObj.getDay()
         });
     });
 
     return results;
 }
 
-window.dateGuide = dateGuide;
-window.getTotoDrawDates = getTotoDrawDates;
+function summarizeMonthResults(results) {
+    const allDigits = results.flatMap((item) => [
+        ...item.root.split(''),
+        ...item.row1.split(''),
+        ...item.row2.split(''),
+        ...item.row3.split(''),
+        ...item.shadow.split(''),
+        ...item.mirror.split('')
+    ]);
+
+    const freq = {};
+    allDigits.forEach((d) => {
+        freq[d] = (freq[d] || 0) + 1;
+    });
+
+    const sortedDigits = Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+    const strongest = results
+        .map((item) => ({
+            date: item.date,
+            score: item.root.split('').reduce((sum, v) => sum + Number(v), 0) + item.shadow.split('').reduce((sum, v) => sum + Number(v), 0)
+        }))
+        .sort((a, b) => b.score - a.score)[0];
+
+    const strongTriple = results
+        .map((item) => item.root)
+        .reduce((acc, value) => {
+            acc[value] = (acc[value] || 0) + 1;
+            return acc;
+        }, {});
+
+    const strongestRoot = Object.entries(strongTriple).sort((a, b) => b[1] - a[1])[0];
+
+    const commonPairs = [];
+    for (let i = 0; i < 10; i++) {
+        const count = allDigits.filter((d) => d === String(i)).length;
+        if (count >= 2) {
+            commonPairs.push({ digit: String(i), count });
+        }
+    }
+
+    return {
+        strongestDate: strongest ? strongest.date : '-',
+        strongestScore: strongest ? strongest.score : 0,
+        mostCommonDigits: sortedDigits.map(([digit, count]) => ({ digit, count })),
+        strongestRoot: strongestRoot ? { root: strongestRoot[0], count: strongestRoot[1] } : { root: '-', count: 0 },
+        repeatedDigits: commonPairs
+    };
+}
+
+function janaRingkasanBulan() {
+    const dateInput = document.getElementById('tarikhCabutan');
+    if (!dateInput || !dateInput.value) {
+        alert('Sila pilih tarikh cabutan terlebih dahulu.');
+        return;
+    }
+
+    const chosen = new Date(dateInput.value);
+    const year = chosen.getFullYear();
+    const monthIndex = chosen.getMonth();
+    const results = scanMonthPattern(year, monthIndex);
+    const summary = summarizeMonthResults(results);
+
+    const summaryBox = document.getElementById('summaryBulan');
+    if (!summaryBox) {
+        alert('Kotak ringkasan bulan tidak dijumpai.');
+        return;
+    }
+
+    const strongDigits = summary.mostCommonDigits.slice(0, 5).map((item) => `${item.digit} (${item.count})`).join(', ') || '-';
+    const repeated = summary.repeatedDigits.slice(0, 5).map((item) => `${item.digit} (${item.count})`).join(', ') || '-';
+
+    summaryBox.innerHTML = `
+        <div class="result-box" style="border-left-color:#2b6cb0; background:#f0f7ff;">
+            <p style="margin:0; font-weight:bold;">📅 Ringkasan Pola Tarif Bulan Ini</p>
+            <p style="margin:8px 0 0 0;"><strong>Tarikh Terkuat:</strong> ${summary.strongestDate} (score ${summary.strongestScore})</p>
+            <p style="margin:6px 0 0 0;"><strong>Root Terkuat:</strong> ${summary.strongestRoot.root} (${summary.strongestRoot.count} kali)</p>
+            <p style="margin:6px 0 0 0;"><strong>Digit Paling Kerap:</strong> ${strongDigits}</p>
+            <p style="margin:6px 0 0 0;"><strong>Digit Berulang:</strong> ${repeated}</p>
+        </div>
+    `;
+}
+
 window.scanMonthPattern = scanMonthPattern;
+window.summarizeMonthResults = summarizeMonthResults;
+window.janaRingkasanBulan = janaRingkasanBulan;
 
 function binaMatriks3x3Induk(drawStr) {
     const normalized = sanitizeDigits(drawStr || '6205', 4);
@@ -543,6 +629,7 @@ function tunjukSenarai(elementId, arr) {
 function resetBorang() {
     const hist = document.getElementById('history');
     const hasil = document.getElementById('hasil');
+    const summary = document.getElementById('summaryBulan');
     const num1 = document.getElementById('num1');
     const drawInduk = document.getElementById('drawInduk');
     const sourceUrl = document.getElementById('resultSource');
@@ -551,6 +638,7 @@ function resetBorang() {
     if (num1) num1.value = '';
     if (drawInduk) drawInduk.value = '6205';
     if (sourceUrl) sourceUrl.value = '';
+    if (summary) summary.innerHTML = '';
     if (hasil) hasil.style.display = 'none';
     autoJanaBenihTarikh();
 }
