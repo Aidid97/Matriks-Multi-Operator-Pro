@@ -1,19 +1,49 @@
 (function () {
-  const labelBank = [
-    'HOT','PAIR','AXIS','MIRROR','TREND','FLOW','CROSS','GAP',
-    'ENTRY','CYCLE','SYNC','STABLE','LAG','LAYER','OPEN','CLOSE',
-    'SEAR','SHIFT','EDGE','LOCK','WAVE','ZIG','DRIFT','SPARK','PATH',
-    'CORE','BEND','LINK','RANGE','PLAIN','SEAL','WIDE','SPAN'
-  ];
+  const DEFAULT_4X4 = '6204';
+  const DEFAULT_3X3 = '620';
 
-  function normalizeDigits(value, targetLength, fallback = '0000') {
-    const raw = String(value ?? '').replace(/\D/g, '');
-    if (!raw) return String(fallback).slice(0, targetLength).padStart(targetLength, '0');
-    return raw.slice(0, targetLength).padStart(targetLength, '0');
+  function sanitizeDigits(value, length) {
+    const digits = String(value ?? '').replace(/\D/g, '');
+    if (!digits) return '';
+    return digits.slice(0, length);
   }
 
   function digitsOf(value, length = 4) {
-    return String(value ?? '').replace(/\D/g, '').padStart(length, '0').slice(0, length).split('').map(Number);
+    const cleaned = sanitizeDigits(value, length);
+    return cleaned.padStart(length, '0').slice(0, length).split('').map(Number);
+  }
+
+  function getAutoSeedFromDate(dateValue, mode) {
+    const raw = dateValue || new Date().toISOString().split('T')[0];
+    const [year, month, day] = raw.split('-');
+
+    const yy = Number(String(year || '2026').slice(-2));
+    const mm = Number(month || '1');
+    const dd = Number(day || '1');
+
+    const a = (yy + mm + dd) % 10;
+    const b = (mm + dd) % 10;
+    const c = (yy + dd) % 10;
+    const d = (yy + mm) % 10;
+
+    if (mode === '4x4') {
+      return `${dd}${a}${b}${c}`.slice(0, 4).padStart(4, '0');
+    }
+
+    if (mode === '3x3') {
+      return `${a}${b}${c}`.slice(0, 3).padStart(3, '0');
+    }
+
+    return '';
+  }
+
+  function resolveSeed(inputId, autoMode) {
+    const input = document.getElementById(inputId);
+    const dateValue = document.getElementById('startDate')?.value || document.getElementById('endDate')?.value || new Date().toISOString().split('T')[0];
+    const manual = sanitizeDigits(input?.value || '', autoMode === '4x4' ? 4 : 3);
+
+    if (manual) return manual.padStart(autoMode === '4x4' ? 4 : 3, '0');
+    return getAutoSeedFromDate(dateValue, autoMode);
   }
 
   function buildMatrix4x4(seed) {
@@ -60,10 +90,10 @@
   function makeStatusText(freqMap, matrix4x4, matrix3x3) {
     const sortedDigits = [...freqMap.entries()].sort((a, b) => b[1] - a[1]);
     const top = sortedDigits[0] ? sortedDigits[0][0] : 0;
-    const rowScore = matrix4x4.flat().reduce((sum, v) => sum + v, 0);
-    const threeScore = matrix3x3.flat().reduce((sum, v) => sum + v, 0);
+    const score4 = matrix4x4.flat().reduce((sum, v) => sum + v, 0);
+    const score3 = matrix3x3.flat().reduce((sum, v) => sum + v, 0);
 
-    return `Normalisasi data aktif. Digit utama pada zon ${top}. Skor matrix 4x4 = ${rowScore}, matrix 3x3 = ${threeScore}. Protokol berjalan dalam urutan: normalize → frequency → matrix → geometry → trajectory → weighted ranking.`;
+    return `Tarikh digunakan untuk auto-seed. Digit utama pada zon ${top}. Skor matrix 4x4 = ${score4}, matrix 3x3 = ${score3}. Protokol aktif: normalize → frequency → matrix → geometry → trajectory → weighted ranking.`;
   }
 
   function renderMatrix(targetId, matrix) {
@@ -93,37 +123,41 @@
   }
 
   function renderProtocol() {
-    const seed4x4 = document.getElementById('matrixSeed4x4');
-    const seed3x3 = document.getElementById('matrixSeed3x3');
-    const resultBox = document.getElementById('finalStatus');
+    const dateValue = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
+    const value4 = resolveSeed('matrixSeed4x4', '4x4');
+    const value3 = resolveSeed('matrixSeed3x3', '3x3');
 
-    const value4x4 = normalizeDigits(seed4x4?.value || '6204', 4, '6204');
-    const value3x3 = normalizeDigits(seed3x3?.value || '620', 3, '620');
-
-    const matrix4x4 = buildMatrix4x4(value4x4);
-    const matrix3x3 = buildMatrix3x3(value3x3);
-    const freqMap = getFrequency([value4x4, value3x3]);
+    const matrix4x4 = buildMatrix4x4(value4 || getAutoSeedFromDate(dateValue, '4x4'));
+    const matrix3x3 = buildMatrix3x3(value3 || getAutoSeedFromDate(dateValue, '3x3'));
+    const freqMap = getFrequency([value4 || getAutoSeedFromDate(dateValue, '4x4'), value3 || getAutoSeedFromDate(dateValue, '3x3')]);
 
     renderMatrix('matrix4x4', matrix4x4);
     renderMatrix('matrix3x3', matrix3x3);
 
-    resultBox.textContent = makeStatusText(freqMap, matrix4x4, matrix3x3);
+    const status = document.getElementById('finalStatus');
+    if (status) status.textContent = makeStatusText(freqMap, matrix4x4, matrix3x3);
+  }
+
+  function initDates() {
+    const today = new Date().toISOString().split('T')[0];
+    const start = document.getElementById('startDate');
+    const end = document.getElementById('endDate');
+
+    if (start) start.value = today;
+    if (end) end.value = today;
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
+    initDates();
+
     const generateBtn = document.getElementById('generateBtn');
-    const seed4x4 = document.getElementById('matrixSeed4x4');
-    const seed3x3 = document.getElementById('matrixSeed3x3');
-
-    if (startDate) startDate.value = '2026-10-01';
-    if (endDate) endDate.value = '2026-10-28';
-    if (seed4x4) seed4x4.value = '6204';
-    if (seed3x3) seed3x3.value = '620';
-
     if (generateBtn) {
       generateBtn.addEventListener('click', renderProtocol);
+    }
+
+    const startDate = document.getElementById('startDate');
+    if (startDate) {
+      startDate.addEventListener('change', renderProtocol);
     }
 
     renderProtocol();
