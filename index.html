@@ -83,11 +83,6 @@
         border-color: var(--green2);
       }
 
-      .field input[readonly] {
-        background: rgba(9, 19, 31, 0.75);
-        color: var(--green);
-      }
-
       .content {
         padding: 14px;
       }
@@ -179,7 +174,7 @@
 
           <div class="field">
             <label for="matrixSeed3x3">3x3</label>
-            <input id="matrixSeed3x3" type="text" maxlength="4" readonly placeholder="derived" />
+            <input id="matrixSeed3x3" type="text" maxlength="4" placeholder="6298" />
           </div>
         </div>
       </div>
@@ -207,13 +202,28 @@
     </div>
 
     <script>
+      const mirrorMap = {
+        0: 5,
+        1: 6,
+        2: 7,
+        3: 8,
+        4: 9,
+        5: 0,
+        6: 1,
+        7: 2,
+        8: 3,
+        9: 4
+      };
+
       function sanitizeDigits(value, length) {
         const digits = String(value ?? '').replace(/\D/g, '');
+        if (!digits) return '';
         return digits.slice(0, length);
       }
 
-      function digitsOf(value, length = 4) {
+      function digitsOf(value, length) {
         const cleaned = sanitizeDigits(value, length);
+        if (!cleaned) return Array(length).fill(0);
         return cleaned.padStart(length, '0').slice(0, length).split('').map(Number);
       }
 
@@ -223,33 +233,28 @@
         const yy = Number(String(year || '2026').slice(-2));
         const mm = Number(month || '1');
         const dd = Number(day || '1');
-
         const a = (yy + mm + dd) % 10;
         const b = (mm + dd) % 10;
         const c = (yy + dd) % 10;
-
         return `${dd}${a}${b}${c}`.slice(0, 4).padStart(4, '0');
       }
 
       function resolveSeed4(dateValue) {
-        const input = document.getElementById('matrixSeed4x4');
-        const manual = sanitizeDigits(input?.value || '', 4);
+        const manual = sanitizeDigits(document.getElementById('matrixSeed4x4').value, 4);
         if (manual) return manual.padStart(4, '0');
         return getAutoSeed4(dateValue);
       }
 
-      function deriveSeed3(seed4) {
-        const cleaned = sanitizeDigits(seed4, 4);
-        if (!cleaned) return '000';
-        return cleaned.slice(-3).padStart(3, '0');
+      function resolveSeed3(dateValue) {
+        const manual = sanitizeDigits(document.getElementById('matrixSeed3x3').value, 4);
+        if (manual) return manual.slice(-3).padStart(3, '0');
+
+        const fallback = getAutoSeed4(dateValue);
+        return fallback.slice(-3).padStart(3, '0');
       }
 
-      function normalizeSeed(seed, length) {
-        return sanitizeDigits(seed, length).padStart(length, '0').slice(0, length);
-      }
-
-      function buildMatrix4x4(seed) {
-        const digits = digitsOf(seed, 4);
+      function buildMatrix4x4(seed4) {
+        const digits = digitsOf(seed4, 4);
         const matrix = [digits.slice()];
 
         for (let r = 1; r < 4; r++) {
@@ -263,8 +268,8 @@
         return matrix;
       }
 
-      function buildMatrix3x3(seed) {
-        const digits = digitsOf(seed, 3);
+      function buildMatrix3x3(seed3) {
+        const digits = digitsOf(seed3, 3);
         const matrix = [digits.slice()];
 
         for (let r = 1; r < 3; r++) {
@@ -278,14 +283,14 @@
         return matrix;
       }
 
-      function buildShadow3x3(seed) {
-        const digits = digitsOf(seed, 3);
-        const matrix = [digits.slice()];
+      function buildShadow3x3(seed3) {
+        const digits = digitsOf(seed3, 3);
+        const matrix = [digits.map(v => mirrorMap[v])];
 
         for (let r = 1; r < 3; r++) {
           const row = [];
           for (let c = 0; c < 3; c++) {
-            row.push((matrix[r - 1][c] + 5) % 10);
+            row.push(mirrorMap[matrix[r - 1][c]]);
           }
           matrix.push(row);
         }
@@ -324,19 +329,17 @@
         const shadow = buildShadow3x3(seed3);
         const list = [];
 
-        main.forEach((row) => list.push(row.join('')));
-        shadow.forEach((row) => list.push(row.join('')));
+        main.forEach(row => list.push(row.join('')));
+        shadow.forEach(row => list.push(row.join('')));
 
-        const unique = Array.from(new Set(list));
-        return unique.slice(0, 6);
+        return Array.from(new Set(list)).slice(0, 6);
       }
 
       function render() {
-        const dateValue = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
-        const seed4 = normalizeSeed(resolveSeed4(dateValue), 4);
-        const seed3 = normalizeSeed(deriveSeed3(seed4), 3);
+        const dateValue = document.getElementById('startDate').value || new Date().toISOString().split('T')[0];
 
-        document.getElementById('matrixSeed3x3').value = seed3;
+        const seed4 = resolveSeed4(dateValue);
+        const seed3 = resolveSeed3(dateValue);
 
         const matrix4x4 = buildMatrix4x4(seed4);
         const matrix3x3 = buildMatrix3x3(seed3);
@@ -347,15 +350,16 @@
         renderMatrix('shadow3x3', shadow3x3);
 
         const probables = get3dProbables(seed3);
-        document.getElementById('predictionOutput').textContent = `${probables.join(' • ')}`;
+        document.getElementById('predictionOutput').textContent = probables.join(' • ');
       }
 
       document.addEventListener('DOMContentLoaded', () => {
-        const startDate = document.getElementById('startDate');
-        startDate.value = new Date().toISOString().split('T')[0];
+        const dateField = document.getElementById('startDate');
+        dateField.value = new Date().toISOString().split('T')[0];
 
-        startDate.addEventListener('change', render);
+        dateField.addEventListener('change', render);
         document.getElementById('matrixSeed4x4').addEventListener('input', render);
+        document.getElementById('matrixSeed3x3').addEventListener('input', render);
 
         render();
       });
