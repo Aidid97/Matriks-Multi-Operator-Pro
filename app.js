@@ -143,6 +143,62 @@ function scanMonthPattern(year, monthIndex) {
     return results;
 }
 
+function groupByWeek(results) {
+    const weekMap = { week1: [], week2: [], week3: [], week4: [], week5: [] };
+
+    results.forEach((item) => {
+        const date = new Date(item.date);
+        const day = date.getDate();
+
+        if (day <= 7) weekMap.week1.push(item);
+        else if (day <= 14) weekMap.week2.push(item);
+        else if (day <= 21) weekMap.week3.push(item);
+        else if (day <= 28) weekMap.week4.push(item);
+        else weekMap.week5.push(item);
+    });
+
+    return weekMap;
+}
+
+function summarizeWeekGroup(group) {
+    if (!group || group.length === 0) {
+        return { root: '-', digits: '-', strongestDate: '-' };
+    }
+
+    const digits = group.flatMap((item) => [
+        ...item.root.split(''),
+        ...item.row1.split(''),
+        ...item.row2.split(''),
+        ...item.row3.split(''),
+        ...item.shadow.split(''),
+        ...item.mirror.split('')
+    ]);
+
+    const freq = {};
+    digits.forEach((d) => {
+        freq[d] = (freq[d] || 0) + 1;
+    });
+
+    const topDigits = Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([digit, count]) => `${digit}(${count})`)
+        .join(', ');
+
+    const strongest = group
+        .map((item) => ({
+            date: item.date,
+            score: item.root.split('').reduce((sum, v) => sum + Number(v), 0) + item.shadow.split('').reduce((sum, v) => sum + Number(v), 0)
+        }))
+        .sort((a, b) => b.score - a.score)[0];
+
+    return {
+        root: group[0].root,
+        digits: topDigits || '-',
+        strongestDate: strongest ? strongest.date : '-'
+    };
+}
+
 function summarizeMonthResults(results) {
     const allDigits = results.flatMap((item) => [
         ...item.root.split(''),
@@ -205,8 +261,9 @@ function janaRingkasanBulan() {
     const chosen = new Date(dateInput.value);
     const year = chosen.getFullYear();
     const monthIndex = chosen.getMonth();
-    const results = scanMonthPattern(year, monthIndex);
-    const summary = summarizeMonthResults(results);
+    const monthlyResults = scanMonthPattern(year, monthIndex);
+    const summary = summarizeMonthResults(monthlyResults);
+    const weekly = groupByWeek(monthlyResults);
 
     const summaryBox = document.getElementById('summaryBulan');
     if (!summaryBox) {
@@ -217,18 +274,29 @@ function janaRingkasanBulan() {
     const strongDigits = summary.mostCommonDigits.slice(0, 5).map((item) => `${item.digit} (${item.count})`).join(', ') || '-';
     const repeated = summary.repeatedDigits.slice(0, 5).map((item) => `${item.digit} (${item.count})`).join(', ') || '-';
 
+    const weekSummary = Object.entries(weekly)
+        .map(([key, group]) => {
+            const data = summarizeWeekGroup(group);
+            return `<p style="margin:6px 0 0 0;"><strong>${key.replace('week', 'Minggu ')}:</strong> root ${data.root} | top ${data.digits} | strongest ${data.strongestDate}</p>`;
+        })
+        .join('');
+
     summaryBox.innerHTML = `
         <div class="result-box" style="border-left-color:#2b6cb0; background:#f0f7ff;">
-            <p style="margin:0; font-weight:bold;">📅 Ringkasan Pola Tarif Bulan Ini</p>
+            <p style="margin:0; font-weight:bold;">📅 Ringkasan Pola Bulan & Minggu</p>
             <p style="margin:8px 0 0 0;"><strong>Tarikh Terkuat:</strong> ${summary.strongestDate} (score ${summary.strongestScore})</p>
             <p style="margin:6px 0 0 0;"><strong>Root Terkuat:</strong> ${summary.strongestRoot.root} (${summary.strongestRoot.count} kali)</p>
             <p style="margin:6px 0 0 0;"><strong>Digit Paling Kerap:</strong> ${strongDigits}</p>
             <p style="margin:6px 0 0 0;"><strong>Digit Berulang:</strong> ${repeated}</p>
+            <div style="margin-top:10px;">
+                ${weekSummary}
+            </div>
         </div>
     `;
 }
 
 window.scanMonthPattern = scanMonthPattern;
+window.groupByWeek = groupByWeek;
 window.summarizeMonthResults = summarizeMonthResults;
 window.janaRingkasanBulan = janaRingkasanBulan;
 
