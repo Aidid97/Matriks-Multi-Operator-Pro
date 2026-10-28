@@ -174,7 +174,7 @@
 
           <div class="field">
             <label for="matrixSeed3x3">3x3</label>
-            <input id="matrixSeed3x3" type="text" maxlength="3" placeholder="151" />
+            <input id="matrixSeed3x3" type="text" maxlength="4" placeholder="1510" />
           </div>
         </div>
       </div>
@@ -241,15 +241,19 @@
         return '';
       }
 
-      function resolveSeed(inputId, mode, dateValue) {
+      function resolveSeed4(inputId, dateValue) {
         const input = document.getElementById(inputId);
-        const manual = sanitizeDigits(input?.value || '', mode === '4x4' ? 4 : 3);
+        const manual = sanitizeDigits(input?.value || '', 4);
+        if (manual) return manual.padStart(4, '0');
+        return getAutoSeedFromDate(dateValue, '4x4');
+      }
 
-        if (manual) {
-          return manual.padStart(mode === '4x4' ? 4 : 3, '0');
+      function normalizeSeed3(value, autoSeed) {
+        const raw = sanitizeDigits(value, 4);
+        if (raw) {
+          return raw.slice(-3).padStart(3, '0');
         }
-
-        return getAutoSeedFromDate(dateValue, mode);
+        return autoSeed;
       }
 
       function normalizeSeed(seed, length) {
@@ -390,8 +394,9 @@
           document.getElementById('startDate')?.value ||
           new Date().toISOString().split('T')[0];
 
-        const seed4 = normalizeSeed(resolveSeed('matrixSeed4x4', '4x4', dateValue), 4);
-        const seed3 = normalizeSeed(resolveSeed('matrixSeed3x3', '3x3', dateValue), 3);
+        const autoSeed3 = getAutoSeedFromDate(dateValue, '3x3');
+        const seed4 = normalizeSeed(resolveSeed4('matrixSeed4x4', dateValue), 4);
+        const seed3 = normalizeSeed3(document.getElementById('matrixSeed3x3').value, autoSeed3);
 
         state.startDate = dateValue;
         state.seed4 = seed4;
