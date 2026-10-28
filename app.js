@@ -56,6 +56,96 @@ function sortCombo(str) {
     return (str || '').split('').sort().join('');
 }
 
+function sumDigits(num) {
+    return String(num)
+        .split('')
+        .reduce((total, ch) => total + Number(ch || 0), 0);
+}
+
+function dateGuide(dateStr) {
+    const raw = dateStr || new Date().toISOString().split('T')[0];
+    const parts = raw.includes('/') ? raw.split('/') : raw.split('-');
+    const isoMode = raw.includes('-') && String(parts[0]).length === 4;
+
+    let dayValue = 0;
+    let monthValue = 0;
+    let year2 = 0;
+
+    if (isoMode) {
+        const [year, month, day] = parts;
+        dayValue = Number(day);
+        monthValue = Number(month);
+        year2 = Number(String(year).slice(-2));
+    } else {
+        const [day, month, year] = parts;
+        dayValue = Number(day);
+        monthValue = Number(month);
+        year2 = Number(String(year).slice(-2));
+    }
+
+    const dSum = sumDigits(dayValue);
+    const mSum = sumDigits(monthValue);
+    const ySum = sumDigits(year2);
+
+    const root = [
+        dSum % 10,
+        mSum % 10,
+        (dSum + mSum + ySum) % 10
+    ].map(String);
+
+    const row1 = [...root];
+    const row2 = row1.map((v) => String((Number(v) - 1 + 10) % 10));
+    const row3 = row2.map((v) => String((Number(v) - 1 + 10) % 10));
+    const shadow = root.map((v) => String((Number(v) + 5) % 10));
+    const mirror = root.map((v) => String((9 - Number(v)) % 10));
+
+    return { root, row1, row2, row3, shadow, mirror };
+}
+
+function isTotoDrawDay(dateObj) {
+    const day = dateObj.getDay();
+    return day === 3 || day === 6 || day === 0;
+}
+
+function getTotoDrawDates(year, monthIndex) {
+    const dates = [];
+    const first = new Date(year, monthIndex, 1);
+    const last = new Date(year, monthIndex + 1, 0);
+
+    for (let d = new Date(first); d <= last; d.setDate(d.getDate() + 1)) {
+        if (isTotoDrawDay(d)) {
+            dates.push(new Date(d));
+        }
+    }
+
+    return dates;
+}
+
+function scanMonthPattern(year, monthIndex) {
+    const drawDates = getTotoDrawDates(year, monthIndex);
+    const results = [];
+
+    drawDates.forEach((dateObj) => {
+        const dateStr = dateObj.toISOString().split('T')[0];
+        const guide = dateGuide(dateStr);
+        results.push({
+            date: dateStr,
+            root: guide.root.join(''),
+            row1: guide.row1.join(''),
+            row2: guide.row2.join(''),
+            row3: guide.row3.join(''),
+            shadow: guide.shadow.join(''),
+            mirror: guide.mirror.join('')
+        });
+    });
+
+    return results;
+}
+
+window.dateGuide = dateGuide;
+window.getTotoDrawDates = getTotoDrawDates;
+window.scanMonthPattern = scanMonthPattern;
+
 function binaMatriks3x3Induk(drawStr) {
     const normalized = sanitizeDigits(drawStr || '6205', 4);
     const baseDigits = normalized.split('').map(Number);
@@ -153,6 +243,58 @@ function getHariPemberatProfile(dateStr) {
     return { wMicro: 0.60, wVelocity: 0.40, driftMultiplier: 1.2, label: 'normal' };
 }
 
+function evaluateHistory(history) {
+    if (!Array.isArray(history) || history.length === 0) {
+        return { strength: 0.5, volatility: 0.5, mirrorScore: 0.5, recency: 0.5 };
+    }
+
+    const recent = history.slice(0, 10);
+    const digitFreq = {};
+
+    recent.join('').split('').forEach((digit) => {
+        digitFreq[digit] = (digitFreq[digit] || 0) + 1;
+    });
+
+    const strength = Object.values(digitFreq).reduce((total, value) => total + value, 0) / (recent.length * 4);
+    const volatility = 1 - strength;
+
+    return {
+        strength: Math.min(Math.max(strength, 0), 1),
+        volatility: Math.min(Math.max(volatility, 0), 1),
+        mirrorScore: 0.5,
+        recency: 0.7
+    };
+}
+
+function adaptWeights(history, dateStr) {
+    const profile = getHariPemberatProfile(dateStr);
+    const stats = evaluateHistory(history);
+
+    let wMicro = profile.wMicro;
+    let wVelocity = profile.wVelocity;
+    let driftMultiplier = profile.driftMultiplier;
+
+    if (stats.strength > 0.6) {
+        wMicro += 0.06;
+    } else {
+        wMicro -= 0.03;
+    }
+
+    if (stats.volatility > 0.5) {
+        wVelocity += 0.06;
+        driftMultiplier += 0.2;
+    } else {
+        wVelocity -= 0.02;
+        driftMultiplier -= 0.05;
+    }
+
+    wMicro = Math.min(Math.max(wMicro, 0.45), 0.75);
+    wVelocity = Math.min(Math.max(wVelocity, 0.20), 0.55);
+    driftMultiplier = Math.min(Math.max(driftMultiplier, 0.8), 1.8);
+
+    return { wMicro, wVelocity, driftMultiplier };
+}
+
 function parseResultMatches(rawText) {
     if (!rawText) return [];
     const matches = rawText.match(/\d{4}/g) || [];
@@ -167,15 +309,7 @@ function normalizeRemoteHistory(payload) {
             .map((entry) => {
                 if (typeof entry === 'string') return entry;
                 if (entry && typeof entry === 'object') {
-                    return (
-                        entry.result ||
-                        entry.draw ||
-                        entry.drawNumber ||
-                        entry.number ||
-                        entry.num ||
-                        entry.value ||
-                        ''
-                    );
+                    return entry.result || entry.draw || entry.drawNumber || entry.number || entry.num || entry.value || '';
                 }
                 return '';
             })
@@ -184,16 +318,7 @@ function normalizeRemoteHistory(payload) {
     }
 
     if (typeof payload === 'object') {
-        const candidates = [
-            payload.results,
-            payload.data,
-            payload.history,
-            payload.draws,
-            payload.toto,
-            payload.items,
-            payload.list
-        ];
-
+        const candidates = [payload.results, payload.data, payload.history, payload.draws, payload.toto, payload.items, payload.list];
         for (const candidate of candidates) {
             if (Array.isArray(candidate)) {
                 return normalizeRemoteHistory(candidate);
@@ -228,12 +353,11 @@ function kiraPemberatToto(sejarahCabutan, dateStr) {
         return ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
     }
 
+    const adaptive = adaptWeights(sejarahCabutan, dateStr);
     const skor = [];
     const t3 = sejarahCabutan.slice(0, 3).join('');
     const t5 = sejarahCabutan.slice(0, 5).join('');
     const t15 = sejarahCabutan.slice(0, 15).join('');
-
-    const { wMicro, wVelocity, driftMultiplier } = getHariPemberatProfile(dateStr);
 
     for (let i = 0; i <= 9; i++) {
         const digit = String(i);
@@ -243,9 +367,12 @@ function kiraPemberatToto(sejarahCabutan, dateStr) {
 
         const vel5 = t5 ? (cT5 / 5) : 0;
         const vel15 = t15 ? (cT15 / 15) : 0;
-        const halaju = (vel5 - vel15) * driftMultiplier;
+        const halaju = (vel5 - vel15) * adaptive.driftMultiplier;
 
-        skor.push({ digit, skorAkhir: (wMicro * fMikro) + (wVelocity * halaju) });
+        skor.push({
+            digit,
+            skorAkhir: (adaptive.wMicro * fMikro) + (adaptive.wVelocity * halaju)
+        });
     }
 
     return skor.sort((a, b) => b.skorAkhir - a.skorAkhir).map((x) => x.digit);
@@ -299,6 +426,16 @@ async function janaKeputusanToto() {
     const historyManualList = parseResultMatches(historyManual);
     const combinedHistory = [...new Set([...historyLuaran, ...historyManualList])];
 
+    const guide = dateGuide(tarikhCabutan || new Date().toISOString().split('T')[0]);
+    const guidePool = [
+        ...guide.root,
+        ...guide.row1,
+        ...guide.row2,
+        ...guide.row3,
+        ...guide.shadow,
+        ...guide.mirror
+    ];
+
     const matrixK1 = binaMatriks4x4(seedStr);
     const matrix3x3 = binaMatriks3x3Induk(drawIndukStr);
 
@@ -314,7 +451,7 @@ async function janaKeputusanToto() {
         persilanganEmas = anjakanData.sasaran;
     }
 
-    const validPool = [...persilanganEmas, ...hotDigits];
+    const validPool = [...new Set([...persilanganEmas, ...hotDigits, ...guidePool])];
     const uniquePool = Array.from(new Set(validPool));
 
     const c1 = uniquePool[0] || '0';
