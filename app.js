@@ -145,7 +145,7 @@ function kiraPemberatToto(sejarahCabutan) {
     const t15 = sejarahCabutan.slice(0, 15).join('');
 
     const wMicro = 0.55;
-    const wVelocity = 0.45;
+    const wVelocity = 0.35;
 
     for (let i = 0; i <= 9; i++) {
         const digit = String(i);
