@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnJana) {
-        btnJana.addEventListener('click', janaKeputusanToto);
+        btnJana.addEventListener('click', () => janaKeputusanToto());
     }
 
     if (btnReset) {
@@ -134,7 +134,96 @@ function renderPolaGrid(polaObj) {
     gridEl.innerHTML = html;
 }
 
-function kiraPemberatToto(sejarahCabutan) {
+function getHariPemberatProfile(dateStr) {
+    const referenceDate = dateStr ? new Date(dateStr) : new Date();
+    const hari = referenceDate.getDay();
+
+    if (hari === 3) {
+        return { wMicro: 0.65, wVelocity: 0.35, driftMultiplier: 1.0, label: 'stabil' };
+    }
+
+    if (hari === 6) {
+        return { wMicro: 0.68, wVelocity: 0.32, driftMultiplier: 1.1, label: 'stabil-sederhana' };
+    }
+
+    if (hari === 0) {
+        return { wMicro: 0.58, wVelocity: 0.42, driftMultiplier: 1.5, label: 'agresif' };
+    }
+
+    return { wMicro: 0.60, wVelocity: 0.40, driftMultiplier: 1.2, label: 'normal' };
+}
+
+function parseResultMatches(rawText) {
+    if (!rawText) return [];
+    const matches = rawText.match(/\d{4}/g) || [];
+    return matches.map((num) => num.trim());
+}
+
+function normalizeRemoteHistory(payload) {
+    if (!payload) return [];
+
+    if (Array.isArray(payload)) {
+        return payload
+            .map((entry) => {
+                if (typeof entry === 'string') return entry;
+                if (entry && typeof entry === 'object') {
+                    return (
+                        entry.result ||
+                        entry.draw ||
+                        entry.drawNumber ||
+                        entry.number ||
+                        entry.num ||
+                        entry.value ||
+                        ''
+                    );
+                }
+                return '';
+            })
+            .filter((value) => /\d{4}/.test(String(value)))
+            .map((value) => String(value).replace(/\D/g, '').slice(0, 4));
+    }
+
+    if (typeof payload === 'object') {
+        const candidates = [
+            payload.results,
+            payload.data,
+            payload.history,
+            payload.draws,
+            payload.toto,
+            payload.items,
+            payload.list
+        ];
+
+        for (const candidate of candidates) {
+            if (Array.isArray(candidate)) {
+                return normalizeRemoteHistory(candidate);
+            }
+        }
+    }
+
+    return parseResultMatches(String(payload));
+}
+
+async function muatDataLuaran() {
+    const sourceInput = document.getElementById('resultSource');
+    if (!sourceInput || !sourceInput.value) {
+        return [];
+    }
+
+    try {
+        const response = await fetch(sourceInput.value, { method: 'GET' });
+        if (!response.ok) {
+            return [];
+        }
+
+        const payload = await response.json();
+        return normalizeRemoteHistory(payload);
+    } catch (error) {
+        return [];
+    }
+}
+
+function kiraPemberatToto(sejarahCabutan, dateStr) {
     if (!Array.isArray(sejarahCabutan) || sejarahCabutan.length === 0) {
         return ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
     }
@@ -144,8 +233,7 @@ function kiraPemberatToto(sejarahCabutan) {
     const t5 = sejarahCabutan.slice(0, 5).join('');
     const t15 = sejarahCabutan.slice(0, 15).join('');
 
-    const wMicro = 0.55;
-    const wVelocity = 0.35;
+    const { wMicro, wVelocity, driftMultiplier } = getHariPemberatProfile(dateStr);
 
     for (let i = 0; i <= 9; i++) {
         const digit = String(i);
@@ -155,7 +243,7 @@ function kiraPemberatToto(sejarahCabutan) {
 
         const vel5 = t5 ? (cT5 / 5) : 0;
         const vel15 = t15 ? (cT15 / 15) : 0;
-        const halaju = vel5 - vel15;
+        const halaju = (vel5 - vel15) * driftMultiplier;
 
         skor.push({ digit, skorAkhir: (wMicro * fMikro) + (wVelocity * halaju) });
     }
@@ -181,10 +269,11 @@ function kiraTrajektoriAnjakan(sortedPemberat) {
     };
 }
 
-function janaKeputusanToto() {
+async function janaKeputusanToto() {
     const seedInput = document.getElementById('num1');
     const drawIndukInput = document.getElementById('drawInduk');
     const historyInput = document.getElementById('history');
+    const tarikhCabutanInput = document.getElementById('tarikhCabutan');
 
     if (!seedInput || !drawIndukInput || !historyInput) {
         alert('Elemen borang tidak dijumpai. Sila muat semula laman.');
@@ -193,7 +282,8 @@ function janaKeputusanToto() {
 
     const seedStr = sanitizeDigits(seedInput.value, 4);
     const drawIndukStr = sanitizeDigits(drawIndukInput.value, 4);
-    const historyRaw = historyInput.value || '';
+    const historyManual = historyInput.value || '';
+    const tarikhCabutan = tarikhCabutanInput ? tarikhCabutanInput.value : '';
 
     if (seedStr.length !== 4) {
         alert('Nombor draw harini 4x4 mesti 4 digit.');
@@ -205,8 +295,9 @@ function janaKeputusanToto() {
         return;
     }
 
-    const matchHasil = historyRaw.match(/\d{4}/g) || [];
-    const sejarahCabutan = matchHasil.map((num) => num.trim());
+    const historyLuaran = await muatDataLuaran();
+    const historyManualList = parseResultMatches(historyManual);
+    const combinedHistory = [...new Set([...historyLuaran, ...historyManualList])];
 
     const matrixK1 = binaMatriks4x4(seedStr);
     const matrix3x3 = binaMatriks3x3Induk(drawIndukStr);
@@ -215,7 +306,7 @@ function janaKeputusanToto() {
     const set3x3 = new Set(matrix3x3.flat());
     let persilanganEmas = Array.from(set4x4).filter((d) => set3x3.has(d)).map(String);
 
-    const sortedPemberat = kiraPemberatToto(sejarahCabutan);
+    const sortedPemberat = kiraPemberatToto(combinedHistory, tarikhCabutan);
     const anjakanData = kiraTrajektoriAnjakan(sortedPemberat);
     const hotDigits = anjakanData.paksi;
 
@@ -317,10 +408,12 @@ function resetBorang() {
     const hasil = document.getElementById('hasil');
     const num1 = document.getElementById('num1');
     const drawInduk = document.getElementById('drawInduk');
+    const sourceUrl = document.getElementById('resultSource');
 
     if (hist) hist.value = '';
     if (num1) num1.value = '';
     if (drawInduk) drawInduk.value = '6205';
+    if (sourceUrl) sourceUrl.value = '';
     if (hasil) hasil.style.display = 'none';
     autoJanaBenihTarikh();
 }
