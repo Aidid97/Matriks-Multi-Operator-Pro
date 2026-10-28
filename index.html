@@ -6,17 +6,19 @@
   <title>Matrix Protocol Engine</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --card: #1f2937;
-      --line: #374151;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
+      --bg: #0b1220;
+      --panel: #101827;
+      --panel-2: #111f33;
+      --card: #17233a;
+      --line: #2e3d59;
+      --text: #e5edf9;
+      --muted: #9aa8c3;
       --blue: #60a5fa;
       --green: #34d399;
       --gold: #fbbf24;
       --red: #f87171;
-      --purple: #c084fc;
+      --purple: #a78bfa;
+      --shadow: rgba(0, 0, 0, 0.3);
     }
 
     * { box-sizing: border-box; }
@@ -24,62 +26,63 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(180deg, #0b1220, #111827);
+      background: linear-gradient(180deg, var(--bg), #111827);
       color: var(--text);
       font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .app {
       width: min(1100px, 100%);
-      background: rgba(17, 24, 39, 0.9);
+      background: rgba(16, 24, 39, 0.9);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 20px 50px var(--shadow);
     }
 
     .topbar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 16px;
       flex-wrap: wrap;
       margin-bottom: 18px;
     }
 
     .title {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .date-row {
       display: flex;
       flex-wrap: wrap;
+      align-items: flex-end;
       gap: 10px;
-      align-items: center;
     }
 
     .date-box {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      min-width: 180px;
+      min-width: 170px;
     }
 
     .date-box label {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--muted);
-      letter-spacing: 0.08em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     .date-box input {
-      background: #0b1220;
+      background: #0a1426;
       color: var(--text);
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -88,7 +91,7 @@
     }
 
     .seed-box {
-      background: #0b1220;
+      background: #0a1426;
       color: var(--text);
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -108,14 +111,13 @@
       transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
-    .button:hover { transform: translateY(-1px); opacity: 0.96; }
+    .button:hover { transform: translateY(-1px); opacity: 0.97; }
     .button:active { transform: translateY(0); }
 
     .content {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
-      margin-top: 18px;
     }
 
     .panel {
@@ -126,13 +128,13 @@
     }
 
     .panel-header {
-      background: #0b1220;
+      background: var(--panel-2);
       border-bottom: 1px solid var(--line);
       padding: 12px 14px;
+      font-size: 0.76rem;
       font-weight: 700;
-      letter-spacing: 0.06em;
       text-transform: uppercase;
-      font-size: 0.8rem;
+      letter-spacing: 0.08em;
       color: var(--muted);
     }
 
@@ -142,72 +144,83 @@
       padding: 14px;
     }
 
-    .matrix-4x4 { grid-template-columns: repeat(4, minmax(100px, 1fr)); }
-    .matrix-3x3 { grid-template-columns: repeat(3, minmax(100px, 1fr)); }
+    .matrix-4x4 { grid-template-columns: repeat(4, minmax(90px, 1fr)); }
+    .matrix-3x3 { grid-template-columns: repeat(3, minmax(90px, 1fr)); }
 
     .cell {
       min-height: 78px;
       border-radius: 12px;
+      background: linear-gradient(180deg, #101d32, #0a1426);
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, #111827, #0f172a);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 4px;
       text-align: center;
       padding: 8px;
-      gap: 4px;
-      color: var(--text);
     }
 
     .tag {
-      font-size: 0.54rem;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
+      font-size: 0.52rem;
       color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .number {
-      font-size: 1.2rem;
+      font-size: 1.28rem;
       font-weight: 700;
       color: var(--green);
     }
 
     .status-bar {
       margin-top: 18px;
-      background: #0b1220;
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 14px 16px;
-      min-height: 120px;
+      min-height: 150px;
     }
 
     .status-title {
-      color: var(--muted);
       font-size: 0.72rem;
+      font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      color: var(--muted);
       margin-bottom: 8px;
     }
 
     .final-text {
-      font-size: 1.05rem;
+      display: grid;
+      gap: 6px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .candidate {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(52, 211, 153, 0.08);
       font-weight: 700;
       color: var(--green);
-      line-height: 1.6;
-      word-wrap: break-word;
+      font-size: 1rem;
     }
 
     @media (max-width: 760px) {
       .content { grid-template-columns: 1fr; }
-      .matrix-4x4, .matrix-3x3 { grid-template-columns: repeat(2, minmax(110px, 1fr)); }
+      .matrix-4x4, .matrix-3x3 { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="title">PROTOKOL ANALISIS MATRIK</div>
+      <div class="title">Protocol Matrix Engine</div>
 
       <div class="date-row">
         <div class="date-box">
@@ -221,12 +234,12 @@
         </div>
 
         <div class="date-box">
-          <label for="matrixSeed4x4">Nilai 4x4</label>
+          <label for="matrixSeed4x4">Seed 4x4</label>
           <input id="matrixSeed4x4" class="seed-box" type="text" placeholder="6204" value="" />
         </div>
 
         <div class="date-box">
-          <label for="matrixSeed3x3">Nilai 3x3</label>
+          <label for="matrixSeed3x3">Seed 3x3</label>
           <input id="matrixSeed3x3" class="seed-box" type="text" placeholder="620" value="" />
         </div>
 
@@ -236,19 +249,23 @@
 
     <div class="content">
       <div class="panel">
-        <div class="panel-header">Carta Matrix 4x4</div>
+        <div class="panel-header">Matrix 4x4</div>
         <div class="matrix matrix-4x4" id="matrix4x4"></div>
       </div>
 
       <div class="panel">
-        <div class="panel-header">Carta Matrix 3x3</div>
+        <div class="panel-header">Matrix 3x3</div>
         <div class="matrix matrix-3x3" id="matrix3x3"></div>
       </div>
     </div>
 
     <div class="status-bar">
-      <div class="status-title">Status Protokol</div>
-      <div class="final-text" id="finalStatus">Menunggu analisis...</div>
+      <div class="status-title">Engine Status</div>
+      <div class="final-text" id="finalStatus"></div>
+    </div>
+
+    <div class="candidate">
+      Final Candidate: <span id="finalCandidate">--</span>
     </div>
   </div>
 
@@ -267,7 +284,6 @@
     function getAutoSeedFromDate(dateValue, mode) {
       const raw = dateValue || new Date().toISOString().split('T')[0];
       const [year, month, day] = raw.split('-');
-
       const yy = Number(String(year || '2026').slice(-2));
       const mm = Number(month || '1');
       const dd = Number(day || '1');
@@ -320,6 +336,10 @@
       return matrix;
     }
 
+    function matrixSum(matrix) {
+      return matrix.flat().reduce((sum, value) => sum + value, 0);
+    }
+
     function getFrequency(results) {
       const map = new Map();
       for (const value of results) {
@@ -331,12 +351,62 @@
       return map;
     }
 
-    function makeStatusText(freqMap, matrix4x4, matrix3x3) {
+    function computeGeometry(seed4, seed3) {
+      const variants = new Set();
+      const digits4 = String(seed4).split('');
+      const digits3 = String(seed3).split('');
+
+      for (const arr of [digits4, digits3]) {
+        variants.add(arr.slice().reverse().join(''));
+        if (arr.length >= 2) {
+          const swapped = [...arr];
+          [swapped[0], swapped[1]] = [swapped[1], swapped[0]];
+          variants.add(swapped.join(''));
+        }
+      }
+
+      const values = [...variants].filter(Boolean);
+      const mirror = values.length > 0 ? values[0] : '000';
+
+      return {
+        label: values.length > 0 ? `Mirror / Geometry OK (${mirror})` : 'Geometry neutral',
+        score: values.length * 10
+      };
+    }
+
+    function computeTrajectory(dateValue, seed4, seed3) {
+      const raw = dateValue || new Date().toISOString().split('T')[0];
+      const [year, month, day] = raw.split('-');
+      const yy = Number(String(year || '2026').slice(-2));
+      const mm = Number(month || '1');
+      const dd = Number(day || '1');
+
+      const total = yy + mm + dd;
+      const seedTotal = digitsOf(seed4, 4).reduce((sum, v) => sum + v, 0) + digitsOf(seed3, 3).reduce((sum, v) => sum + v, 0);
+      const delta = (total - seedTotal) % 10;
+
+      return {
+        label: delta >= 5 ? 'Trajectory upward' : 'Trajectory stable',
+        score: delta + 1
+      };
+    }
+
+    function computeWeightedScore({ freqMap, matrix4x4, matrix3x3, geometry, trajectory }) {
       const sortedDigits = [...freqMap.entries()].sort((a, b) => b[1] - a[1]);
-      const top = sortedDigits[0] ? sortedDigits[0][0] : 0;
-      const score4 = matrix4x4.flat().reduce((sum, v) => sum + v, 0);
-      const score3 = matrix3x3.flat().reduce((sum, v) => sum + v, 0);
-      return `Tarikh digunakan untuk auto-seed. Digit utama pada zon ${top}. Skor matrix 4x4 = ${score4}, matrix 3x3 = ${score3}. Protokol aktif: normalize → frequency → matrix → geometry → trajectory → weighted ranking.`;
+      const topDigit = sortedDigits[0] ? sortedDigits[0][0] : 0;
+      const score =
+        (sortedDigits[0]?.[1] ?? 0) * 2.2 +
+        matrix4x4 * 0.8 +
+        matrix3x3 * 1.0 +
+        geometry.score * 0.9 +
+        trajectory.score * 1.4;
+
+      let label = 'Medium zone';
+      if (score >= 90) label = 'High priority zone';
+      else if (score >= 70) label = 'Strong signal';
+      else if (score >= 50) label = 'Watch zone';
+
+      return { label, score, topDigit };
     }
 
     function renderMatrix(targetId, matrix) {
@@ -364,33 +434,74 @@
       });
     }
 
+    function renderProtocol() {
+      const dateValue = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
+      const seed4 = resolveSeed('matrixSeed4x4', '4x4', dateValue);
+      const seed3 = resolveSeed('matrixSeed3x3', '3x3', dateValue);
+
+      const matrix4x4 = buildMatrix4x4(seed4);
+      const matrix3x3 = buildMatrix3x3(seed3);
+      const freqMap = getFrequency([seed4, seed3]);
+      const matrix4Score = matrixSum(matrix4x4);
+      const matrix3Score = matrixSum(matrix3x3);
+      const geometry = computeGeometry(seed4, seed3);
+      const trajectory = computeTrajectory(dateValue, seed4, seed3);
+      const weighted = computeWeightedScore({
+        freqMap,
+        matrix4x4: matrix4Score,
+        matrix3x3: matrix3Score,
+        geometry,
+        trajectory
+      });
+
+      renderMatrix('matrix4x4', matrix4x4);
+      renderMatrix('matrix3x3', matrix3x3);
+
+      const status = document.getElementById('finalStatus');
+      if (status) {
+        status.innerHTML = `
+          <div><strong>Seed 4x4:</strong> ${seed4}</div>
+          <div><strong>Seed 3x3:</strong> ${seed3}</div>
+          <div><strong>Top digit:</strong> ${weighted.topDigit}</div>
+          <div><strong>Matrix 4x4:</strong> ${matrix4Score}</div>
+          <div><strong>Matrix 3x3:</strong> ${matrix3Score}</div>
+          <div><strong>Geometry:</strong> ${geometry.label}</div>
+          <div><strong>Trajectory:</strong> ${trajectory.label}</div>
+          <div><strong>Weighted rank:</strong> ${weighted.label}</div>
+          <div><strong>Score:</strong> ${weighted.score.toFixed(2)}</div>
+        `;
+      }
+
+      const finalCandidate = document.getElementById('finalCandidate');
+      if (finalCandidate) {
+        finalCandidate.textContent = `${seed4} / ${seed3}`;
+      }
+    }
+
     function setDefaultDates() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('startDate').value = today;
       document.getElementById('endDate').value = today;
     }
 
-    function renderProtocol() {
-      const dateValue = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
-      const value4 = resolveSeed('matrixSeed4x4', '4x4', dateValue);
-      const value3 = resolveSeed('matrixSeed3x3', '3x3', dateValue);
-
-      const matrix4x4 = buildMatrix4x4(value4);
-      const matrix3x3 = buildMatrix3x3(value3);
-      const freqMap = getFrequency([value4, value3]);
-
-      renderMatrix('matrix4x4', matrix4x4);
-      renderMatrix('matrix3x3', matrix3x3);
-
-      const status = document.getElementById('finalStatus');
-      if (status) status.textContent = makeStatusText(freqMap, matrix4x4, matrix3x3);
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       setDefaultDates();
-      document.getElementById('generateBtn').addEventListener('click', renderProtocol);
-      document.getElementById('startDate').addEventListener('change', renderProtocol);
-      document.getElementById('endDate').addEventListener('change', renderProtocol);
+
+      const generateBtn = document.getElementById('generateBtn');
+      if (generateBtn) {
+        generateBtn.addEventListener('click', renderProtocol);
+      }
+
+      const startDate = document.getElementById('startDate');
+      if (startDate) {
+        startDate.addEventListener('change', renderProtocol);
+      }
+
+      const endDate = document.getElementById('endDate');
+      if (endDate) {
+        endDate.addEventListener('change', renderProtocol);
+      }
+
       renderProtocol();
     });
   </script>
