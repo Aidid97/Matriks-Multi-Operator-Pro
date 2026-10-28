@@ -33,7 +33,7 @@
       }
 
       .phone {
-        width: min(420px, 100%);
+        width: min(430px, 100%);
         min-height: 100vh;
         background: rgba(9, 19, 31, 0.96);
         border: 1px solid var(--line);
@@ -81,6 +81,11 @@
 
       .field input:focus {
         border-color: var(--green2);
+      }
+
+      .field input[readonly] {
+        background: rgba(9, 19, 31, 0.75);
+        color: var(--green);
       }
 
       .content {
@@ -145,7 +150,7 @@
       }
 
       .prediction-box {
-        margin-top: 6px;
+        margin-top: 8px;
         background: linear-gradient(135deg, rgba(52, 211, 153, 0.18), rgba(59,130,246,0.10));
         border: 1px solid var(--line);
         border-radius: 16px;
@@ -169,12 +174,12 @@
 
           <div class="field">
             <label for="matrixSeed4x4">4x4</label>
-            <input id="matrixSeed4x4" type="text" maxlength="4" placeholder="6207" />
+            <input id="matrixSeed4x4" type="text" maxlength="4" placeholder="6298" />
           </div>
 
           <div class="field">
             <label for="matrixSeed3x3">3x3</label>
-            <input id="matrixSeed3x3" type="text" maxlength="4" placeholder="1510" />
+            <input id="matrixSeed3x3" type="text" maxlength="4" readonly placeholder="derived" />
           </div>
         </div>
       </div>
@@ -202,15 +207,8 @@
     </div>
 
     <script>
-      const state = {
-        startDate: '',
-        seed4: '',
-        seed3: ''
-      };
-
       function sanitizeDigits(value, length) {
         const digits = String(value ?? '').replace(/\D/g, '');
-        if (!digits) return '';
         return digits.slice(0, length);
       }
 
@@ -219,7 +217,7 @@
         return cleaned.padStart(length, '0').slice(0, length).split('').map(Number);
       }
 
-      function getAutoSeedFromDate(dateValue, mode) {
+      function getAutoSeed4(dateValue) {
         const raw = dateValue || new Date().toISOString().split('T')[0];
         const [year, month, day] = raw.split('-');
         const yy = Number(String(year || '2026').slice(-2));
@@ -230,30 +228,20 @@
         const b = (mm + dd) % 10;
         const c = (yy + dd) % 10;
 
-        if (mode === '4x4') {
-          return `${dd}${a}${b}${c}`.slice(0, 4).padStart(4, '0');
-        }
-
-        if (mode === '3x3') {
-          return `${a}${b}${c}`.slice(0, 3).padStart(3, '0');
-        }
-
-        return '';
+        return `${dd}${a}${b}${c}`.slice(0, 4).padStart(4, '0');
       }
 
-      function resolveSeed4(inputId, dateValue) {
-        const input = document.getElementById(inputId);
+      function resolveSeed4(dateValue) {
+        const input = document.getElementById('matrixSeed4x4');
         const manual = sanitizeDigits(input?.value || '', 4);
         if (manual) return manual.padStart(4, '0');
-        return getAutoSeedFromDate(dateValue, '4x4');
+        return getAutoSeed4(dateValue);
       }
 
-      function normalizeSeed3(value, autoSeed) {
-        const raw = sanitizeDigits(value, 4);
-        if (raw) {
-          return raw.slice(-3).padStart(3, '0');
-        }
-        return autoSeed;
+      function deriveSeed3(seed4) {
+        const cleaned = sanitizeDigits(seed4, 4);
+        if (!cleaned) return '000';
+        return cleaned.slice(-3).padStart(3, '0');
       }
 
       function normalizeSeed(seed, length) {
@@ -305,52 +293,6 @@
         return matrix;
       }
 
-      function frequencyScan(values) {
-        const map = new Map();
-
-        values.forEach((entry) => {
-          const digits = String(entry).split('');
-          digits.forEach((d) => {
-            const key = Number(d);
-            map.set(key, (map.get(key) || 0) + 1);
-          });
-        });
-
-        return [...map.entries()].sort((a, b) => b[1] - a[1]);
-      }
-
-      function geometryCheck(seed3, seed4) {
-        const checks = [
-          String(seed3),
-          String(seed4),
-          String(seed3).split('').reverse().join(''),
-          String(seed4).split('').reverse().join('')
-        ];
-
-        return checks.filter(Boolean).length;
-      }
-
-      function trajectoryCheck(seed3, seed4) {
-        const total =
-          digitsOf(seed3, 3).reduce((a, b) => a + b, 0) +
-          digitsOf(seed4, 4).reduce((a, b) => a + b, 0);
-
-        return total % 2 === 0 ? 'stable' : 'bias-up';
-      }
-
-      function weightedScore(frequency, geometry, trajectory) {
-        let score = 0;
-
-        frequency.forEach(([digit, count]) => {
-          score += count * 10 + digit;
-        });
-
-        score += geometry * 15;
-        score += trajectory === 'bias-up' ? 12 : 6;
-
-        return score;
-      }
-
       function renderMatrix(targetId, matrix) {
         const target = document.getElementById(targetId);
         if (!target) return;
@@ -380,27 +322,21 @@
       function get3dProbables(seed3) {
         const main = buildMatrix3x3(seed3);
         const shadow = buildShadow3x3(seed3);
-
         const list = [];
 
         main.forEach((row) => list.push(row.join('')));
         shadow.forEach((row) => list.push(row.join('')));
 
-        return Array.from(new Set(list)).slice(0, 6);
+        const unique = Array.from(new Set(list));
+        return unique.slice(0, 6);
       }
 
       function render() {
-        const dateValue =
-          document.getElementById('startDate')?.value ||
-          new Date().toISOString().split('T')[0];
+        const dateValue = document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0];
+        const seed4 = normalizeSeed(resolveSeed4(dateValue), 4);
+        const seed3 = normalizeSeed(deriveSeed3(seed4), 3);
 
-        const autoSeed3 = getAutoSeedFromDate(dateValue, '3x3');
-        const seed4 = normalizeSeed(resolveSeed4('matrixSeed4x4', dateValue), 4);
-        const seed3 = normalizeSeed3(document.getElementById('matrixSeed3x3').value, autoSeed3);
-
-        state.startDate = dateValue;
-        state.seed4 = seed4;
-        state.seed3 = seed3;
+        document.getElementById('matrixSeed3x3').value = seed3;
 
         const matrix4x4 = buildMatrix4x4(seed4);
         const matrix3x3 = buildMatrix3x3(seed3);
@@ -411,13 +347,7 @@
         renderMatrix('shadow3x3', shadow3x3);
 
         const probables = get3dProbables(seed3);
-        const freq = frequencyScan(probables);
-        const geometry = geometryCheck(seed3, seed4);
-        const trajectory = trajectoryCheck(seed3, seed4);
-        const score = weightedScore(freq, geometry, trajectory);
-
-        document.getElementById('predictionOutput').textContent =
-          `${probables.join(' • ')} | score ${score}`;
+        document.getElementById('predictionOutput').textContent = `${probables.join(' • ')}`;
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -426,7 +356,6 @@
 
         startDate.addEventListener('change', render);
         document.getElementById('matrixSeed4x4').addEventListener('input', render);
-        document.getElementById('matrixSeed3x3').addEventListener('input', render);
 
         render();
       });
