@@ -6,7 +6,7 @@
     <title>Sistem Matriks Dwi-Carta Toto Pro</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 600px; width: 100%; }
+        .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 800px; width: 100%; }
         h2 { text-align: center; color: #1a365d; margin-bottom: 5px; }
         p.subtitle { text-align: center; color: #718096; font-size: 12px; margin-bottom: 20px; }
         .input-group { margin-bottom: 12px; text-align: left; }
@@ -22,18 +22,24 @@
         .btn-reset:hover { background-color: #a0aec0; }
         .btn-kocok { background-color: #198754; color: white; font-size: 11px; padding: 4px 8px; float: right; }
         
-        .charts-flex { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        @media (max-width: 480px) { .charts-flex { grid-template-columns: 1fr; } }
+        /* Susunan 3 Carta Bersebelahan */
+        .charts-flex { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        @media (max-width: 768px) { .charts-flex { grid-template-columns: 1fr; } }
         
-        .chart-box { background: #fff; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; text-align: center; }
-        .chart-title { font-size: 13px; font-weight: bold; color: #1a365d; margin-bottom: 8px; }
+        .chart-box { background: #fff; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; text-align: center; }
+        .chart-box-shadow { background: #fdf2f8; border: 1px solid #fbcfe8; }
+        .chart-title { font-size: 12px; font-weight: bold; color: #1a365d; margin-bottom: 8px; }
         
-        .matrix-table-4x4 { width: 100%; border-collapse: collapse; font-size: 20px; font-weight: bold; margin: 0 auto; }
-        .matrix-table-4x4 td { border: 2px solid #4a5568; padding: 8px; background: #fff; text-align: center; }
+        .matrix-table-4x4 { width: 100%; border-collapse: collapse; font-size: 18px; font-weight: bold; margin: 0 auto; }
+        .matrix-table-4x4 td { border: 2px solid #4a5568; padding: 6px; background: #fff; text-align: center; }
         .matrix-table-4x4 tr:first-child td { background-color: #e2e8f0; }
 
-        .matrix-grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0 auto; }
-        .matrix-grid-3x3 .cell-3x3 { border: 2px solid #d97706; padding: 12px; font-size: 22px; font-weight: bold; background: #fffbe0; border-radius: 6px; text-align: center; }
+        .matrix-grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 0 auto; }
+        .matrix-grid-3x3 .cell-3x3 { border: 2px solid #d97706; padding: 10px; font-size: 18px; font-weight: bold; background: #fffbe0; border-radius: 6px; text-align: center; }
+        
+        /* Styling Carta Bayangan */
+        .matrix-grid-3x3 .cell-shadow { border: 2px solid #db2777; background: #fff0f6; color: #831843; }
+        .matrix-grid-3x3 .cell-lock { background: #fef08a !important; border-color: #ca8a04 !important; color: #854d0e !important; box-shadow: 0 0 5px rgba(202, 138, 4, 0.5); }
 
         .result-box { margin-top: 15px; padding: 15px; background: #f8f9fc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
         .pod-box { background: #fef3c7; border-left: 5px solid #d97706; padding: 15px; border-radius: 6px; margin-top: 15px; text-align: left; }
@@ -46,7 +52,7 @@
 
 <div class="container">
     <h2>Mesin Matriks Dwi-Carta Toto Pro</h2>
-    <p class="subtitle">Carta Matriks 4x4 (Tolak 1) & Carta 3x3 Mod Tarikh Lebah Naga</p>
+    <p class="subtitle">Carta Matriks 4x4 (Tolak 1), Carta Teras 3x3 Lebah Naga & Matriks Bayangan (+5)</p>
 
     <div class="input-group">
         <label for="num1">Nombor Induk / Dasar 4D (Contoh: 3594) :</label>
@@ -71,44 +77,51 @@
     </div>
 
     <div class="btn-group">
-        <button class="btn-jana" onclick="janaKeputusan()">Bina Dwi-Carta & Analisa</button>
-        <button class="btn-reset" onclick="resetBorang()">Reset</button>
+        <button class="btn-jana" type="button" onclick="janaKeputusan()">Bina 3 Carta & Analisa</button>
+        <button class="btn-reset" type="button" onclick="resetBorang()">Reset</button>
     </div>
 
     <div id="hasil" style="display: none;">
+        <!-- PAPARAN 3 CARTA BERSAMA -->
         <div class="charts-flex">
             <div class="chart-box">
-                <div class="chart-title">🔲 Carta Matriks 4x4 (Tolak 1)</div>
+                <div class="chart-title">1️⃣ Matriks 4x4 (Tolak 1)</div>
                 <table class="matrix-table-4x4" id="matrixTable4x4"></table>
             </div>
             
             <div class="chart-box">
-                <div class="chart-title">🐉 Carta 3x3 Tarikh (Lebah Naga)</div>
+                <div class="chart-title">2️⃣ Teras 3x3 (Lebah Naga)</div>
                 <div class="matrix-grid-3x3" id="matrixGrid3x3"></div>
+            </div>
+
+            <div class="chart-box chart-box-shadow">
+                <div class="chart-title" style="color: #9d174d;">3️⃣ Matriks Bayangan (+5)</div>
+                <div class="matrix-grid-3x3" id="matrixGrid3x3Bayangan"></div>
             </div>
         </div>
 
         <div class="pod-box">
             <p style="margin:0; font-weight:bold; color:#92400e; font-size:14px; border-bottom:1px solid #fcd34d; padding-bottom:5px; margin-bottom:8px;">🔥 POD (Pilihan Optimal Draw Toto)</p>
-            <div><strong>Digit Hilang (Key Missing):</strong> <span id="missing-digits" style="font-weight:bold; color:#dc2626;"></span></div>
+            <div><strong>Digit Hilang Utama:</strong> <span id="missing-digits" style="font-weight:bold; color:#dc2626;"></span></div>
+            <div><strong>🔒 Nombor Kunci (Lock Dominan):</strong> <span id="lock-digit" style="font-weight:bold; color:#b45309; background:#fef08a; padding:2px 8px; border-radius:4px;"></span></div>
             <hr style="border-top:1px dashed #fcd34d; margin:6px 0;">
             <div><strong>Top 2D POD (Vektor Euclidean):</strong> <span id="pod-2d" style="font-weight:bold; color:#b45309; font-size:16px;"></span></div>
-            <div><strong>Top 3D POD:</strong> <span id="pod-3d" style="font-weight:bold; color:#1d4ed8; font-size:16px;"></span></div>
-            <div><strong>Top 4D POD:</strong> <span id="pod-4d" style="font-weight:bold; color:#6b21a8; font-size:18px;"></span></div>
+            <div><strong>Top 3D POD (Multi-Anchor Matrix):</strong> <span id="pod-3d" style="font-weight:bold; color:#1d4ed8; font-size:16px;"></span></div>
+            <div><strong>Top 4D POD (Solid/Straight):</strong> <span id="pod-4d" style="font-weight:bold; color:#6b21a8; font-size:18px;"></span></div>
         </div>
 
         <div class="result-box" style="border-left-color: #2b6cb0;">
-            <p style="margin:0;"><strong>Senarai 2D Pilihan Kebarangkalian (Vektor Jarak $d$)</strong> <button class="btn-kocok" onclick="salin('out-2d')">Salin 2D</button></p>
+            <p style="margin:0;"><strong>Senarai 2D Pilihan Kebarangkalian (Vektor Jarak)</strong> <button class="btn-kocok" onclick="salin('out-2d')">Salin 2D</button></p>
             <div id="out-2d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Senarai 3D Pilihan Kebarangkalian</strong> <button class="btn-kocok" onclick="salin('out-3d')">Salin 3D</button></p>
+            <p style="margin:0;"><strong>Senarai 3D Pilihan Kebarangkalian (Bayangan + Anchor Matrix)</strong> <button class="btn-kocok" onclick="salin('out-3d')">Salin 3D</button></p>
             <div id="out-3d" class="number-grid"></div>
         </div>
 
         <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Senarai 4D iBox / Permutasi Pilihan</strong> <button class="btn-kocok" onclick="salin('out-4d')">Salin 4D</button></p>
+            <p style="margin:0;"><strong>Senarai 4D Solid / Straight Pilihan</strong> <button class="btn-kocok" onclick="salin('out-4d')">Salin 4D</button></p>
             <div id="out-4d" class="number-grid"></div>
         </div>
     </div>
