@@ -80,12 +80,10 @@ class EnjinDwiCartaToto {
         ];
     }
 
-    // MATRIKS BAYANGAN (SHADOW INDEX +5)
     binaMatrixBayangan3x3(m3x3) {
         return m3x3.map(baris => baris.map(val => (val + 5) % 10));
     }
 
-    // KESAN NOMBOR KUNCI / LOCK DOMINAN
     kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan) {
         let setUtama = new Set();
         m4x4.forEach(row => row.forEach(val => setUtama.add(val)));
@@ -134,76 +132,41 @@ class EnjinDwiCartaToto {
         return senaraiSkor;
     }
 
-    ekstraksiKunci3DDinamik(sejarahCabutan) {
-        let kunci3DSenarai = [];
-        let top3 = sejarahCabutan.slice(0, 3);
-
-        top3.forEach(numStr => {
-            let digits = numStr.toString().padStart(4, '0').split('').map(Number);
-            let d1 = digits[0], d2 = digits[1], d3 = digits[2], d4 = digits[3];
-
-            let dx = d3 - d1;
-            let dy = d4 - d2;
-            let deltaJarak = Math.round(Math.sqrt(dx * dx + dy * dy)) % 10;
-
-            let k1 = (d1 + d4) % 10;
-            let k2 = deltaJarak;
-            let k3 = (d2 + d3) % 10;
-
-            let combo3D = this.sortCombo(`${k1}${k2}${k3}`);
-            kunci3DSenarai.push({ combo: combo3D, k1, k2, k3 });
-        });
-
-        return kunci3DSenarai;
-    }
-
-    janaSenarai2D(m4x4, senaraiObjekSkor, statusCermin) {
+    // FORMULA 2D: PERSILANGAN 3 CARTA (3-CHART INTERSECTION)
+    janaSenarai2D(m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin) {
         let petaSkor = {};
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
 
-        let petaKoordinat = {};
-        for (let r = 0; r < 4; r++) {
-            for (let c = 0; c < 4; c++) {
-                let val = m4x4[r][c].toString();
-                if (!petaKoordinat[val]) {
-                    petaKoordinat[val] = [];
-                }
-                petaKoordinat[val].push({ x: c, y: r });
-            }
-        }
+        // Pengiraan Kekerapan Digit Merentasi 3 Carta
+        let kiraanCarta = {};
+        for (let d = 0; d <= 9; d++) kiraanCarta[d.toString()] = 0;
 
-        let digitPanas = senaraiObjekSkor.slice(0, 6).map(item => item.digitSasaran);
+        m4x4.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 1));
+        m3x3.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 2)); // Bobot tinggi Teras
+        m3x3Bayangan.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 2.5)); // Bobot tinggi Bayangan
+
         let senaraiCalon2D = [];
+        for (let d1 = 0; d1 <= 9; d1++) {
+            for (let d2 = d1 + 1; d2 <= 9; d2++) {
+                let s1 = d1.toString();
+                let s2 = d2.toString();
+                let kombo = this.sortCombo(s1 + s2);
+                let skorResonans = (kiraanCarta[s1] * kiraanCarta[s2]) + (petaSkor[s1] || 0) + (petaSkor[s2] || 0);
 
-        for (let i = 0; i < digitPanas.length; i++) {
-            for (let j = i + 1; j < digitPanas.length; j++) {
-                let d1 = digitPanas[i];
-                let d2 = digitPanas[j];
-                let kombo = this.sortCombo(d1 + d2);
-
-                let pos1 = petaKoordinat[d1] ? petaKoordinat[d1][0] : { x: 0, y: 0 };
-                let pos2 = petaKoordinat[d2] ? petaKoordinat[d2][0] : { x: 3, y: 3 };
-
-                let deltaX = pos2.x - pos1.x;
-                let deltaY = pos2.y - pos1.y;
-                let jarakEuclidean = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
-
-                let faktorVektor = jarakEuclidean > 0 ? (1 / jarakEuclidean) : 1.5;
-                let skorProbabiliti = ((petaSkor[d1] || 0) + (petaSkor[d2] || 0)) * (1 + faktorVektor);
-
-                senaraiCalon2D.push({ kombo: kombo, skor: skorProbabiliti });
+                senaraiCalon2D.push({ kombo: kombo, skor: skorResonans });
             }
         }
 
         if (statusCermin) {
-            digitPanas.forEach(d => {
-                let mirrorD = this.MIRROR_MAP[d];
-                if (mirrorD) {
-                    let kombo = this.sortCombo(d + mirrorD);
-                    let skorBonus = ((petaSkor[d] || 0) + (petaSkor[mirrorD] || 0)) * 1.25;
+            for (let d = 0; d <= 9; d++) {
+                let s = d.toString();
+                let m = this.MIRROR_MAP[s];
+                if (m && parseInt(s) < parseInt(m)) {
+                    let kombo = this.sortCombo(s + m);
+                    let skorBonus = (kiraanCarta[s] + kiraanCarta[m]) * 1.5;
                     senaraiCalon2D.push({ kombo: kombo, skor: skorBonus });
                 }
-            });
+            }
         }
 
         let kedudukanPeta = new Map();
@@ -218,45 +181,59 @@ class EnjinDwiCartaToto {
             .sort((a, b) => b.skor - a.skor);
     }
 
-    janaSenarai3D(m3x3, m3x3Bayangan, objek2D, senaraiObjekSkor, kunciLock, sejarahCabutan) {
-        let petaSkor = {};
-        senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
+    // FORMULA 3D TAJAM: TRIANGULASI KLUSTER GEOMETRI MATRIKS BAYANGAN (+5)
+    janaSenarai3DTriangulasi(m3x3Bayangan, m3x3, objek2D, kunciLock) {
+        let B = m3x3Bayangan;
+        let set3D = new Map();
 
-        let centerLebahNaga = m3x3[1][1].toString();
-        let centerBayangan = m3x3Bayangan[1][1].toString();
-        let senaraiCalon3D = [];
+        // 1. Ekstraksi Garis Berkesebelahan (Horisontal & Vertikal Matriks Bayangan)
+        let garisan = [
+            // Horisontal
+            [B[0][0], B[0][1], B[0][2]],
+            [B[1][0], B[1][1], B[1][2]],
+            [B[2][0], B[2][1], B[2][2]],
+            // Vertikal
+            [B[0][0], B[1][0], B[2][0]],
+            [B[0][1], B[1][1], B[2][1]],
+            [B[0][2], B[1][2], B[2][2]],
+            // Diagonals
+            [B[0][0], B[1][1], B[2][2]],
+            [B[0][2], B[1][1], B[2][0]]
+        ];
 
-        let kunciKhas3D = this.ekstraksiKunci3DDinamik(sejarahCabutan);
-        kunciKhas3D.forEach(itemKunci => {
-            senaraiCalon3D.push({ kombo: itemKunci.combo, skor: 4.5 });
+        garisan.forEach(arr => {
+            let kombo = this.sortCombo(arr.join(''));
+            if (kombo.length === 3) set3D.set(kombo, 4.0);
         });
 
-        let top2D = objek2D.slice(0, 5);
+        // 2. Ekstraksi Triangulasi Kluster (Bentuk 'L' / Segitiga di sekeliling Paksi Pusat)
+        let center = B[1][1];
+        let jiran = [B[0][0], B[0][1], B[0][2], B[1][0], B[1][2], B[2][0], B[2][1], B[2][2]];
+
+        for (let i = 0; i < jiran.length; i++) {
+            for (let j = i + 1; j < jiran.length; j++) {
+                let kombo = this.sortCombo(`${center}${jiran[i]}${jiran[j]}`);
+                if (kombo.length === 3) {
+                    let markahAwal = set3D.get(kombo) || 2.0;
+                    set3D.set(kombo, markahAwal + 1.5);
+                }
+            }
+        }
+
+        // 3. Menyerap Lock Digit ke dalam Top 2D
+        let top2D = objek2D.slice(0, 6);
         top2D.forEach(item2D => {
-            let combo2D = item2D.kombo;
-            let score2D = item2D.skor;
-
-            let c1 = this.sortCombo(combo2D + centerLebahNaga);
-            senaraiCalon3D.push({ kombo: c1, skor: score2D + (petaSkor[centerLebahNaga] || 0) * 1.5 });
-
-            let c2 = this.sortCombo(combo2D + centerBayangan);
-            senaraiCalon3D.push({ kombo: c2, skor: score2D + 1.8 });
-
             if (kunciLock.length > 0) {
-                let lockDigit = kunciLock[0].toString();
-                let c3 = this.sortCombo(combo2D + lockDigit);
-                senaraiCalon3D.push({ kombo: c3, skor: score2D + 2.2 });
+                let k = kunciLock[0].toString();
+                let kombo = this.sortCombo(item2D.kombo + k);
+                if (kombo.length === 3) {
+                    let markahAwal = set3D.get(kombo) || 1.0;
+                    set3D.set(kombo, markahAwal + 2.5);
+                }
             }
         });
 
-        let kedudukanPeta = new Map();
-        senaraiCalon3D.forEach(item => {
-            if (!kedudukanPeta.has(item.kombo) || kedudukanPeta.get(item.kombo) < item.skor) {
-                kedudukanPeta.set(item.kombo, item.skor);
-            }
-        });
-
-        return Array.from(kedudukanPeta.entries())
+        return Array.from(set3D.entries())
             .map(([kombo, skor]) => ({ kombo, skor }))
             .sort((a, b) => b.skor - a.skor);
     }
@@ -272,26 +249,27 @@ class EnjinDwiCartaToto {
 
         let senaraiObjekSkor = this.kiraTrajektori(sejarahResult);
 
-        let objek2D = this.janaSenarai2D(m4x4, senaraiObjekSkor, statusCermin);
+        // 2D Berpandukan Persilangan 3-Carta
+        let objek2D = this.janaSenarai2D(m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin);
         let list2DText = objek2D.map(item => item.kombo);
 
-        let objek3D = this.janaSenarai3D(m3x3, m3x3Bayangan, objek2D, senaraiObjekSkor, kunciLock, sejarahResult);
+        // 3D Berpandukan Triangulasi Geometri Matriks Bayangan (+5)
+        let objek3D = this.janaSenarai3DTriangulasi(m3x3Bayangan, m3x3, objek2D, kunciLock);
         let list3DText = objek3D.map(item => item.kombo).slice(0, 6);
 
-        let top3DCore = list3DText[0] || '135';
-        let lockDigitDominan = kunciLock.length > 0 ? kunciLock[0].toString() : '7';
-        
-        let target4D = this.sortCombo(top3DCore + lockDigitDominan);
-        let list4D = [target4D];
+        let lockDigitDominan = kunciLock.length > 0 ? kunciLock[0].toString() : (missingDigits[0] || '7').toString();
+        let top3DCore = list3DText[0] || '789';
 
-        kunciLock.forEach(k => {
-            list4D.push(this.sortCombo(top3DCore + k.toString()));
+        // 4D Solid / Straight Penapisan Podium
+        let list4D = [];
+        list3DText.slice(0, 4).forEach(t3d => {
+            list4D.push(this.sortCombo(t3d + lockDigitDominan));
+            if (missingDigits.length > 0) {
+                list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+            }
         });
 
-        if (list3DText[1]) {
-            let shiftDigit = ((parseInt(list3DText[1][0]) + 5) % 10).toString();
-            list4D.push(this.sortCombo(list3DText[1] + shiftDigit));
-        }
+        let target4D = list4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
 
         return {
             matrix4x4: m4x4,
@@ -304,7 +282,7 @@ class EnjinDwiCartaToto {
             hasil4D: [...new Set(list4D)].slice(0, 8),
             pod: {
                 top2D: list2DText.slice(0, 3).join(', '),
-                top3D: list3DText.slice(0, 2).join(', '),
+                top3D: list3DText.slice(0, 3).join(', '),
                 top4D: target4D,
                 lockDominan: lockDigitDominan
             }
@@ -369,7 +347,7 @@ function janaKeputusan() {
 
         let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
         if (historyArray.length < 3) {
-            historyArray = ["1508", "5241", "6336", "2203", "4065"];
+            historyArray = ["0878", "2783", "1789", "0435", "7053"];
         }
 
         globalResult = enjin.jana(inputNum1, inputDate, historyArray, statusCermin);
@@ -431,7 +409,6 @@ function salin(idElement) {
     }
 }
 
-// PENETAPAN TARIKH LANGSUNG DENGAN TRY-CATCH (TANPA EVENTLISTENER)
 try {
     const elDate = document.getElementById('drawDate');
     if (elDate) {
