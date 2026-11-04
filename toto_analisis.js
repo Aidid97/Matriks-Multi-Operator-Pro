@@ -29,7 +29,7 @@ class EnjinDwiCartaToto {
         return matriksLengkap;
     }
 
-    binaMatrix3x3LebahNaga(tarikhInput) {
+    parseTarikh(tarikhInput) {
         let tarikhObj;
         if (tarikhInput) {
             let parts = tarikhInput.split('-');
@@ -41,9 +41,12 @@ class EnjinDwiCartaToto {
         } else {
             tarikhObj = new Date();
         }
-
         if (isNaN(tarikhObj.getTime())) tarikhObj = new Date();
+        return tarikhObj;
+    }
 
+    binaMatrix3x3LebahNaga(tarikhInput) {
+        let tarikhObj = this.parseTarikh(tarikhInput);
         let dd = tarikhObj.getDate();
         let mm = tarikhObj.getMonth() + 1;
         let yy = tarikhObj.getFullYear() % 100;
@@ -132,7 +135,6 @@ class EnjinDwiCartaToto {
         return senaraiSkor;
     }
 
-    // ALGORITMA RANTAIAN 8-JIRAN (SEMAKAN SEMUA POLA POLIFORM)
     janaLaluanRantaianGrid(grid) {
         let rows = grid.length;
         let cols = grid[0].length;
@@ -171,12 +173,11 @@ class EnjinDwiCartaToto {
         return [...new Set(setLaluan)];
     }
 
-    // MODUL BAHARU: CORNER-LOCK SCAN (IMBASAN 4 SUDUT PENJURU MATRIKS 4X4)
     ekstraksiCornerLock4x4(m4x4) {
-        let c1 = m4x4[0][0].toString(); // Atas-Kiri
-        let c2 = m4x4[0][3].toString(); // Atas-Kanan
-        let c3 = m4x4[3][0].toString(); // Bawah-Kiri
-        let c4 = m4x4[3][3].toString(); // Bawah-Kanan
+        let c1 = m4x4[0][0].toString(); 
+        let c2 = m4x4[0][3].toString(); 
+        let c3 = m4x4[3][0].toString(); 
+        let c4 = m4x4[3][3].toString(); 
 
         let raw4D = this.sortCombo(c1 + c2 + c3 + c4);
         let sub3D = [
@@ -272,53 +273,89 @@ class EnjinDwiCartaToto {
             .sort((a, b) => b.skor - a.skor);
     }
 
-    // FORMULA 3D SOLID TRIANGULASI TERBAIK (RANTAIAN 8-JIRAN + CORNER-LOCK)
-    janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor) {
+    // FORMULA 3D DENGAN KESAN HARI RABU & REBOUND HUJUNG MINGGU
+    janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj) {
         let petaSkor = {};
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
 
         let set3D = new Map();
+        
+        let hari = tarikhObj.getDay();
+        let isRabu = (hari === 3); 
+        let isHujungMinggu = (hari === 0 || hari === 6); // 0: Ahad, 6: Sabtu
 
-        // 1. Imbas Laluan Rantaian (L, Y, T, X, Zigzag) dari Matriks 4x4
         let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
-        rantaian4x4.forEach(c3d => {
-            set3D.set(c3d, 3.0);
-        });
+        rantaian4x4.forEach(c3d => set3D.set(c3d, 3.0));
 
-        // 2. Imbas Laluan Rantaian dari Matriks Bayangan 3x3 (+5)
         let rantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
         rantaianBayangan.forEach(c3d => {
-            let markahSediaAda = set3D.get(c3d) || 0;
-            set3D.set(c3d, markahSediaAda + 4.5);
+            let markah = set3D.get(c3d) || 0;
+            set3D.set(c3d, markah + 4.5);
         });
 
-        // 3. SUNTIKAN CORNER-LOCK SCAN (4 SUDUT PENJURU CARTA 4X4)
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         cornerData.sub3D.forEach(c3d => {
-            let markahSediaAda = set3D.get(c3d) || 1.0;
-            set3D.set(c3d, markahSediaAda + 4.0); // Bonus markah tinggi Corner-Lock
+            let markah = set3D.get(c3d) || 1.0;
+            set3D.set(c3d, markah + 4.0);
         });
 
-        // 4. Suntikan Pengunci Lock Dominan
         let lockStr = kunciLock.length > 0 ? kunciLock[0].toString() : '';
         if (lockStr) {
             let top2D = objek2D.slice(0, 6);
             top2D.forEach(item2D => {
                 let kombo = this.sortCombo(item2D.kombo + lockStr);
                 if (kombo.length === 3) {
-                    let currentScore = set3D.get(kombo) || 1.0;
-                    set3D.set(kombo, currentScore + 3.0);
+                    let markah = set3D.get(kombo) || 1.0;
+                    set3D.set(kombo, markah + 3.0);
                 }
             });
         }
 
-        // 5. Pengiraan Pemberatan Skor Trajektori
+        // --- ENJIN RABU (MID-WEEK EFFECT) ---
+        if (isRabu && missingDigits.length > 0) {
+            let missingStrList = missingDigits.map(d => d.toString());
+            set3D.forEach((skor, kombo) => {
+                let jumlahMissing = 0;
+                missingStrList.forEach(mDigit => {
+                    if (kombo.includes(mDigit)) jumlahMissing++;
+                });
+                // Bonus ekstrem untuk Digit Hilang pada hari Rabu
+                if (jumlahMissing > 0) {
+                    set3D.set(kombo, skor + (jumlahMissing * 4.5));
+                }
+            });
+        }
+
+        // --- ENJIN HUJUNG MINGGU (WEEKEND REBOUND) ---
+        if (isHujungMinggu) {
+            // Ekstrak semua digit unik dari Matriks 3x3 dan Bayangan
+            let terasMatriks = new Set();
+            m3x3.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
+            m3x3Bayangan.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
+            
+            let terasStrList = Array.from(terasMatriks);
+
+            set3D.forEach((skor, kombo) => {
+                let jumlahTeras = 0;
+                terasStrList.forEach(tDigit => {
+                    if (kombo.includes(tDigit)) jumlahTeras++;
+                });
+                
+                // Bonus untuk mengunci Matriks Utama pada Sabtu & Ahad
+                // Semakin banyak nombor matriks dalam 3D tu, semakin tinggi ia melonjak
+                if (jumlahTeras === 3) {
+                    set3D.set(kombo, skor + 5.0); // Solid matriks 100%
+                } else if (jumlahTeras === 2) {
+                    set3D.set(kombo, skor + 2.5); // Campuran matriks + hilang
+                }
+            });
+        }
+
         let hasilSusunan = [];
         set3D.forEach((skorAsas, kombo) => {
             let d1 = kombo[0], d2 = kombo[1], d3 = kombo[2];
             let skorTrajektori = (petaSkor[d1] || 0) + (petaSkor[d2] || 0) + (petaSkor[d3] || 0);
             let skorAkhir = skorAsas + (skorTrajektori * 0.5);
-
             hasilSusunan.push({ kombo: kombo, skor: skorAkhir });
         });
 
@@ -329,6 +366,7 @@ class EnjinDwiCartaToto {
         let m4x4 = this.binaMatrix4x4Tolak1(nombor4D);
         let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput);
         let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
+        let tarikhObj = this.parseTarikh(tarikhInput);
 
         let dataKunci = this.kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan);
         let missingDigits = dataKunci.digitHilang;
@@ -339,8 +377,7 @@ class EnjinDwiCartaToto {
         let objek2D = this.janaSenarai2DUnjuranVektor(m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin);
         let list2DText = objek2D.map(item => item.kombo);
 
-        // Penjanaan 3D Solid Universal
-        let objek3D = this.janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor);
+        let objek3D = this.janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj);
         let list3DText = objek3D.map(item => item.kombo).slice(0, 6);
 
         let lockDigitDominan = kunciLock.length > 0 ? kunciLock[0].toString() : (missingDigits[0] || '7').toString();
@@ -348,16 +385,34 @@ class EnjinDwiCartaToto {
 
         let list4D = [];
 
-        // Masukkan Terus Raw 4D hasil Corner-Lock Scan 4x4
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         if (cornerData.raw4D.length === 4) {
             list4D.push(cornerData.raw4D);
         }
 
+        let isRabu = tarikhObj.getDay() === 3;
+        let isHujungMinggu = (tarikhObj.getDay() === 0 || tarikhObj.getDay() === 6);
+
         list3DText.slice(0, 5).forEach(t3d => {
             list4D.push(this.sortCombo(t3d + lockDigitDominan));
-            if (missingDigits.length > 0) {
-                list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+            
+            if (isRabu && missingDigits.length > 0) {
+                 list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                 if (missingDigits.length > 1) {
+                     list4D.push(this.sortCombo(t3d + missingDigits[1].toString()));
+                 }
+            } else if (isHujungMinggu) {
+                 // Hujung minggu: Kepit dengan Matriks Utama (Cari elemen dalam 3x3)
+                 let terasRaw = m3x3[1][1].toString(); // Pusat matriks lebah naga
+                 list4D.push(this.sortCombo(t3d + terasRaw));
+                 if (missingDigits.length > 0) {
+                     // Tetap sediakan 1 pelan back-up dari digit hilang
+                     list4D.push(this.sortCombo(t3d + missingDigits[0].toString())); 
+                 }
+            } else {
+                 if (missingDigits.length > 0) {
+                     list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                 }
             }
         });
 
@@ -371,7 +426,7 @@ class EnjinDwiCartaToto {
             kunciLock: kunciLock,
             hasil2D: list2DText,
             hasil3D: list3DText,
-            hasil4D: [...new Set(list4D)].slice(0, 8),
+            hasil4D: [...new Set(list4D)].slice(0, 10),
             pod: {
                 top2D: list2DText.slice(0, 3).join(', '),
                 top3D: list3DText.slice(0, 3).join(', '),
