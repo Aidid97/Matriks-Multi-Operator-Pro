@@ -12,8 +12,8 @@ class EnjinDwiCartaToto {
     }
 
     binaMatrix4x4Tolak1(nomborBase) {
-        let nomborKemas = (nomborBase || '3594').toString().replace(/[^0-9]/g, '');
-        if (nomborKemas.length < 4) nomborKemas = '3594';
+        let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
+        if (nomborKemas.length < 4) nomborKemas = '0000';
 
         let barisAsas = nomborKemas.substring(0, 4).split('').map(Number);
         let matriksLengkap = [barisAsas];
@@ -32,16 +32,33 @@ class EnjinDwiCartaToto {
     parseTarikh(tarikhInput) {
         let tarikhObj;
         if (tarikhInput) {
-            let parts = tarikhInput.split('-');
-            if (parts.length === 3) {
-                tarikhObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            let cleanStr = tarikhInput.toString().trim();
+            if (cleanStr.includes('-')) {
+                let parts = cleanStr.split('-');
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) {
+                        tarikhObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    } else {
+                        tarikhObj = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+                    }
+                }
+            } else if (cleanStr.includes('/')) {
+                let parts = cleanStr.split('/');
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) {
+                        tarikhObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    } else {
+                        tarikhObj = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+                    }
+                }
             } else {
-                tarikhObj = new Date(tarikhInput);
+                tarikhObj = new Date(cleanStr);
             }
-        } else {
+        }
+        
+        if (!tarikhObj || isNaN(tarikhObj.getTime())) {
             tarikhObj = new Date();
         }
-        if (isNaN(tarikhObj.getTime())) tarikhObj = new Date();
         return tarikhObj;
     }
 
@@ -273,7 +290,6 @@ class EnjinDwiCartaToto {
             .sort((a, b) => b.skor - a.skor);
     }
 
-    // FORMULA 3D DENGAN KESAN HARI RABU & REBOUND HUJUNG MINGGU
     janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj) {
         let petaSkor = {};
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
@@ -282,7 +298,7 @@ class EnjinDwiCartaToto {
         
         let hari = tarikhObj.getDay();
         let isRabu = (hari === 3); 
-        let isHujungMinggu = (hari === 0 || hari === 6); // 0: Ahad, 6: Sabtu
+        let isHujungMinggu = (hari === 0 || hari === 6);
 
         let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
         rantaian4x4.forEach(c3d => set3D.set(c3d, 3.0));
@@ -311,7 +327,6 @@ class EnjinDwiCartaToto {
             });
         }
 
-        // --- ENJIN RABU (MID-WEEK EFFECT) ---
         if (isRabu && missingDigits.length > 0) {
             let missingStrList = missingDigits.map(d => d.toString());
             set3D.forEach((skor, kombo) => {
@@ -319,16 +334,13 @@ class EnjinDwiCartaToto {
                 missingStrList.forEach(mDigit => {
                     if (kombo.includes(mDigit)) jumlahMissing++;
                 });
-                // Bonus ekstrem untuk Digit Hilang pada hari Rabu
                 if (jumlahMissing > 0) {
                     set3D.set(kombo, skor + (jumlahMissing * 4.5));
                 }
             });
         }
 
-        // --- ENJIN HUJUNG MINGGU (WEEKEND REBOUND) ---
         if (isHujungMinggu) {
-            // Ekstrak semua digit unik dari Matriks 3x3 dan Bayangan
             let terasMatriks = new Set();
             m3x3.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
             m3x3Bayangan.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
@@ -340,13 +352,10 @@ class EnjinDwiCartaToto {
                 terasStrList.forEach(tDigit => {
                     if (kombo.includes(tDigit)) jumlahTeras++;
                 });
-                
-                // Bonus untuk mengunci Matriks Utama pada Sabtu & Ahad
-                // Semakin banyak nombor matriks dalam 3D tu, semakin tinggi ia melonjak
                 if (jumlahTeras === 3) {
-                    set3D.set(kombo, skor + 5.0); // Solid matriks 100%
+                    set3D.set(kombo, skor + 5.0);
                 } else if (jumlahTeras === 2) {
-                    set3D.set(kombo, skor + 2.5); // Campuran matriks + hilang
+                    set3D.set(kombo, skor + 2.5);
                 }
             });
         }
@@ -402,11 +411,9 @@ class EnjinDwiCartaToto {
                      list4D.push(this.sortCombo(t3d + missingDigits[1].toString()));
                  }
             } else if (isHujungMinggu) {
-                 // Hujung minggu: Kepit dengan Matriks Utama (Cari elemen dalam 3x3)
-                 let terasRaw = m3x3[1][1].toString(); // Pusat matriks lebah naga
+                 let terasRaw = m3x3[1][1].toString();
                  list4D.push(this.sortCombo(t3d + terasRaw));
                  if (missingDigits.length > 0) {
-                     // Tetap sediakan 1 pelan back-up dari digit hilang
                      list4D.push(this.sortCombo(t3d + missingDigits[0].toString())); 
                  }
             } else {
