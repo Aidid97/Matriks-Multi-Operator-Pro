@@ -152,10 +152,12 @@ class EnjinDwiCartaToto {
         return senaraiSkor;
     }
 
+    // ALGORITMA 8 YANG TELAH DIPERTINGKAT (4D EXTRACTOR)
     janaLaluanRantaianGrid(grid) {
         let rows = grid.length;
         let cols = grid[0].length;
-        let setLaluan = [];
+        let set3D = [];
+        let set4D = []; // BAHARU: Merekod sambungan 4-langkah
 
         let dRow = [-1, -1, -1, 0, 0, 1, 1, 1];
         let dCol = [-1, 0, 1, -1, 1, -1, 0, 1];
@@ -177,9 +179,18 @@ class EnjinDwiCartaToto {
 
                             if (r3 >= 0 && r3 < rows && c3 >= 0 && c3 < cols && !(r3 === r1 && c3 === c1)) {
                                 let v3 = grid[r3][c3].toString();
-                                let combo = this.sortCombo(v1 + v2 + v3);
-                                if (combo.length === 3) {
-                                    setLaluan.push(combo);
+                                let combo3 = this.sortCombo(v1 + v2 + v3);
+                                if (combo3.length === 3) set3D.push(combo3);
+
+                                // BAHARU: Langkah Ke-4 untuk bentuk seperti 9276
+                                for (let k = 0; k < 8; k++) {
+                                    let r4 = r3 + dRow[k];
+                                    let c4 = c3 + dCol[k];
+                                    if (r4 >= 0 && r4 < rows && c4 >= 0 && c4 < cols && !(r4 === r2 && c4 === c2) && !(r4 === r1 && c4 === c1)) {
+                                        let v4 = grid[r4][c4].toString();
+                                        let combo4 = this.sortCombo(v1 + v2 + v3 + v4);
+                                        if (combo4.length === 4) set4D.push(combo4);
+                                    }
                                 }
                             }
                         }
@@ -187,7 +198,10 @@ class EnjinDwiCartaToto {
                 }
             }
         }
-        return [...new Set(setLaluan)];
+        return {
+            rantaian3D: [...new Set(set3D)],
+            rantaian4D: [...new Set(set4D)]
+        };
     }
 
     ekstraksiCornerLock4x4(m4x4) {
@@ -300,11 +314,14 @@ class EnjinDwiCartaToto {
         let isRabu = (hari === 3); 
         let isHujungMinggu = (hari === 0 || hari === 6);
 
-        let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
-        rantaian4x4.forEach(c3d => set3D.set(c3d, 3.0));
+        let dataRantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
+        dataRantaian4x4.rantaian3D.forEach(c3d => {
+            // BOOST: Carta Ibu 4x4 kini diutamakan! Markah naik kepada 6.5
+            set3D.set(c3d, 6.5); 
+        });
 
-        let rantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
-        rantaianBayangan.forEach(c3d => {
+        let dataRantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
+        dataRantaianBayangan.rantaian3D.forEach(c3d => {
             let markah = set3D.get(c3d) || 0;
             set3D.set(c3d, markah + 4.5);
         });
@@ -397,6 +414,14 @@ class EnjinDwiCartaToto {
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         if (cornerData.raw4D.length === 4) {
             list4D.push(cornerData.raw4D);
+        }
+
+        // BAHARU: Menangkap & menyuntik rantaian 4D bersilang dari Matriks 4x4 (contoh pattern 9276)
+        let rantaianPenuh4x4 = this.janaLaluanRantaianGrid(m4x4).rantaian4D;
+        let senaraiTapis4D = rantaianPenuh4x4.filter(combo => combo.includes(lockDigitDominan) || (missingDigits.length > 0 && combo.includes(missingDigits[0].toString())));
+        if (senaraiTapis4D.length > 0) {
+            list4D.push(senaraiTapis4D[0]); // Suntik 4D paling padu dari carta ibu
+            if (senaraiTapis4D.length > 1) list4D.push(senaraiTapis4D[1]); 
         }
 
         let isRabu = tarikhObj.getDay() === 3;
