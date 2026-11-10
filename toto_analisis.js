@@ -427,17 +427,37 @@ class EnjinDwiCartaToto {
         let top3DCore = list3DText[0] || '789';
 
         let list4D = [];
+        let podium3D = [];
+
+        if (missingDigits.length === 3) {
+            let m3 = this.sortCombo(missingDigits.join(''));
+            podium3D.push(m3);
+            list4D.push(this.sortCombo(m3 + lockDigitDominan));
+        } else if (missingDigits.length === 2) {
+            let m3 = this.sortCombo(missingDigits.join('') + lockDigitDominan);
+            podium3D.push(m3);
+            list4D.push(this.sortCombo(m3 + m3x3[1][1].toString()));
+        } else if (missingDigits.length === 4) {
+            let m4 = this.sortCombo(missingDigits.join(''));
+            list4D.push(m4);
+            podium3D.push(this.sortCombo(missingDigits.slice(0,3).join('')));
+        }
+
+        if (podium3D.length > 0) {
+            list3DText = [...new Set([...podium3D, ...list3DText])].slice(0, 6);
+            top3DCore = podium3D[0]; 
+        }
 
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         if (cornerData.raw4D.length === 4) {
             list4D.push(cornerData.raw4D);
         }
 
-        // BAHARU: Menangkap & menyuntik rantaian 4D bersilang dari Matriks 4x4 (contoh pattern 9276)
         let rantaianPenuh4x4 = this.janaLaluanRantaianGrid(m4x4).rantaian4D;
         let senaraiTapis4D = rantaianPenuh4x4.filter(combo => combo.includes(lockDigitDominan) || (missingDigits.length > 0 && combo.includes(missingDigits[0].toString())));
+        
         if (senaraiTapis4D.length > 0) {
-            list4D.push(senaraiTapis4D[0]); // Suntik 4D paling padu dari carta ibu
+            list4D.push(senaraiTapis4D[0]); 
             if (senaraiTapis4D.length > 1) list4D.push(senaraiTapis4D[1]); 
         }
 
@@ -449,19 +469,9 @@ class EnjinDwiCartaToto {
             
             if (isRabu && missingDigits.length > 0) {
                  list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
-                 if (missingDigits.length > 1) {
-                     list4D.push(this.sortCombo(t3d + missingDigits[1].toString()));
-                 }
             } else if (isHujungMinggu) {
                  let terasRaw = m3x3[1][1].toString();
                  list4D.push(this.sortCombo(t3d + terasRaw));
-                 if (missingDigits.length > 0) {
-                     list4D.push(this.sortCombo(t3d + missingDigits[0].toString())); 
-                 }
-            } else {
-                 if (missingDigits.length > 0) {
-                     list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
-                 }
             }
         });
 
@@ -476,6 +486,7 @@ class EnjinDwiCartaToto {
             hasil2D: list2DText,
             hasil3D: list3DText,
             hasil4D: [...new Set(list4D)].slice(0, 10),
+            podium3D: podium3D,
             pod: {
                 top2D: list2DText.slice(0, 3).join(', '),
                 top3D: list3DText.slice(0, 3).join(', '),
@@ -483,7 +494,8 @@ class EnjinDwiCartaToto {
                 lockDominan: lockDigitDominan
             }
         };
-    }
+
+
 }
 
 const enjin = new EnjinDwiCartaToto();
