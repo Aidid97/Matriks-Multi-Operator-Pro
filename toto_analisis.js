@@ -62,36 +62,64 @@ class EnjinDwiCartaToto {
         return tarikhObj;
     }
 
-    binaMatrix3x3LebahNaga(tarikhInput) {
-        let tarikhObj = this.parseTarikh(tarikhInput);
-        let dd = tarikhObj.getDate();
-        let mm = tarikhObj.getMonth() + 1;
-        let yy = tarikhObj.getFullYear() % 100;
+    dapatkanKalendarJawa(tarikhStr) {
+        const d = this.parseTarikh(tarikhStr);
+        
+        // Neptu 7 Hari (0 = Ahad ... 6 = Sabtu)
+        const neptuHariList = [5, 4, 3, 7, 8, 6, 9];
+        const namaHariList = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
+        
+        const dayIdx = d.getDay();
+        const neptuHari = neptuHariList[dayIdx];
 
-        let dTens = Math.floor(dd / 10);
-        let dOnes = dd % 10;
-        let mOnes = mm % 10;
-        let yTens = Math.floor(yy / 10);
+        // Pengiraan Kitaran 5 Pasaran Jawa (Anchor: 1 Jan 1970 = Khamis Wage)
+        const utcMillis = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+        const daysSinceEpoch = Math.floor(utcMillis / 86400000);
+        
+        const pasaranList = [
+            { nama: "Legi", neptu: 5 },
+            { nama: "Pahing", neptu: 9 },
+            { nama: "Pon", neptu: 7 },
+            { nama: "Wage", neptu: 4 },
+            { nama: "Kliwon", neptu: 8 }
+        ];
 
-        let sumDigits = (dTens + dOnes) + (Math.floor(mm / 10) + mOnes) + (yTens + (yy % 10));
-        let kunciNeptu = sumDigits > 0 ? (sumDigits + 1) : 13; 
+        const pasaranIdx = (daysSinceEpoch + 3) % 5;
+        const pasaranObj = pasaranList[(pasaranIdx + 5) % 5];
 
-        let c1 = dTens > 0 ? dTens : (dOnes > 0 ? dOnes : 3);
-        let l1 = Math.pow(c1, 0); 
-        let r1 = Math.pow(c1, 2) % 10; 
-        if (l1 + c1 + r1 !== kunciNeptu) {
-            r1 = (kunciNeptu - (l1 + c1)) % 10;
+        const totalNeptu = neptuHari + pasaranObj.neptu;
+
+        return {
+            hari: namaHariList[dayIdx],
+            pasaran: pasaranObj.nama,
+            neptuHari: neptuHari,
+            neptuPasaran: pasaranObj.neptu,
+            totalNeptu: totalNeptu
+        };
+    }
+
+    binaMatrix3x3LebahNaga(tarikhInput, num1Input) {
+        const dataJawa = this.dapatkanKalendarJawa(tarikhInput);
+        const totalNeptu = dataJawa.totalNeptu;
+
+        const numClean = (num1Input || '').replace(/\D/g, '');
+        let sumNum = 0;
+        for (let char of numClean) {
+            sumNum += parseInt(char) || 0;
         }
 
-        let l2 = yTens > 0 ? yTens : 2;
-        let c2 = (l2 * 2) % 10; 
-        let r2 = (kunciNeptu - (l2 + c2)) % 10; 
-        if (r2 < 0) r2 += 10;
+        // Tapak Asas Grid Jawa (5,8,3 / 2,7,9 / 4,1,6)
+        const baseGrid = [
+            [5, 8, 3],
+            [2, 7, 9],
+            [4, 1, 6]
+        ];
 
-        let c3 = dOnes; 
-        let l3 = Math.abs(kunciNeptu - 8); 
-        let r3 = (kunciNeptu - (l3 + c3)) % 10; 
-        if (r3 < 0) r3 += 10;
+        // Anjakan Dinamik Mengikut Neptu Jawa & Digit Nombor Induk
+        return baseGrid.map((row, rIdx) => 
+            row.map((val, cIdx) => (val + totalNeptu + sumNum + (rIdx * 3 + cIdx)) % 10)
+        );
+    }
 
         return [
             [Math.abs(l1), Math.abs(c1), Math.abs(r1)],
@@ -391,7 +419,7 @@ class EnjinDwiCartaToto {
     jana(nombor4D, tarikhInput, sejarahResult, statusCermin) {
         let m4x4 = this.binaMatrix4x4Tolak1(nombor4D);
         let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput);
-        let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
+        let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput, nombor4D);
         let tarikhObj = this.parseTarikh(tarikhInput);
 
         let dataKunci = this.kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan);
