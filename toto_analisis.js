@@ -532,7 +532,10 @@ function lukisGrid3x3(matrix, idElement, isShadow = false, lockDigits = []) {
     });
 }
 
-// FUNGSI HIGHLIGHT MISSING DIGIT WARNA EMAS (🔥)
+        alert("Memori cache enjin berjaya dibersihkan!");
+    } catch (e) {
+        console.log("Pembersihan manual selesai.");
+    }// FUNGSI HIGHLIGHT MISSING DIGIT WARNA EMAS (🔥)
 function tunjukSenarai(idElement, dataArray, highlightList = []) {
     const container = document.getElementById(idElement);
     if (!container) return;
@@ -726,7 +729,7 @@ function tunjukSenarai(idElement, dataArray, highlightList = []) {
         div.className = 'number-tag';
         
         if (highlightList.includes(item)) {
-            div.style.backgroundColor = '#FFD700';
+            div.style.backgroundColor = '#FFD700'; // Warna Emas/Gold
             div.style.color = '#000000';
             div.style.fontWeight = 'bold';
             div.style.border = '2px solid #D2691E';
@@ -774,7 +777,7 @@ function janaKeputusan() {
         if (elPod4d) elPod4d.innerText = globalResult.pod.top4D;
 
         tunjukSenarai('out-2d', globalResult.hasil2D);
-        tunjukSenarai('out-3d', globalResult.hasil3D, globalResult.podium3D); // <--- Ditambah parameter ketiga
+        tunjukSenarai('out-3d', globalResult.hasil3D, globalResult.podium3D); // Fungsi highlight dipanggil
         tunjukSenarai('out-4d', globalResult.hasil4D);
 
         const elHasil = document.getElementById('hasil');
@@ -811,17 +814,17 @@ function salin(idElement) {
     }
 }
 
-// 1. Tetapkan tarikh automatik secara terus dan selamat
+// Tarikh Automatik Waktu Tempatan (Ringkas & Stabil)
 try {
     const elDate = document.getElementById('drawDate');
     if (elDate && !elDate.value) {
-        elDate.value = new Date().toISOString().split('T')[0];
+        const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
+        const waktuLokal = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+        elDate.value = waktuLokal;
     }
-} catch (err) {
-    console.log("Tetapan tarikh awal dilewati:", err);
-}
+} catch (err) {}
 
-// 2. Fungsi Manual Reset & Pembersihan Cache
+// Fungsi Manual Reset & Pembersihan Cache
 function hardResetEnjin() {
     try {
         localStorage.clear();
@@ -831,7 +834,10 @@ function hardResetEnjin() {
         if (elNum1) elNum1.value = '';
 
         const elDate = document.getElementById('drawDate');
-        if (elDate) elDate.value = new Date().toISOString().split('T')[0];
+        if (elDate) {
+            const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
+            elDate.value = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+        }
 
         const elHist = document.getElementById('history');
         if (elHist) elHist.value = '';
@@ -842,6 +848,6 @@ function hardResetEnjin() {
         globalResult = null;
         alert("Memori cache enjin berjaya dibersihkan!");
     } catch (e) {
-        console.log("Pembersihan manual selesai.");
+        console.log(e);
     }
 }
