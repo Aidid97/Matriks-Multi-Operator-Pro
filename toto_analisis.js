@@ -98,15 +98,9 @@ class EnjinDwiCartaToto {
         };
     }
 
-    binaMatrix3x3LebahNaga(tarikhInput, num1Input) {
+    binaMatrix3x3LebahNaga(tarikhInput) {
         const dataJawa = this.dapatkanKalendarJawa(tarikhInput);
         const totalNeptu = dataJawa.totalNeptu;
-
-        const numClean = (num1Input || '').replace(/\D/g, '');
-        let sumNum = 0;
-        for (let char of numClean) {
-            sumNum += parseInt(char) || 0;
-        }
 
         // Tapak Asas Grid Jawa (5,8,3 / 2,7,9 / 4,1,6)
         const baseGrid = [
@@ -115,9 +109,9 @@ class EnjinDwiCartaToto {
             [4, 1, 6]
         ];
 
-        // Anjakan Dinamik Mengikut Neptu Jawa & Digit Nombor Induk
-        return baseGrid.map((row, rIdx) => 
-            row.map((val, cIdx) => (val + totalNeptu + sumNum + (rIdx * 3 + cIdx)) % 10)
+        // Anjakan tulen mengikut Neptu Jawa sahaja (kekal 9 angka unik)
+        return baseGrid.map(row => 
+            row.map(val => (val + totalNeptu) % 10)
         );
     }
 
