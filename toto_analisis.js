@@ -64,15 +64,12 @@ class EnjinDwiCartaToto {
 
     dapatkanKalendarJawa(tarikhStr) {
         const d = this.parseTarikh(tarikhStr);
-        
-        // Neptu 7 Hari (0 = Ahad ... 6 = Sabtu)
         const neptuHariList = [5, 4, 3, 7, 8, 6, 9];
         const namaHariList = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
         
         const dayIdx = d.getDay();
         const neptuHari = neptuHariList[dayIdx];
 
-        // Pengiraan Kitaran 5 Pasaran Jawa (Anchor: 1 Jan 1970 = Khamis Wage)
         const utcMillis = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
         const daysSinceEpoch = Math.floor(utcMillis / 86400000);
         
@@ -86,7 +83,6 @@ class EnjinDwiCartaToto {
 
         const pasaranIdx = (daysSinceEpoch + 3) % 5;
         const pasaranObj = pasaranList[(pasaranIdx + 5) % 5];
-
         const totalNeptu = neptuHari + pasaranObj.neptu;
 
         return {
@@ -102,20 +98,16 @@ class EnjinDwiCartaToto {
         const dataJawa = this.dapatkanKalendarJawa(tarikhInput);
         const totalNeptu = dataJawa.totalNeptu;
 
-        // Tapak Asas Grid Jawa (5,8,3 / 2,7,9 / 4,1,6)
         const baseGrid = [
             [5, 8, 3],
             [2, 7, 9],
             [4, 1, 6]
         ];
 
-        // Anjakan tulen mengikut Neptu Jawa sahaja (kekal 9 angka unik)
         return baseGrid.map(row => 
             row.map(val => (val + totalNeptu) % 10)
         );
     }
-
-       
 
     binaMatrixBayangan3x3(m3x3) {
         return m3x3.map(baris => baris.map(val => (val + 5) % 10));
@@ -169,12 +161,10 @@ class EnjinDwiCartaToto {
         return senaraiSkor;
     }
 
-    // ALGORITMA 8 YANG TELAH DIPERTINGKAT (4D EXTRACTOR)
     janaLaluanRantaianGrid(grid) {
         let rows = grid.length;
         let cols = grid[0].length;
-        let set3D = [];
-        let set4D = []; // BAHARU: Merekod sambungan 4-langkah
+        let setLaluan = [];
 
         let dRow = [-1, -1, -1, 0, 0, 1, 1, 1];
         let dCol = [-1, 0, 1, -1, 1, -1, 0, 1];
@@ -196,18 +186,9 @@ class EnjinDwiCartaToto {
 
                             if (r3 >= 0 && r3 < rows && c3 >= 0 && c3 < cols && !(r3 === r1 && c3 === c1)) {
                                 let v3 = grid[r3][c3].toString();
-                                let combo3 = this.sortCombo(v1 + v2 + v3);
-                                if (combo3.length === 3) set3D.push(combo3);
-
-                                // BAHARU: Langkah Ke-4 untuk bentuk seperti 9276
-                                for (let k = 0; k < 8; k++) {
-                                    let r4 = r3 + dRow[k];
-                                    let c4 = c3 + dCol[k];
-                                    if (r4 >= 0 && r4 < rows && c4 >= 0 && c4 < cols && !(r4 === r2 && c4 === c2) && !(r4 === r1 && c4 === c1)) {
-                                        let v4 = grid[r4][c4].toString();
-                                        let combo4 = this.sortCombo(v1 + v2 + v3 + v4);
-                                        if (combo4.length === 4) set4D.push(combo4);
-                                    }
+                                let combo = this.sortCombo(v1 + v2 + v3);
+                                if (combo.length === 3) {
+                                    setLaluan.push(combo);
                                 }
                             }
                         }
@@ -215,10 +196,7 @@ class EnjinDwiCartaToto {
                 }
             }
         }
-        return {
-            rantaian3D: [...new Set(set3D)],
-            rantaian4D: [...new Set(set4D)]
-        };
+        return [...new Set(setLaluan)];
     }
 
     ekstraksiCornerLock4x4(m4x4) {
@@ -326,19 +304,15 @@ class EnjinDwiCartaToto {
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
 
         let set3D = new Map();
-        
         let hari = tarikhObj.getDay();
         let isRabu = (hari === 3); 
         let isHujungMinggu = (hari === 0 || hari === 6);
 
-        let dataRantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
-        dataRantaian4x4.rantaian3D.forEach(c3d => {
-            // BOOST: Carta Ibu 4x4 kini diutamakan! Markah naik kepada 6.5
-            set3D.set(c3d, 6.5); 
-        });
+        let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
+        rantaian4x4.forEach(c3d => set3D.set(c3d, 3.0));
 
-        let dataRantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
-        dataRantaianBayangan.rantaian3D.forEach(c3d => {
+        let rantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
+        rantaianBayangan.forEach(c3d => {
             let markah = set3D.get(c3d) || 0;
             set3D.set(c3d, markah + 4.5);
         });
@@ -407,7 +381,7 @@ class EnjinDwiCartaToto {
 
     jana(nombor4D, tarikhInput, sejarahResult, statusCermin) {
         let m4x4 = this.binaMatrix4x4Tolak1(nombor4D);
-        let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput, nombor4D);
+        let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput);
         let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
         let tarikhObj = this.parseTarikh(tarikhInput);
 
@@ -427,38 +401,10 @@ class EnjinDwiCartaToto {
         let top3DCore = list3DText[0] || '789';
 
         let list4D = [];
-        let podium3D = [];
-
-        if (missingDigits.length === 3) {
-            let m3 = this.sortCombo(missingDigits.join(''));
-            podium3D.push(m3);
-            list4D.push(this.sortCombo(m3 + lockDigitDominan));
-        } else if (missingDigits.length === 2) {
-            let m3 = this.sortCombo(missingDigits.join('') + lockDigitDominan);
-            podium3D.push(m3);
-            list4D.push(this.sortCombo(m3 + m3x3[1][1].toString()));
-        } else if (missingDigits.length === 4) {
-            let m4 = this.sortCombo(missingDigits.join(''));
-            list4D.push(m4);
-            podium3D.push(this.sortCombo(missingDigits.slice(0,3).join('')));
-        }
-
-        if (podium3D.length > 0) {
-            list3DText = [...new Set([...podium3D, ...list3DText])].slice(0, 6);
-            top3DCore = podium3D[0]; 
-        }
 
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         if (cornerData.raw4D.length === 4) {
             list4D.push(cornerData.raw4D);
-        }
-
-        let rantaianPenuh4x4 = this.janaLaluanRantaianGrid(m4x4).rantaian4D;
-        let senaraiTapis4D = rantaianPenuh4x4.filter(combo => combo.includes(lockDigitDominan) || (missingDigits.length > 0 && combo.includes(missingDigits[0].toString())));
-        
-        if (senaraiTapis4D.length > 0) {
-            list4D.push(senaraiTapis4D[0]); 
-            if (senaraiTapis4D.length > 1) list4D.push(senaraiTapis4D[1]); 
         }
 
         let isRabu = tarikhObj.getDay() === 3;
@@ -469,12 +415,23 @@ class EnjinDwiCartaToto {
             
             if (isRabu && missingDigits.length > 0) {
                  list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                 if (missingDigits.length > 1) {
+                     list4D.push(this.sortCombo(t3d + missingDigits[1].toString()));
+                 }
             } else if (isHujungMinggu) {
                  let terasRaw = m3x3[1][1].toString();
                  list4D.push(this.sortCombo(t3d + terasRaw));
+                 if (missingDigits.length > 0) {
+                     list4D.push(this.sortCombo(t3d + missingDigits[0].toString())); 
+                 }
+            } else {
+                 if (missingDigits.length > 0) {
+                     list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                 }
             }
         });
-    let target4D = list4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
+
+        let target4D = list4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
 
         return {
             matrix4x4: m4x4,
@@ -485,7 +442,6 @@ class EnjinDwiCartaToto {
             hasil2D: list2DText,
             hasil3D: list3DText,
             hasil4D: [...new Set(list4D)].slice(0, 10),
-            podium3D: podium3D, // Hantar data anomali untuk diwarnakan
             pod: {
                 top2D: list2DText.slice(0, 3).join(', '),
                 top3D: list3DText.slice(0, 3).join(', '),
@@ -532,28 +488,14 @@ function lukisGrid3x3(matrix, idElement, isShadow = false, lockDigits = []) {
     });
 }
 
-        alert("Memori cache enjin berjaya dibersihkan!");
-    } catch (e) {
-        console.log("Pembersihan manual selesai.");
-    }// FUNGSI HIGHLIGHT MISSING DIGIT WARNA EMAS (🔥)
-function tunjukSenarai(idElement, dataArray, highlightList = []) {
+function tunjukSenarai(idElement, dataArray) {
     const container = document.getElementById(idElement);
     if (!container) return;
     container.innerHTML = '';
     dataArray.forEach(item => {
         let div = document.createElement('div');
         div.className = 'number-tag';
-        
-        if (highlightList.includes(item)) {
-            div.style.backgroundColor = '#FFD700'; // Warna Emas/Gold
-            div.style.color = '#000000';
-            div.style.fontWeight = 'bold';
-            div.style.border = '2px solid #D2691E';
-            div.innerText = '🔥 ' + item;
-        } else {
-            div.innerText = item;
-        }
-        
+        div.innerText = item;
         container.appendChild(div);
     });
 }
@@ -563,8 +505,7 @@ function janaKeputusan() {
         const inputNum1 = document.getElementById('num1').value.trim();
         const inputDate = document.getElementById('drawDate').value;
         const inputHistory = document.getElementById('history').value.trim();
-        const elCermin = document.getElementById('useMirror');
-        const statusCermin = elCermin ? elCermin.checked : false;
+        const statusCermin = document.getElementById('useMirror').checked;
 
         let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
         if (historyArray.length < 3) {
@@ -593,7 +534,7 @@ function janaKeputusan() {
         if (elPod4d) elPod4d.innerText = globalResult.pod.top4D;
 
         tunjukSenarai('out-2d', globalResult.hasil2D);
-        tunjukSenarai('out-3d', globalResult.hasil3D, globalResult.podium3D); // Fungsi highlight dipanggil
+        tunjukSenarai('out-3d', globalResult.hasil3D);
         tunjukSenarai('out-4d', globalResult.hasil4D);
 
         const elHasil = document.getElementById('hasil');
@@ -609,7 +550,7 @@ function resetBorang() {
     if (elNum1) elNum1.value = '';
 
     const elDate = document.getElementById('drawDate');
-    if (elDate) elDate.value = new Date().toISOString().split('T')[0];
+    if (elDate) elDate.valueAsDate = new Date();
 
     const elHist = document.getElementById('history');
     if (elHist) elHist.value = '';
@@ -632,222 +573,9 @@ function salin(idElement) {
 
 try {
     const elDate = document.getElementById('drawDate');
-    if (elDate && !elDate.value) {
-        elDate.value = new Date().toISOString().split('T')[0];
+    if (elDate) {
+        elDate.valueAsDate = new Date();
     }
-} catch (err) {
-    console.log(err);
-}
-
-function hardResetEnjin() {
-    try {
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        const elNum1 = document.getElementById('num1');
-        if (elNum1) elNum1.value = '';
-
-        const elDate = document.getElementById('drawDate');
-        if (elDate) elDate.value = new Date().toISOString().split('T')[0];
-
-        const elHist = document.getElementById('history');
-        if (elHist) elHist.value = '';
-
-        const elHasil = document.getElementById('hasil');
-        if (elHasil) elHasil.style.display = 'none';
-
-        globalResult = null;
-        alert("Memori cache enjin berjaya dibersihkan!");
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-        return {
-            matrix4x4: m4x4,
-            matrix3x3: m3x3,
-            matrixBayangan: m3x3Bayangan,
-            missing: missingDigits,
-            kunciLock: kunciLock,
-            hasil2D: list2DText,
-            hasil3D: list3DText,
-            hasil4D: [...new Set(list4D)].slice(0, 10),
-            podium3D: podium3D,
-            pod: {
-                top2D: list2DText.slice(0, 3).join(', '),
-                top3D: list3DText.slice(0, 3).join(', '),
-                top4D: target4D,
-                lockDominan: lockDigitDominan
-            }
-        };
-
-
-}
-
-const enjin = new EnjinDwiCartaToto();
-let globalResult = null;
-
-function lukisJadual4x4(matrix) {
-    const table = document.getElementById('matrixTable4x4');
-    if (!table) return;
-    table.innerHTML = '';
-    matrix.forEach(row => {
-        let tr = document.createElement('tr');
-        row.forEach(val => {
-            let td = document.createElement('td');
-            td.innerText = val;
-            tr.appendChild(td);
-        });
-        table.appendChild(tr);
-    });
-}
-
-function lukisGrid3x3(matrix, idElement, isShadow = false, lockDigits = []) {
-    const grid = document.getElementById(idElement);
-    if (!grid) return;
-    grid.innerHTML = '';
-    matrix.forEach(row => {
-        row.forEach(val => {
-            let div = document.createElement('div');
-            let classNames = 'cell-3x3';
-            if (isShadow) classNames += ' cell-shadow';
-            if (lockDigits.includes(val)) classNames += ' cell-lock';
-            
-            div.className = classNames;
-            div.innerText = val;
-            grid.appendChild(div);
-        });
-    });
-}
-
-function tunjukSenarai(idElement, dataArray, highlightList = []) {
-    const container = document.getElementById(idElement);
-    if (!container) return;
-    container.innerHTML = '';
-    dataArray.forEach(item => {
-        let div = document.createElement('div');
-        div.className = 'number-tag';
-        
-        if (highlightList.includes(item)) {
-            div.style.backgroundColor = '#FFD700'; // Warna Emas/Gold
-            div.style.color = '#000000';
-            div.style.fontWeight = 'bold';
-            div.style.border = '2px solid #D2691E';
-            div.innerText = '🔥 ' + item;
-        } else {
-            div.innerText = item;
-        }
-        
-        container.appendChild(div);
-    });
-}
-
-function janaKeputusan() {
-    try {
-        const inputNum1 = document.getElementById('num1').value.trim();
-        const inputDate = document.getElementById('drawDate').value;
-        const inputHistory = document.getElementById('history').value.trim();
-        const elCermin = document.getElementById('useMirror');
-        const statusCermin = elCermin ? elCermin.checked : false;
-
-        let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
-        if (historyArray.length < 3) {
-            historyArray = ["1508", "5241", "6336"];
-        }
-
-        globalResult = enjin.jana(inputNum1, inputDate, historyArray, statusCermin);
-
-        lukisJadual4x4(globalResult.matrix4x4);
-        lukisGrid3x3(globalResult.matrix3x3, 'matrixGrid3x3', false, []);
-        lukisGrid3x3(globalResult.matrixBayangan, 'matrixGrid3x3Bayangan', true, globalResult.kunciLock);
-
-        const elMissing = document.getElementById('missing-digits');
-        if (elMissing) elMissing.innerText = globalResult.missing.length > 0 ? globalResult.missing.join(', ') : 'Tiada';
-        
-        const elLock = document.getElementById('lock-digit');
-        if (elLock) elLock.innerText = globalResult.pod.lockDominan;
-
-        const elPod2d = document.getElementById('pod-2d');
-        if (elPod2d) elPod2d.innerText = globalResult.pod.top2D;
-
-        const elPod3d = document.getElementById('pod-3d');
-        if (elPod3d) elPod3d.innerText = globalResult.pod.top3D;
-
-        const elPod4d = document.getElementById('pod-4d');
-        if (elPod4d) elPod4d.innerText = globalResult.pod.top4D;
-
-        tunjukSenarai('out-2d', globalResult.hasil2D);
-        tunjukSenarai('out-3d', globalResult.hasil3D, globalResult.podium3D); // Fungsi highlight dipanggil
-        tunjukSenarai('out-4d', globalResult.hasil4D);
-
-        const elHasil = document.getElementById('hasil');
-        if (elHasil) elHasil.style.display = 'block';
-    } catch (err) {
-        console.error(err);
-        alert("Ralat semasa menjana carta: " + err.message);
-    }
-}
-
-function resetBorang() {
-    const elNum1 = document.getElementById('num1');
-    if (elNum1) elNum1.value = '';
-
-    const elDate = document.getElementById('drawDate');
-    if (elDate) elDate.value = new Date().toISOString().split('T')[0];
-
-    const elHist = document.getElementById('history');
-    if (elHist) elHist.value = '';
-
-    const elHasil = document.getElementById('hasil');
-    if (elHasil) elHasil.style.display = 'none';
-
-    globalResult = null;
-}
-
-function salin(idElement) {
-    const targetDiv = document.getElementById(idElement);
-    if (!targetDiv) return;
-    const tags = targetDiv.querySelectorAll('.number-tag');
-    let text = Array.from(tags).map(t => t.innerText).join(', ');
-    if (text) {
-        navigator.clipboard.writeText(text).then(() => alert("Berjaya disalin: " + text));
-    }
-}
-
-// Tarikh Automatik Waktu Tempatan (Ringkas & Stabil)
-try {
-    const elDate = document.getElementById('drawDate');
-    if (elDate && !elDate.value) {
-        const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
-        const waktuLokal = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
-        elDate.value = waktuLokal;
-    }
-} catch (err) {}
-
-// Fungsi Manual Reset & Pembersihan Cache
-function hardResetEnjin() {
-    try {
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        const elNum1 = document.getElementById('num1');
-        if (elNum1) elNum1.value = '';
-
-        const elDate = document.getElementById('drawDate');
-        if (elDate) {
-            const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
-            elDate.value = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
-        }
-
-        const elHist = document.getElementById('history');
-        if (elHist) elHist.value = '';
-
-        const elHasil = document.getElementById('hasil');
-        if (elHasil) elHasil.style.display = 'none';
-
-        globalResult = null;
-        alert("Memori cache enjin berjaya dibersihkan!");
-    } catch (e) {
-        console.log(e);
-    }
+} catch (e) {
+    console.log("Tetapan tarikh dilewati secara selamat.");
 }
