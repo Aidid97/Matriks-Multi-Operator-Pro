@@ -570,11 +570,14 @@ function salin(idElement) {
         navigator.clipboard.writeText(text).then(() => alert("Berjaya disalin: " + text));
     }
 }
-
 try {
     const elDate = document.getElementById('drawDate');
     if (elDate) {
-        elDate.valueAsDate = new Date();
+        if (!elDate.value) {
+            const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+            const waktuLokal = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+            elDate.value = waktuLokal;
+        }
     }
 } catch (e) {
     console.log("Tetapan tarikh dilewati secara selamat.");
