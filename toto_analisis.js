@@ -522,7 +522,8 @@ function janaKeputusan() {
         const inputNum1 = document.getElementById('num1').value.trim();
         const inputDate = document.getElementById('drawDate').value;
         const inputHistory = document.getElementById('history').value.trim();
-        const statusCermin = document.getElementById('useMirror').checked;
+        const elCermin = document.getElementById('useMirror');
+const statusCermin = elCermin ? elCermin.checked : false;
 
         let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
         if (historyArray.length < 3) {
@@ -567,7 +568,7 @@ function resetBorang() {
     if (elNum1) elNum1.value = '';
 
     const elDate = document.getElementById('drawDate');
-    if (elDate) elDate.valueAsDate = new Date();
+    if (elDate) elDate.value = new Date().toISOString().split('T')[0];
 
     const elHist = document.getElementById('history');
     if (elHist) elHist.value = '';
