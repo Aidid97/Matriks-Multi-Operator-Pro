@@ -121,12 +121,7 @@ class EnjinDwiCartaToto {
         );
     }
 
-        return [
-            [Math.abs(l1), Math.abs(c1), Math.abs(r1)],
-            [Math.abs(l2), Math.abs(c2), Math.abs(r2)],
-            [Math.abs(l3), Math.abs(c3), Math.abs(r3)]
-        ];
-    }
+       
 
     binaMatrixBayangan3x3(m3x3) {
         return m3x3.map(baris => baris.map(val => (val + 5) % 10));
