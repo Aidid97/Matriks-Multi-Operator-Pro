@@ -474,8 +474,191 @@ class EnjinDwiCartaToto {
                  list4D.push(this.sortCombo(t3d + terasRaw));
             }
         });
+    let target4D = list4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
 
-        let target4D = list4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
+        return {
+            matrix4x4: m4x4,
+            matrix3x3: m3x3,
+            matrixBayangan: m3x3Bayangan,
+            missing: missingDigits,
+            kunciLock: kunciLock,
+            hasil2D: list2DText,
+            hasil3D: list3DText,
+            hasil4D: [...new Set(list4D)].slice(0, 10),
+            podium3D: podium3D, // Hantar data anomali untuk diwarnakan
+            pod: {
+                top2D: list2DText.slice(0, 3).join(', '),
+                top3D: list3DText.slice(0, 3).join(', '),
+                top4D: target4D,
+                lockDominan: lockDigitDominan
+            }
+        };
+    }
+}
+
+const enjin = new EnjinDwiCartaToto();
+let globalResult = null;
+
+function lukisJadual4x4(matrix) {
+    const table = document.getElementById('matrixTable4x4');
+    if (!table) return;
+    table.innerHTML = '';
+    matrix.forEach(row => {
+        let tr = document.createElement('tr');
+        row.forEach(val => {
+            let td = document.createElement('td');
+            td.innerText = val;
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+}
+
+function lukisGrid3x3(matrix, idElement, isShadow = false, lockDigits = []) {
+    const grid = document.getElementById(idElement);
+    if (!grid) return;
+    grid.innerHTML = '';
+    matrix.forEach(row => {
+        row.forEach(val => {
+            let div = document.createElement('div');
+            let classNames = 'cell-3x3';
+            if (isShadow) classNames += ' cell-shadow';
+            if (lockDigits.includes(val)) classNames += ' cell-lock';
+            
+            div.className = classNames;
+            div.innerText = val;
+            grid.appendChild(div);
+        });
+    });
+}
+
+// FUNGSI HIGHLIGHT MISSING DIGIT WARNA EMAS (🔥)
+function tunjukSenarai(idElement, dataArray, highlightList = []) {
+    const container = document.getElementById(idElement);
+    if (!container) return;
+    container.innerHTML = '';
+    dataArray.forEach(item => {
+        let div = document.createElement('div');
+        div.className = 'number-tag';
+        
+        if (highlightList.includes(item)) {
+            div.style.backgroundColor = '#FFD700'; // Warna Emas/Gold
+            div.style.color = '#000000';
+            div.style.fontWeight = 'bold';
+            div.style.border = '2px solid #D2691E';
+            div.innerText = '🔥 ' + item;
+        } else {
+            div.innerText = item;
+        }
+        
+        container.appendChild(div);
+    });
+}
+
+function janaKeputusan() {
+    try {
+        const inputNum1 = document.getElementById('num1').value.trim();
+        const inputDate = document.getElementById('drawDate').value;
+        const inputHistory = document.getElementById('history').value.trim();
+        const elCermin = document.getElementById('useMirror');
+        const statusCermin = elCermin ? elCermin.checked : false;
+
+        let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
+        if (historyArray.length < 3) {
+            historyArray = ["1508", "5241", "6336"];
+        }
+
+        globalResult = enjin.jana(inputNum1, inputDate, historyArray, statusCermin);
+
+        lukisJadual4x4(globalResult.matrix4x4);
+        lukisGrid3x3(globalResult.matrix3x3, 'matrixGrid3x3', false, []);
+        lukisGrid3x3(globalResult.matrixBayangan, 'matrixGrid3x3Bayangan', true, globalResult.kunciLock);
+
+        const elMissing = document.getElementById('missing-digits');
+        if (elMissing) elMissing.innerText = globalResult.missing.length > 0 ? globalResult.missing.join(', ') : 'Tiada';
+        
+        const elLock = document.getElementById('lock-digit');
+        if (elLock) elLock.innerText = globalResult.pod.lockDominan;
+
+        const elPod2d = document.getElementById('pod-2d');
+        if (elPod2d) elPod2d.innerText = globalResult.pod.top2D;
+
+        const elPod3d = document.getElementById('pod-3d');
+        if (elPod3d) elPod3d.innerText = globalResult.pod.top3D;
+
+        const elPod4d = document.getElementById('pod-4d');
+        if (elPod4d) elPod4d.innerText = globalResult.pod.top4D;
+
+        tunjukSenarai('out-2d', globalResult.hasil2D);
+        tunjukSenarai('out-3d', globalResult.hasil3D, globalResult.podium3D); // Fungsi highlight dipanggil
+        tunjukSenarai('out-4d', globalResult.hasil4D);
+
+        const elHasil = document.getElementById('hasil');
+        if (elHasil) elHasil.style.display = 'block';
+    } catch (err) {
+        console.error(err);
+        alert("Ralat semasa menjana carta: " + err.message);
+    }
+}
+
+function resetBorang() {
+    const elNum1 = document.getElementById('num1');
+    if (elNum1) elNum1.value = '';
+
+    const elDate = document.getElementById('drawDate');
+    if (elDate) elDate.value = new Date().toISOString().split('T')[0];
+
+    const elHist = document.getElementById('history');
+    if (elHist) elHist.value = '';
+
+    const elHasil = document.getElementById('hasil');
+    if (elHasil) elHasil.style.display = 'none';
+
+    globalResult = null;
+}
+
+function salin(idElement) {
+    const targetDiv = document.getElementById(idElement);
+    if (!targetDiv) return;
+    const tags = targetDiv.querySelectorAll('.number-tag');
+    let text = Array.from(tags).map(t => t.innerText).join(', ');
+    if (text) {
+        navigator.clipboard.writeText(text).then(() => alert("Berjaya disalin: " + text));
+    }
+}
+
+try {
+    const elDate = document.getElementById('drawDate');
+    if (elDate && !elDate.value) {
+        elDate.value = new Date().toISOString().split('T')[0];
+    }
+} catch (err) {
+    console.log(err);
+}
+
+function hardResetEnjin() {
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        const elNum1 = document.getElementById('num1');
+        if (elNum1) elNum1.value = '';
+
+        const elDate = document.getElementById('drawDate');
+        if (elDate) elDate.value = new Date().toISOString().split('T')[0];
+
+        const elHist = document.getElementById('history');
+        if (elHist) elHist.value = '';
+
+        const elHasil = document.getElementById('hasil');
+        if (elHasil) elHasil.style.display = 'none';
+
+        globalResult = null;
+        alert("Memori cache enjin berjaya dibersihkan!");
+    } catch (e) {
+        console.log(e);
+    }
+}
 
         return {
             matrix4x4: m4x4,
@@ -534,14 +717,24 @@ function lukisGrid3x3(matrix, idElement, isShadow = false, lockDigits = []) {
     });
 }
 
-function tunjukSenarai(idElement, dataArray) {
+function tunjukSenarai(idElement, dataArray, highlightList = []) {
     const container = document.getElementById(idElement);
     if (!container) return;
     container.innerHTML = '';
     dataArray.forEach(item => {
         let div = document.createElement('div');
         div.className = 'number-tag';
-        div.innerText = item;
+        
+        if (highlightList.includes(item)) {
+            div.style.backgroundColor = '#FFD700';
+            div.style.color = '#000000';
+            div.style.fontWeight = 'bold';
+            div.style.border = '2px solid #D2691E';
+            div.innerText = '🔥 ' + item;
+        } else {
+            div.innerText = item;
+        }
+        
         container.appendChild(div);
     });
 }
@@ -552,7 +745,7 @@ function janaKeputusan() {
         const inputDate = document.getElementById('drawDate').value;
         const inputHistory = document.getElementById('history').value.trim();
         const elCermin = document.getElementById('useMirror');
-const statusCermin = elCermin ? elCermin.checked : false;
+        const statusCermin = elCermin ? elCermin.checked : false;
 
         let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
         if (historyArray.length < 3) {
@@ -581,7 +774,7 @@ const statusCermin = elCermin ? elCermin.checked : false;
         if (elPod4d) elPod4d.innerText = globalResult.pod.top4D;
 
         tunjukSenarai('out-2d', globalResult.hasil2D);
-        tunjukSenarai('out-3d', globalResult.hasil3D);
+        tunjukSenarai('out-3d', globalResult.hasil3D, globalResult.podium3D); // <--- Ditambah parameter ketiga
         tunjukSenarai('out-4d', globalResult.hasil4D);
 
         const elHasil = document.getElementById('hasil');
