@@ -617,17 +617,15 @@ function salin(idElement) {
     }
 }
 
-// 1. Tetapkan tarikh secara selamat apabila laman sedia (Mesra Phone & Offline)
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        const elDate = document.getElementById('drawDate');
-        if (elDate && !elDate.value) {
-            elDate.value = new Date().toISOString().split('T')[0];
-        }
-    } catch (err) {
-        console.log("Tetapan tarikh awal dilewati secara selamat:", err);
+// 1. Tetapkan tarikh automatik secara terus dan selamat
+try {
+    const elDate = document.getElementById('drawDate');
+    if (elDate && !elDate.value) {
+        elDate.value = new Date().toISOString().split('T')[0];
     }
-});
+} catch (err) {
+    console.log("Tetapan tarikh awal dilewati:", err);
+}
 
 // 2. Fungsi Manual Reset & Pembersihan Cache
 function hardResetEnjin() {
