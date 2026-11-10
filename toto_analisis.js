@@ -413,8 +413,8 @@ class EnjinDwiCartaToto {
 
     jana(nombor4D, tarikhInput, sejarahResult, statusCermin) {
         let m4x4 = this.binaMatrix4x4Tolak1(nombor4D);
-        let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput);
         let m3x3 = this.binaMatrix3x3LebahNaga(tarikhInput, nombor4D);
+        let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
         let tarikhObj = this.parseTarikh(tarikhInput);
 
         let dataKunci = this.kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan);
