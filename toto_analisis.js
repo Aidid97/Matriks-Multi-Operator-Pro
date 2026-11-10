@@ -589,11 +589,39 @@ function salin(idElement) {
     }
 }
 
-try {
-    const elDate = document.getElementById('drawDate');
-    if (elDate) {
-        elDate.valueAsDate = new Date();
+// 1. Tetapkan tarikh secara selamat apabila laman sedia (Mesra Phone & Offline)
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const elDate = document.getElementById('drawDate');
+        if (elDate && !elDate.value) {
+            elDate.value = new Date().toISOString().split('T')[0];
+        }
+    } catch (err) {
+        console.log("Tetapan tarikh awal dilewati secara selamat:", err);
     }
-} catch (e) {
-    console.log("Tetapan tarikh dilewati secara selamat.");
+});
+
+// 2. Fungsi Manual Reset & Pembersihan Cache
+function hardResetEnjin() {
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        const elNum1 = document.getElementById('num1');
+        if (elNum1) elNum1.value = '';
+
+        const elDate = document.getElementById('drawDate');
+        if (elDate) elDate.value = new Date().toISOString().split('T')[0];
+
+        const elHist = document.getElementById('history');
+        if (elHist) elHist.value = '';
+
+        const elHasil = document.getElementById('hasil');
+        if (elHasil) elHasil.style.display = 'none';
+
+        globalResult = null;
+        alert("Memori cache enjin berjaya dibersihkan!");
+    } catch (e) {
+        console.log("Pembersihan manual selesai.");
+    }
 }
