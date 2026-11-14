@@ -15,8 +15,13 @@ class EnjinDwiCartaToto {
         let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
         if (nomborKemas.length < 4) nomborKemas = '0000';
 
-        let barisAsas = nomborKemas.substring(0, 4).split('').map(Number);
-        let matriksLengkap = [barisAsas];
+        let barisAsas = nomborKemas.substring(0, 4).split('').map(d => {
+    let nombor = Number(d);
+    if (nombor === 0) {
+        return 5; // Enjin menukar 0 kepada 5 di sini
+    }
+    return nombor;
+});
 
         for (let baris = 1; baris < 4; baris++) {
             let barisBaru = [];
@@ -70,8 +75,8 @@ class EnjinDwiCartaToto {
         const dayIdx = d.getDay();
         const neptuHari = neptuHariList[dayIdx];
 
-        const utcMillis = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-        const daysSinceEpoch = Math.floor(utcMillis / 86400000);
+       const localMillis = d.getTime() - (d.getTimezoneOffset() * 60000); 
+const daysSinceEpoch = Math.floor(localMillis / 86400000);
         
         const pasaranList = [
             { nama: "Legi", neptu: 5 },
