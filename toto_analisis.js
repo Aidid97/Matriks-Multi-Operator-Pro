@@ -15,7 +15,8 @@ class EnjinDwiCartaToto {
         let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
         if (nomborKemas.length < 4) nomborKemas = '0000';
 
-      let barisAsas = nomborKemas.substring(0, 4).split('').map(Number); 
+        let barisAsas = nomborKemas.substring(0, 4).split('').map(Number);
+let matriksLengkap = [barisAsas];
 
         for (let baris = 1; baris < 4; baris++) {
             let barisBaru = [];
