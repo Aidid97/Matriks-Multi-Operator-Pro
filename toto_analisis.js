@@ -15,13 +15,7 @@ class EnjinDwiCartaToto {
         let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
         if (nomborKemas.length < 4) nomborKemas = '0000';
 
-        let barisAsas = nomborKemas.substring(0, 4).split('').map(d => {
-    let nombor = Number(d);
-    if (nombor === 0) {
-        return 5; // Enjin menukar 0 kepada 5 di sini
-    }
-    return nombor;
-});
+      let barisAsas = nomborKemas.substring(0, 4).split('').map(Number); 
 
         for (let baris = 1; baris < 4; baris++) {
             let barisBaru = [];
