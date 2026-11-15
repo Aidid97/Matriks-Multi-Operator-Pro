@@ -11,7 +11,6 @@ class EnjinDwiCartaToto {
         return teksNombor.toString().split('').sort().join('');
     }
 
-    // Simpan matriks 4x4 asal (tanpa mutasi) untuk semakan silang Digit Hilang
     binaMatrix4x4Asal(nomborBase) {
         let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
         if (nomborKemas.length < 4) nomborKemas = '0000';
@@ -30,22 +29,20 @@ class EnjinDwiCartaToto {
         return matriksLengkap;
     }
 
-    // NAIK TARAF 1: Auto-Shadow Mutator pada Matriks 4x4 Utama
     binaMatrix4x4Tolak1(nomborBase) {
         let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
         if (nomborKemas.length < 4) nomborKemas = '0000';
 
-        let barisAsal = nomborKemas.substring(0, 4).split('').map(Number);
-        
-        // Auto-Shadow Mutator: Pecahkan digit double pada baris pertama
+        let barisAsasRaw = nomborKemas.substring(0, 4).split('').map(Number);
         let barisAsas = [];
+        
         for (let i = 0; i < 4; i++) {
-            let d = barisAsal[i];
+            let d = barisAsasRaw[i];
             if (barisAsas.includes(d)) {
-                d = (d + 5) % 10; // Tukar ke pembayang (+5) dahulu
+                d = (d + 5) % 10;
             }
             while (barisAsas.includes(d)) {
-                d = (d + 1) % 10; // Jika masih berlaga, anjak +1 sehingga unik
+                d = (d + 1) % 10;
             }
             barisAsas.push(d);
         }
@@ -147,7 +144,6 @@ class EnjinDwiCartaToto {
         return m3x3.map(baris => baris.map(val => (val + 5) % 10));
     }
 
-    // NAIK TARAF 2: Pengesanan Digit Hilang Berlapis (Elak keluar "Tiada")
     kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan, m4x4Asal = null) {
         let set4x4Mutasi = new Set();
         m4x4.forEach(row => row.forEach(val => set4x4Mutasi.add(val)));
@@ -170,7 +166,6 @@ class EnjinDwiCartaToto {
             if (!set3x3.has(d)) hilang3x3.push(d);
         }
 
-        // Keutamaan: Digit Hilang 4x4 Mutator -> 4x4 Asal -> Teras 3x3
         let digitHilangUtama = [];
         if (hilangMutasi.length > 0) {
             digitHilangUtama = hilangMutasi;
@@ -188,7 +183,6 @@ class EnjinDwiCartaToto {
             }
         });
 
-        // Jika tiada dalam bayangan, guna Digit Hilang pertama atau titik tengah Bayangan
         if (lockDominan.length === 0 && digitHilangUtama.length > 0) {
             lockDominan = [digitHilangUtama[0]];
         } else if (lockDominan.length === 0) {
@@ -267,7 +261,6 @@ class EnjinDwiCartaToto {
         let c3 = m4x4[3][0].toString(); 
         let c4 = m4x4[3][3].toString(); 
 
-        // Jambatan Silang Mutator (Pola 7641 / 6104)
         let j1 = m4x4[0][1].toString();
         let j2 = m4x4[0][3].toString();
         let j3 = m4x4[1][2].toString();
@@ -369,7 +362,6 @@ class EnjinDwiCartaToto {
             .sort((a, b) => b.skor - a.skor);
     }
 
-    // NAIK TARAF 3: Utamakan Baris Penuh Pembayang (+5) & Kunci Digit Hilang
     janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj) {
         let petaSkor = {};
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
@@ -388,7 +380,6 @@ class EnjinDwiCartaToto {
             set3D.set(c3d, markah + 4.5);
         });
 
-        // BONUS KHAS: Baris Mendatar & Lajur Tegak Matriks Bayangan (+5)
         for (let i = 0; i < 3; i++) {
             let barisBayang = this.sortCombo(m3x3Bayangan[i].join(''));
             let lajurBayang = this.sortCombo(`${m3x3Bayangan[0][i]}${m3x3Bayangan[1][i]}${m3x3Bayangan[2][i]}`);
@@ -483,13 +474,11 @@ class EnjinDwiCartaToto {
 
         let list4D = [];
 
-        // 1. Utamakan Baris Pembayang (+5) + Kunci Digit Hilang
         for (let r = 0; r < 3; r++) {
             let barisBayangStr = m3x3Bayangan[r].join('');
             list4D.push(this.sortCombo(barisBayangStr + lockDigitDominan));
         }
 
-        // 2. Masukkan Jambatan Silang Mutator & Ekor Baris 1 + Kepala Bayangan
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         if (cornerData.bridge4D && cornerData.bridge4D.length === 4) {
             list4D.push(cornerData.bridge4D);
@@ -602,10 +591,9 @@ function janaKeputusan() {
         const inputHistory = document.getElementById('history').value.trim();
         const statusCermin = document.getElementById('useMirror').checked;
 
-        // Kekalkan default asal supaya ringan, atau baca daripada kotak input sejarah jika diisi
         let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
         if (historyArray.length < 3) {
-            historyArray = ["1508", "5241", "6336"];
+            historyArray = ["0325", "8187", "3595"];
         }
 
         globalResult = enjin.jana(inputNum1, inputDate, historyArray, statusCermin);
@@ -654,7 +642,6 @@ function resetBorang() {
     const elHist = document.getElementById('history');
     if (elHist) elHist.value = '';
 
-    // Bersihkan memori DOM supaya enjin kekal ringan
     ['matrixTable4x4', 'matrixGrid3x3', 'matrixGrid3x3Bayangan', 'out-2d', 'out-3d', 'out-4d'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '';
