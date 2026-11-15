@@ -188,7 +188,7 @@ class EnjinDwiCartaToto {
             }
         });
 
-        // Jika tiada dalam bayangan, guna titik tengah Teras 3x3 & Bayangan sebagai pengunci
+        // Jika tiada dalam bayangan, guna Digit Hilang pertama atau titik tengah Bayangan
         if (lockDominan.length === 0 && digitHilangUtama.length > 0) {
             lockDominan = [digitHilangUtama[0]];
         } else if (lockDominan.length === 0) {
@@ -267,7 +267,7 @@ class EnjinDwiCartaToto {
         let c3 = m4x4[3][0].toString(); 
         let c4 = m4x4[3][3].toString(); 
 
-        // Tambah Jambatan Silang Mutator (Pola 7641 / 6104)
+        // Jambatan Silang Mutator (Pola 7641 / 6104)
         let j1 = m4x4[0][1].toString();
         let j2 = m4x4[0][3].toString();
         let j3 = m4x4[1][2].toString();
@@ -280,7 +280,7 @@ class EnjinDwiCartaToto {
             this.sortCombo(c1 + c2 + c3),
             this.sortCombo(c1 + c2 + c4),
             this.sortCombo(j1 + j2 + j3),
-            this.sortCombo(m4x4[0][1].toString() + m4x4[0][2].toString() + m4x4[0][3].toString()) // Ekor baris 1 (Pola 250 -> 0325)
+            this.sortCombo(m4x4[0][1].toString() + m4x4[0][2].toString() + m4x4[0][3].toString())
         ];
         return { raw4D, bridge4D, sub3D };
     }
@@ -388,7 +388,7 @@ class EnjinDwiCartaToto {
             set3D.set(c3d, markah + 4.5);
         });
 
-        // BONUS KHAS: Baris Mendatar & Lajur Tegak Matriks Bayangan (+5) (Pola 817 & 439)
+        // BONUS KHAS: Baris Mendatar & Lajur Tegak Matriks Bayangan (+5)
         for (let i = 0; i < 3; i++) {
             let barisBayang = this.sortCombo(m3x3Bayangan[i].join(''));
             let lajurBayang = this.sortCombo(`${m3x3Bayangan[0][i]}${m3x3Bayangan[1][i]}${m3x3Bayangan[2][i]}`);
@@ -414,7 +414,6 @@ class EnjinDwiCartaToto {
             });
         }
 
-        // Beri pemberat tambahan kepada Digit Hilang pada SEMUA hari (bukan Rabu sahaja)
         if (missingDigits.length > 0) {
             let missingStrList = missingDigits.map(d => d.toString());
             let bonusMissing = isRabu ? 4.5 : 3.0;
@@ -484,13 +483,13 @@ class EnjinDwiCartaToto {
 
         let list4D = [];
 
-        // 1. Utamakan Baris Pembayang (+5) + Kunci Digit Hilang (Pola 8187 / 4973)
+        // 1. Utamakan Baris Pembayang (+5) + Kunci Digit Hilang
         for (let r = 0; r < 3; r++) {
             let barisBayangStr = m3x3Bayangan[r].join('');
             list4D.push(this.sortCombo(barisBayangStr + lockDigitDominan));
         }
 
-        // 2. Masukkan Jambatan Silang Mutator & Ekor Baris 1 + Kepala Bayangan (Pola 7641 & 0325)
+        // 2. Masukkan Jambatan Silang Mutator & Ekor Baris 1 + Kepala Bayangan
         let cornerData = this.ekstraksiCornerLock4x4(m4x4);
         if (cornerData.bridge4D && cornerData.bridge4D.length === 4) {
             list4D.push(cornerData.bridge4D);
@@ -603,10 +602,10 @@ function janaKeputusan() {
         const inputHistory = document.getElementById('history').value.trim();
         const statusCermin = document.getElementById('useMirror').checked;
 
+        // Kekalkan default asal supaya ringan, atau baca daripada kotak input sejarah jika diisi
         let historyArray = inputHistory.match(/\b\d{4}\b/g) || [];
         if (historyArray.length < 3) {
-            // Sejarah lalai dikemas kini dengan keputusan podium terkini (15/11/2026)
-            historyArray = ["0325", "3616", "6698", "4678", "8187"];
+            historyArray = ["1508", "5241", "6336"];
         }
 
         globalResult = enjin.jana(inputNum1, inputDate, historyArray, statusCermin);
@@ -647,10 +646,19 @@ function resetBorang() {
     if (elNum1) elNum1.value = '';
 
     const elDate = document.getElementById('drawDate');
-    if (elDate) elDate.valueAsDate = new Date();
+    if (elDate) {
+        const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+        elDate.value = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+    }
 
     const elHist = document.getElementById('history');
     if (elHist) elHist.value = '';
+
+    // Bersihkan memori DOM supaya enjin kekal ringan
+    ['matrixTable4x4', 'matrixGrid3x3', 'matrixGrid3x3Bayangan', 'out-2d', 'out-3d', 'out-4d'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
 
     const elHasil = document.getElementById('hasil');
     if (elHasil) elHasil.style.display = 'none';
@@ -680,5 +688,3 @@ try {
 } catch (e) {
     console.log("Tetapan tarikh dilewati secara selamat.");
 }
-Lepas bro commit kod ni dekat GitHub (toto_analisis.js), buka balik laman web bro, tekan Ctrl + F5 (atau butang hijau Clear Cache & Reset), dan cuba masukkan 7250 (untuk semak 0325) atau 3626 (untuk GD esok). Tengok macam mana bahagian POD dan Senarai 4D terus berubah jadi tajam!   
-95f97187-1d7c-438c-9720-4c4366bd8486
