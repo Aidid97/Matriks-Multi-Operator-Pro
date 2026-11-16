@@ -267,70 +267,18 @@ class EnjinDwiCartaToto {
 
         skorKunci.sort((a, b) => b.skor - a.skor);
 
-   let kotakSejarah = document.getElementById('sejarahCabutan') || document.getElementById('sejarah') || {};
-    let teksSejarah = kotakSejarah.value || String(sejarahCabutan || sejarahInput || '');
-    let senaraiBaris = teksSejarah.split('\n');
-    let nomborPodium = [];
+        let digitHilangUtama = skorKunci.map(item => item.digit).slice(0, 4);
+        let lockDominan = skorKunci.map(item => item.digit).slice(0, 2);
 
-    for (let b of senaraiBaris) {
-        let bLower = b.toLowerCase();
-        if (bLower.includes('1st') || bLower.includes('2nd') || bLower.includes('3rd') || 
-            bLower.includes('头') || bLower.includes('二') || bLower.includes('三')) {
-            let jumpa = b.match(/\d{4}/g);
-            if (jumpa) nomborPodium.push(...jumpa);
+        if (lockDominan.length === 0) {
+            lockDominan = [m3x3Bayangan[1][1]];
         }
+
+        return {
+            digitHilang: digitHilangUtama,
+            kunciLock: lockDominan
+        };
     }
-
-    if (nomborPodium.length === 0) {
-        let fallback = teksSejarah.match(/\d{4}/g) || [];
-        nomborPodium = fallback.slice(0, 3);
-    }
-
-    let gabungNombor = nomborPodium.join('');
-    let digitHilangUtama = [];
-    for (let i = 0; i <= 9; i++) {
-        if (!gabungNombor.includes(i.toString())) {
-            digitHilangUtama.push(i);
-        }
-    }
-
-    if (nomborPodium.length === 0) {
-        let fallback = teksSejarah.match(/\d{4}/g) || [];
-        nomborPodium = fallback.slice(0, 3);
-    }
-
-    let gabungNombor = nomborPodium.join('');
-    let digitHilangUtama = [];
-    for (let i = 0; i <= 9; i++) {
-        if (!gabungNombor.includes(i.toString())) {
-            digitHilangUtama.push(i);
-        }
-    }
-
-    if (nomborPodium.length === 0) {
-        let fallback = teksSejarah.match(/\d{4}/g) || [];
-        nomborPodium = fallback.slice(0, 3);
-    }
-
-    let gabungNombor = nomborPodium.join('');
-    let digitHilangUtama = [];
-    for (let i = 0; i <= 9; i++) {
-        if (!gabungNombor.includes(i.toString())) {
-            digitHilangUtama.push(i);
-        }
-    }
-
-    let lockDominan = skorKunci.map(item => item.digit).slice(0, 2);
-
-    if (lockDominan.length === 0) {
-        lockDominan = [m3x3Bayangan[1][1]];
-    }
-
-    return {
-        digitHilang: digitHilangUtama,
-        kunciLock: lockDominan
-    };
-}
 
     kiraTrajektori(sejarahCabutan, operatorMode = "TOTO") {
         let senaraiSkor = [];
@@ -520,6 +468,7 @@ class EnjinDwiCartaToto {
             }
         });
 
+        // Tapis hanya Top 12 2D paling kuat supaya tidak melambak 45 nombor
         return Array.from(kedudukanPeta.entries())
             .map(([kombo, skor]) => ({ kombo, skor }))
             .sort((a, b) => b.skor - a.skor)
