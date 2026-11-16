@@ -3,135 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Matriks Dwi-Carta Toto Pro</title>
+    <title>Enjin Dwi-Carta Multi-Operator Pro</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 800px; width: 100%; }
-        h2 { text-align: center; color: #1a365d; margin-bottom: 5px; }
-        p.subtitle { text-align: center; color: #718096; font-size: 12px; margin-bottom: 20px; }
-        .input-group { margin-bottom: 12px; text-align: left; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
-        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; font-family: monospace; }
-        textarea { outline: none; border-color: #3182ce; resize: vertical; }
-        .checkbox-group { text-align: left; margin: 10px 0; font-size: 13px; font-weight: 600; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-jana { background-color: #a08edf; color: white; }
-        .btn-jana:hover { background-color: #8b75d7; }
-        .btn-reset { background-color: #cbd5e0; color: white; }
-        .btn-reset:hover { background-color: #a0aec0; }
-        .btn-kocok { background-color: #198754; color: white; font-size: 11px; padding: 4px 8px; float: right; }
-        
-        /* Susunan 3 Carta Bersebelahan */
-        .charts-flex { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
-        @media (max-width: 768px) { .charts-flex { grid-template-columns: 1fr; } }
-        
-        .chart-box { background: #fff; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; text-align: center; }
-        .chart-box-shadow { background: #fdf2f8; border: 1px solid #fbcfe8; }
-        .chart-title { font-size: 12px; font-weight: bold; color: #1a365d; margin-bottom: 8px; }
-        
-        .matrix-table-4x4 { width: 100%; border-collapse: collapse; font-size: 18px; font-weight: bold; margin: 0 auto; }
-        .matrix-table-4x4 td { border: 2px solid #4a5568; padding: 6px; background: #fff; text-align: center; }
-        .matrix-table-4x4 tr:first-child td { background-color: #e2e8f0; }
-
-        .matrix-grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 0 auto; }
-        .matrix-grid-3x3 .cell-3x3 { border: 2px solid #d97706; padding: 10px; font-size: 18px; font-weight: bold; background: #fffbe0; border-radius: 6px; text-align: center; }
-        
-        /* Styling Carta Bayangan */
-        .matrix-grid-3x3 .cell-shadow { border: 2px solid #db2777; background: #fff0f6; color: #831843; }
-        .matrix-grid-3x3 .cell-lock { background: #fef08a !important; border-color: #ca8a04 !important; color: #854d0e !important; box-shadow: 0 0 5px rgba(202, 138, 4, 0.5); }
-
-        .result-box { margin-top: 15px; padding: 15px; background: #f8f9fc; border-left: 4px solid #3182ce; border-radius: 6px; text-align: left; }
-        .pod-box { background: #fef3c7; border-left: 5px solid #d97706; padding: 15px; border-radius: 6px; margin-top: 15px; text-align: left; }
-        
-        .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin-top: 10px; }
-        .number-tag { background: #2d3748; color: #ffffff; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 15px; letter-spacing: 1px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #2d3748;
+            margin: 0;
+            padding: 15px;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #1a365d;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-generate {
+            background-color: #2b6cb0;
+            color: white;
+        }
+        .btn-generate:hover {
+            background-color: #2c5282;
+        }
+        .btn-reset {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        .btn-reset:hover {
+            background-color: #cbd5e0;
+        }
+        .charts-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .chart-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .chart-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #1a365d;
+        }
+        table.matrix-4x4 {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        table.matrix-4x4 td {
+            border: 1px solid #cbd5e0;
+            padding: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            background: #ffffff;
+        }
+        .grid-3x3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            max-width: 160px;
+            margin: 0 auto;
+        }
+        .cell-3x3 {
+            background: #ffffff;
+            border: 1px solid #cbd5e0;
+            padding: 10px 0;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .cell-shadow {
+            background: #edf2f7;
+            color: #2b6cb0;
+        }
+        .cell-lock {
+            background: #fed7d7;
+            color: #c53030;
+            border-color: #fc8181;
+        }
+        .pod-box {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+        .pod-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2b6cb0;
+        }
+        .pod-item {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .result-section {
+            margin-bottom: 18px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .result-header span {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1a365d;
+        }
+        .btn-copy {
+            flex: none;
+            padding: 5px 12px;
+            font-size: 12px;
+            background: #edf2f7;
+            color: #2d3748;
+            border-radius: 6px;
+        }
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .number-tag {
+            background: #2b6cb0;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Mesin Matriks Dwi-Carta Toto Pro</h2>
-    <p class="subtitle">Carta Matriks 4x4 (Tolak 1), Carta Teras 3x3 Lebah Naga & Matriks Bayangan (+5)</p>
+    <h1>Enjin Dwi-Carta Multi-Operator</h1>
+    <p class="subtitle">Matriks 4x4 Dinamik (Sejarah & Kalendar), Teras 3x3 & Matriks Bayangan (+5)</p>
 
-    <!-- TAMBAHAN SUIS OPERATOR DI SINI -->
-    <div class="input-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
-        <label for="operatorMode" style="color: #1a365d; font-size: 14px;">Pilih Mod Enjin Operator:</label>
+    <div class="input-group" style="background: #e2e8f0;">
+        <label for="operatorMode" style="color: #1a365d;">Pilih Operator Cabutan:</label>
         <select id="operatorMode">
-            <option value="GDLOTTO">GD Lotto (Vektor Koordinat + Jawa/Bazi + Formula 582)</option>
-            <option value="TOTO">Sports Toto (Teras Lebah Naga + Multi-Anchor)</option>
+            <option value="GDLOTTO">GD Lotto (Vektor Koordinat + Silangan Bayangan +5)</option>
+            <option value="TOTO">Sports Toto (Teras Lebah Naga + Dinamik 4x4)</option>
         </select>
     </div>
 
     <div class="input-group">
-        <label for="num1">Nombor Induk / Dasar 4D (Contoh: 0000) :</label>
-        <input type="text" id="num1" maxlength="4" placeholder="0000" onclick="this.select()">
+        <label for="num1">Nombor Induk / Dasar 4D (Contoh: 3626):</label>
+        <input type="text" id="num1" maxlength="4" placeholder="Masukkan 4 digit induk...">
     </div>
 
     <div class="input-group">
-        <label for="drawDate">Tarikh Cabutan Seterusnya (Automatik Hari Ini) :</label>
+        <label for="drawDate">Tarikh Cabutan / Ujian Backtest (YYYY-MM-DD):</label>
         <input type="text" id="drawDate" placeholder="YYYY-MM-DD">
     </div>
 
     <div class="input-group">
-        <label for="history">Sejarah Cabutan Lepas Toto (Paste Result) :</label>
-        <textarea id="history" rows="3" placeholder="Paste result lepas di sini...&#10;Contoh: 1508, 5241, 6336, 2203, 4065..."></textarea>
+        <label for="history">Sejarah Keputusan Lepas (Untuk Pola Panas & Sejuk 4x4):</label>
+        <textarea id="history" placeholder="Contoh: 1711, 6131, 0311, 1871, 9386"></textarea>
     </div>
 
     <div class="checkbox-group">
-        <label style="cursor: pointer;">
-            <input type="checkbox" id="useMirror" checked>
-            Aktifkan Formula Cermin (0 = 5, 1 = 6, 2 = 7, 3 = 8, 4 = 9)
-        </label>
+        <input type="checkbox" id="useMirror" checked>
+        <label for="useMirror" style="margin:0;">Aktifkan Penapis Cermin & Bayangan (+5)</label>
     </div>
 
-    <div class="btn-group">
-        <button class="btn-jana" type="button" onclick="janaKeputusan()">Bina 3 Carta & Analisa</button>
-        <button class="btn-reset" type="button" onclick="resetBorang()">Clear Cache & Reset</button>
+    <div class="btn-row">
+        <button class="btn-generate" onclick="janaKeputusan()">Jana Carta & Ramalan</button>
+        <button class="btn-reset" onclick="resetBorang()">Set Semula</button>
     </div>
 
     <div id="hasil" style="display: none;">
-        <!-- PAPARAN 3 CARTA BERSAMA -->
-        <div class="charts-flex">
-            <div class="chart-box">
-                <div class="chart-title">1️⃣ Matriks 4x4 (Tolak 1)</div>
-                <table class="matrix-table-4x4" id="matrixTable4x4"></table>
-            </div>
-            
-            <div class="chart-box">
-                <div class="chart-title">2️⃣ Teras 3x3 (Lebah Naga)</div>
-                <div class="matrix-grid-3x3" id="matrixGrid3x3"></div>
+        <div class="charts-wrapper">
+            <div class="chart-card">
+                <div class="chart-title">1️⃣ Matriks 4x4 Dinamik (Sejarah & Kalendar)</div>
+                <table class="matrix-4x4" id="matrixTable4x4"></table>
             </div>
 
-            <div class="chart-box chart-box-shadow">
-                <div class="chart-title" style="color: #9d174d;">3️⃣ Matriks Bayangan (+5)</div>
-                <div class="matrix-grid-3x3" id="matrixGrid3x3Bayangan"></div>
+            <div class="chart-card">
+                <div class="chart-title">2️⃣ Teras 3x3 Utama</div>
+                <div class="grid-3x3" id="matrixGrid3x3"></div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">3️⃣ Matriks Bayangan (+5)</div>
+                <div class="grid-3x3" id="matrixGrid3x3Bayangan"></div>
             </div>
         </div>
 
         <div class="pod-box">
-            <p style="margin:0; font-weight:bold; color:#92400e; font-size:14px; border-bottom:1px solid #fcd34d; padding-bottom:5px; margin-bottom:8px;">🔥 POD (Pilihan Optimal Draw Toto)</p>
-            <div><strong>Digit Hilang Utama:</strong> <span id="missing-digits" style="font-weight:bold; color:#dc2626;"></span></div>
-            <div><strong>🔒 Nombor Kunci (Lock Dominan):</strong> <span id="lock-digit" style="font-weight:bold; color:#b45309; background:#fef08a; padding:2px 8px; border-radius:4px;"></span></div>
-            <hr style="border-top:1px dashed #fcd34d; margin:6px 0;">
-            <div><strong>Top 2D POD (Vektor Euclidean):</strong> <span id="pod-2d" style="font-weight:bold; color:#b45309; font-size:16px;"></span></div>
-            <div><strong>Top 3D POD (Multi-Anchor Matrix):</strong> <span id="pod-3d" style="font-weight:bold; color:#1d4ed8; font-size:16px;"></span></div>
-            <div><strong>Top 4D POD (Solid/Straight):</strong> <span id="pod-4d" style="font-weight:bold; color:#6b21a8; font-size:18px;"></span></div>
+            <h3>🎯 Ringkasan Kunci & POD Utama</h3>
+            <div class="pod-item"><strong>Digit Hilang Utama:</strong> <span id="missing-digits">-</span></div>
+            <div class="pod-item"><strong>Nombor Kunci (Lock Dominan):</strong> <span id="lock-digit" style="color:#c53030; font-weight:bold;">-</span></div>
+            <div class="pod-item"><strong>POD 2D Terkuat:</strong> <span id="pod-2d" style="font-weight:bold;">-</span></div>
+            <div class="pod-item"><strong>POD 3D Terkuat:</strong> <span id="pod-3d" style="font-weight:bold;">-</span></div>
+            <div class="pod-item"><strong>POD 4D Sasaran:</strong> <span id="pod-4d" style="color:#2b6cb0; font-weight:bold;">-</span></div>
         </div>
 
-        <div class="result-box" style="border-left-color: #2b6cb0;">
-            <p style="margin:0;"><strong>Senarai 2D Pilihan Kebarangkalian (Vektor Jarak)</strong> <button class="btn-kocok" onclick="salin('out-2d')">Salin 2D</button></p>
-            <div id="out-2d" class="number-grid"></div>
+        <div class="result-section">
+            <div class="result-header">
+                <span>📌 Pilihan 2D Terkuat (Top 12)</span>
+                <button class="btn-copy" onclick="salin('out-2d')">Salin 2D</button>
+            </div>
+            <div class="tags-container" id="out-2d"></div>
         </div>
 
-        <div class="result-box" style="border-left-color: #dd6b20;">
-            <p style="margin:0;"><strong>Senarai 3D Pilihan Kebarangkalian (Bayangan + Anchor Matrix)</strong> <button class="btn-kocok" onclick="salin('out-3d')">Salin 3D</button></p>
-            <div id="out-3d" class="number-grid"></div>
+        <div class="result-section">
+            <div class="result-header">
+                <span>🔥 Pilihan 3D Solid (Top 6)</span>
+                <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button>
+            </div>
+            <div class="tags-container" id="out-3d"></div>
         </div>
 
-        <div class="result-box" style="border-left-color: #805ad5;">
-            <p style="margin:0;"><strong>Senarai 4D Solid / Straight Pilihan</strong> <button class="btn-kocok" onclick="salin('out-4d')">Salin 4D</button></p>
-            <div id="out-4d" class="number-grid"></div>
+        <div class="result-section">
+            <div class="result-header">
+                <span>💎 Pilihan 4D Podium (Top 10)</span>
+                <button class="btn-copy" onclick="salin('out-4d')">Salin 4D</button>
+            </div>
+            <div class="tags-container" id="out-4d"></div>
         </div>
     </div>
 </div>
