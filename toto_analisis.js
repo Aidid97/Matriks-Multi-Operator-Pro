@@ -22,86 +22,41 @@ class EnjinDwiCartaToto {
         return teksNombor.toString().split('').sort().join('');
     }
 
-    binaMatrix4x4Asal(nomborBase) {
-        let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
-        if (nomborKemas.length < 4) nomborKemas = nomborKemas.padEnd(4, '0');
-
-        let barisAsas = nomborKemas.substring(0, 4).split('').map(Number);
-        let matriksLengkap = [barisAsas];
-
-        for (let baris = 1; baris < 4; baris++) {
-            let barisBaru = [];
-            for (let lajur = 0; lajur < 4; lajur++) {
-                let nilaiKiraan = (matriksLengkap[baris - 1][lajur] + 9) % 10;
-                barisBaru.push(nilaiKiraan);
-            }
-            matriksLengkap.push(barisBaru);
-        }
-        return matriksLengkap;
-    }
-
-    binaMatrix4x4Tolak1(nomborBase) {
-        let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
-        if (nomborKemas.length < 4) nomborKemas = nomborKemas.padEnd(4, '0');
-
-        let barisAsasRaw = nomborKemas.substring(0, 4).split('').map(Number);
-        let barisAsas = [];
-        
-        for (let i = 0; i < 4; i++) {
-            let d = barisAsasRaw[i];
-            if (barisAsas.includes(d)) {
-                d = (d + 5) % 10;
-            }
-            while (barisAsas.includes(d)) {
-                d = (d + 1) % 10;
-            }
-            barisAsas.push(d);
-        }
-
-        let matriksLengkap = [barisAsas];
-
-        for (let baris = 1; baris < 4; baris++) {
-            let barisBaru = [];
-            for (let lajur = 0; lajur < 4; lajur++) {
-                let nilaiKiraan = (matriksLengkap[baris - 1][lajur] + 9) % 10;
-                barisBaru.push(nilaiKiraan);
-            }
-            matriksLengkap.push(barisBaru);
-        }
-        return matriksLengkap;
-    }
-
     parseTarikh(tarikhInput) {
-        let tarikhObj;
+        if (tarikhInput instanceof Date && !isNaN(tarikhInput.getTime())) {
+            return new Date(tarikhInput.getFullYear(), tarikhInput.getMonth(), tarikhInput.getDate(), 12, 0, 0);
+        }
+
         if (tarikhInput) {
             let cleanStr = tarikhInput.toString().trim();
+            let parts = null;
+
             if (cleanStr.includes('-')) {
-                let parts = cleanStr.split('-');
-                if (parts.length === 3) {
-                    if (parts[0].length === 4) {
-                        tarikhObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-                    } else {
-                        tarikhObj = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-                    }
-                }
+                parts = cleanStr.split('-');
             } else if (cleanStr.includes('/')) {
-                let parts = cleanStr.split('/');
-                if (parts.length === 3) {
-                    if (parts[0].length === 4) {
-                        tarikhObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-                    } else {
-                        tarikhObj = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-                    }
+                parts = cleanStr.split('/');
+            }
+
+            if (parts && parts.length === 3) {
+                let y, m, d;
+                if (parts[0].length === 4) {
+                    y = parseInt(parts[0], 10);
+                    m = parseInt(parts[1], 10) - 1;
+                    d = parseInt(parts[2], 10);
+                } else {
+                    d = parseInt(parts[0], 10);
+                    m = parseInt(parts[1], 10) - 1;
+                    y = parseInt(parts[2], 10);
                 }
-            } else {
-                tarikhObj = new Date(cleanStr);
+                let tarikhTepat = new Date(y, m, d, 12, 0, 0);
+                if (!isNaN(tarikhTepat.getTime())) {
+                    return tarikhTepat;
+                }
             }
         }
-        
-        if (!tarikhObj || isNaN(tarikhObj.getTime())) {
-            tarikhObj = new Date();
-        }
-        return tarikhObj;
+
+        let sekarang = new Date();
+        return new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate(), 12, 0, 0);
     }
 
     dapatkanKalendarJawa(tarikhStr) {
@@ -112,8 +67,8 @@ class EnjinDwiCartaToto {
         const dayIdx = d.getDay();
         const neptuHari = neptuHariList[dayIdx];
 
-        const localMillis = d.getTime() - (d.getTimezoneOffset() * 60000); 
-        const daysSinceEpoch = Math.floor(localMillis / 86400000);
+        const utcHari = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+        const daysSinceEpoch = Math.floor(utcHari / 86400000);
         
         const pasaranList = [
             { nama: "Legi", neptu: 5 },
@@ -123,8 +78,8 @@ class EnjinDwiCartaToto {
             { nama: "Kliwon", neptu: 8 }
         ];
 
-        const pasaranIdx = (daysSinceEpoch + 3) % 5;
-        const pasaranObj = pasaranList[(pasaranIdx + 5) % 5];
+        const pasaranIdx = ((daysSinceEpoch + 3) % 5 + 5) % 5;
+        const pasaranObj = pasaranList[pasaranIdx];
         const totalNeptu = neptuHari + pasaranObj.neptu;
 
         const digitJawa1 = totalNeptu % 10;
@@ -147,8 +102,8 @@ class EnjinDwiCartaToto {
 
     dapatkanElemenBazi(tarikhStr) {
         const d = this.parseTarikh(tarikhStr);
-        const localMillis = d.getTime() - (d.getTimezoneOffset() * 60000);
-        const daysSinceEpoch = Math.floor(localMillis / 86400000);
+        const utcHari = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+        const daysSinceEpoch = Math.floor(utcHari / 86400000);
 
         const senaraiBatang = [
             { batang: "Jia", elemen: "Kayu", digit: [3, 8] },
@@ -165,6 +120,26 @@ class EnjinDwiCartaToto {
 
         const idx = ((daysSinceEpoch + 6) % 10 + 10) % 10;
         return senaraiBatang[idx];
+    }
+
+    binaMatrix4x4Dinamik(nomborBase, dataJawa, dataBazi, senaraiObjekSkor) {
+        let nomborKemas = (nomborBase || '0000').toString().replace(/[^0-9]/g, '');
+        if (nomborKemas.length < 4) nomborKemas = nomborKemas.padEnd(4, '0');
+
+        let baris1 = nomborKemas.substring(0, 4).split('').map(Number);
+
+        let baris2 = [
+            dataJawa.digitJawa1,
+            dataJawa.paksiTengah,
+            dataBazi.digit[0],
+            dataBazi.digit[1]
+        ];
+
+        let baris3 = senaraiObjekSkor.slice(0, 4).map(item => parseInt(item.digitSasaran, 10));
+
+        let baris4 = senaraiObjekSkor.slice(-4).reverse().map(item => parseInt(item.digitSasaran, 10));
+
+        return [baris1, baris2, baris3, baris4];
     }
 
     binaMatrix3x3LebahNaga(tarikhInput) {
@@ -241,56 +216,61 @@ class EnjinDwiCartaToto {
         };
     }
 
-    kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan, m4x4Asal = null, operatorMode = "TOTO") {
-        let set4x4Mutasi = new Set();
-        m4x4.forEach(row => row.forEach(val => set4x4Mutasi.add(val)));
-
-        let set4x4Asal = new Set();
-        if (m4x4Asal) {
-            m4x4Asal.forEach(row => row.forEach(val => set4x4Asal.add(val)));
-        }
+    kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan, operatorMode = "TOTO", dataJawa = null, dataBazi = null, senaraiObjekSkor = []) {
+        let set4x4 = new Set();
+        m4x4.forEach(row => row.forEach(val => set4x4.add(val)));
 
         let set3x3 = new Set();
         m3x3.forEach(row => row.forEach(val => set3x3.add(val)));
 
-        let hilangMutasi = [];
-        let hilangAsal = [];
+        let setBayangan = new Set();
+        m3x3Bayangan.forEach(row => row.forEach(val => setBayangan.add(val)));
+
+        let hilang4x4 = [];
         let hilang3x3 = [];
 
         for (let d = 0; d <= 9; d++) {
-            if (!set4x4Mutasi.has(d)) hilangMutasi.push(d);
-            if (m4x4Asal && !set4x4Asal.has(d)) hilangAsal.push(d);
+            if (!set4x4.has(d)) hilang4x4.push(d);
             if (!set3x3.has(d)) hilang3x3.push(d);
         }
 
-        let digitHilangUtama = [];
-        if (hilangMutasi.length > 0) {
-            digitHilangUtama = hilangMutasi;
-        } else if (hilangAsal.length > 0) {
-            digitHilangUtama = hilangAsal;
-        } else {
-            digitHilangUtama = hilang3x3;
+        let gabunganHilang = [...new Set([...hilang4x4, ...hilang3x3])];
+        if (gabunganHilang.length === 0) {
+            gabunganHilang = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(d => !setBayangan.has(d));
         }
 
-        let lockDominan = [];
-        digitHilangUtama.forEach(digit => {
-            let adaDalamBayangan = m3x3Bayangan.some(row => row.includes(digit));
-            if (adaDalamBayangan) {
-                lockDominan.push(digit);
+        let skorKunci = gabunganHilang.map(digit => {
+            let skor = 0;
+            if (hilang4x4.includes(digit)) skor += 3.5;
+            if (hilang3x3.includes(digit)) skor += 2.0;
+            if (setBayangan.has(digit)) skor += 2.5;
+
+            if (dataJawa) {
+                if (digit === dataJawa.digitJawa1 || digit === dataJawa.digitJawa2) skor += 4.0;
+                if (digit === dataJawa.paksiTengah || digit === dataJawa.bayanganTengah) skor += 3.5;
             }
+            if (dataBazi && dataBazi.digit.includes(digit)) {
+                skor += 4.0;
+            }
+
+            if (operatorMode === "GDLOTTO" && this.GD_KEY_NUMBERS.includes(digit)) {
+                skor += 1.5;
+            }
+
+            let objTraj = senaraiObjekSkor.find(item => item.digitSasaran === digit.toString());
+            if (objTraj) {
+                skor += (objTraj.markahAkhir * 0.5);
+            }
+
+            return { digit, skor };
         });
 
-        if (operatorMode === "GDLOTTO") {
-            this.GD_KEY_NUMBERS.forEach(k => {
-                if (digitHilangUtama.includes(k) && !lockDominan.includes(k)) {
-                    lockDominan.unshift(k);
-                }
-            });
-        }
+        skorKunci.sort((a, b) => b.skor - a.skor);
 
-        if (lockDominan.length === 0 && digitHilangUtama.length > 0) {
-            lockDominan = [digitHilangUtama[0]];
-        } else if (lockDominan.length === 0) {
+        let digitHilangUtama = skorKunci.map(item => item.digit).slice(0, 4);
+        let lockDominan = skorKunci.map(item => item.digit).slice(0, 2);
+
+        if (lockDominan.length === 0) {
             lockDominan = [m3x3Bayangan[1][1]];
         }
 
@@ -304,21 +284,24 @@ class EnjinDwiCartaToto {
         let senaraiSkor = [];
         let panjang = sejarahCabutan.length;
         let p3 = Math.min(3, panjang);
-        let p5 = Math.min(5, panjang);
+        let p5 = Math.min(8, panjang);
 
         let str3 = sejarahCabutan.slice(0, p3).join('');
         let str5 = sejarahCabutan.slice(0, p5).join('');
+        let strSemua = sejarahCabutan.join('');
 
-        let beratTerkini = operatorMode === "GDLOTTO" ? 0.90 : 0.75;
-        let beratLama = operatorMode === "GDLOTTO" ? 0.25 : 0.40;
+        let beratTerkini = operatorMode === "GDLOTTO" ? 0.95 : 0.80;
+        let beratSederhana = operatorMode === "GDLOTTO" ? 0.35 : 0.45;
+        let beratKeseluruhan = 0.15;
 
         for (let d = 0; d <= 9; d++) {
             let digitStr = d.toString();
             let freq3 = p3 > 0 ? (str3.split(digitStr).length - 1) : 0;
             let freq5 = p5 > 0 ? (str5.split(digitStr).length - 1) : 0;
+            let freqSemua = panjang > 0 ? (strSemua.split(digitStr).length - 1) : 0;
 
-            let markah = (freq3 * beratTerkini) + (freq5 * beratLama);
-            senaraiSkor.push({ digitSasaran: digitStr, markahAkhir: markah });
+            let markah = (freq3 * beratTerkini) + (freq5 * beratSederhana) + (freqSemua * beratKeseluruhan);
+            senaraiSkor.push({ digitSasaran: digitStr, markahAkhir: markah, kekerapan: freqSemua });
         }
 
         senaraiSkor.sort((a, b) => b.markahAkhir - a.markahAkhir);
@@ -402,14 +385,14 @@ class EnjinDwiCartaToto {
         let kiraanCarta = {};
         for (let d = 0; d <= 9; d++) kiraanCarta[d.toString()] = 0;
 
-        m4x4.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 1));
-        m3x3.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 2));
+        m4x4.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 1.5));
+        m3x3.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 2.0));
         m3x3Bayangan.forEach(r => r.forEach(v => kiraanCarta[v.toString()] += 2.5));
 
-        if (operatorMode === "GDLOTTO" && dataBazi && dataJawa) {
-            dataBazi.digit.forEach(d => { kiraanCarta[d.toString()] += 2.0; });
-            kiraanCarta[dataJawa.paksiTengah.toString()] += 2.0;
-            kiraanCarta[dataJawa.bayanganTengah.toString()] += 2.0;
+        if (dataBazi && dataJawa) {
+            dataBazi.digit.forEach(d => { kiraanCarta[d.toString()] += 1.5; });
+            kiraanCarta[dataJawa.paksiTengah.toString()] += 1.5;
+            kiraanCarta[dataJawa.bayanganTengah.toString()] += 1.5;
         }
 
         let senaraiCalon2D = [];
@@ -485,9 +468,11 @@ class EnjinDwiCartaToto {
             }
         });
 
+        // Tapis hanya Top 12 2D paling kuat supaya tidak melambak 45 nombor
         return Array.from(kedudukanPeta.entries())
             .map(([kombo, skor]) => ({ kombo, skor }))
-            .sort((a, b) => b.skor - a.skor);
+            .sort((a, b) => b.skor - a.skor)
+            .slice(0, 12);
     }
 
     janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, vektorGD = null, dataJawa = null, dataBazi = null, operatorMode = "TOTO") {
@@ -499,108 +484,149 @@ class EnjinDwiCartaToto {
         let isRabu = (hari === 3); 
         let isHujungMinggu = (hari === 0 || hari === 6);
 
-        let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
-        rantaian4x4.forEach(c3d => set3D.set(c3d, 3.0));
+        if (operatorMode === "GDLOTTO") {
+            let top2DList = objek2D.slice(0, 6);
+            top2DList.forEach((item2D, idx) => {
+                let a = item2D.kombo[0];
+                let b = item2D.kombo[1];
+                let c = this.MIRROR_MAP[a];
+                let d = this.MIRROR_MAP[b];
 
-        let rantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
-        rantaianBayangan.forEach(c3d => {
-            let markah = set3D.get(c3d) || 0;
-            set3D.set(c3d, markah + 4.5);
-        });
+                let berat2D = 16.0 - (idx * 1.5);
 
-        for (let i = 0; i < 3; i++) {
-            let barisBayang = this.sortCombo(m3x3Bayangan[i].join(''));
-            let lajurBayang = this.sortCombo(`${m3x3Bayangan[0][i]}${m3x3Bayangan[1][i]}${m3x3Bayangan[2][i]}`);
-            set3D.set(barisBayang, (set3D.get(barisBayang) || 2.0) + 6.5);
-            set3D.set(lajurBayang, (set3D.get(lajurBayang) || 2.0) + 5.0);
-        }
+                let silang1 = this.sortCombo(a + b + c);
+                let silang2 = this.sortCombo(a + b + d);
+                let silang3 = this.sortCombo(c + d + a);
+                let silang4 = this.sortCombo(c + d + b);
 
-        let cornerData = this.ekstraksiCornerLock4x4(m4x4);
-        cornerData.sub3D.forEach(c3d => {
-            let markah = set3D.get(c3d) || 1.0;
-            set3D.set(c3d, markah + 4.5);
-        });
-
-        if (operatorMode === "GDLOTTO" && vektorGD && dataJawa && dataBazi) {
-            let tapakVektor = [
-                `${vektorGD.v2}${vektorGD.bezaPaksi}`,
-                `${vektorGD.s2}${vektorGD.bezaPaksi}`,
-                vektorGD.pasanganAsal,
-                vektorGD.pasanganBayang
-            ];
-
-            let pengikatKalendar = [
-                dataJawa.bayanganTengah.toString(),
-                dataJawa.paksiTengah.toString(),
-                dataJawa.digitJawa1.toString(),
-                dataBazi.digit[0].toString(),
-                dataBazi.digit[1].toString(),
-                vektorGD.dx.toString(),
-                vektorGD.dy.toString()
-            ];
-
-            tapakVektor.forEach((t2d, idxTapak) => {
-                pengikatKalendar.forEach((pDigit, idxKunci) => {
-                    let komboKoreksi = this.sortCombo(t2d + pDigit);
-                    if (komboKoreksi.length === 3) {
-                        let bonus = 9.5 - (idxTapak * 1.2) - (idxKunci * 0.4);
-                        set3D.set(komboKoreksi, (set3D.get(komboKoreksi) || 2.0) + Math.max(2.0, bonus));
+                [silang1, silang2, silang3, silang4].forEach((k3d, sIdx) => {
+                    if (k3d.length === 3) {
+                        set3D.set(k3d, (set3D.get(k3d) || 0) + berat2D - (sIdx * 0.4));
                     }
                 });
+
+                if (idx < 3) {
+                    let doubleA = this.sortCombo(a + a + b);
+                    let doubleB = this.sortCombo(a + b + b);
+                    set3D.set(doubleA, (set3D.get(doubleA) || 0) + (berat2D * 0.85));
+                    set3D.set(doubleB, (set3D.get(doubleB) || 0) + (berat2D * 0.85));
+                }
+
+                if (dataJawa && dataBazi && idx < 4) {
+                    let pengikatHari = [
+                        dataJawa.bayanganTengah.toString(),
+                        dataJawa.paksiTengah.toString(),
+                        dataBazi.digit[0].toString(),
+                        dataBazi.digit[1].toString()
+                    ];
+                    pengikatHari.forEach((pDigit, pIdx) => {
+                        let kAsal = this.sortCombo(a + b + pDigit);
+                        let kBayang = this.sortCombo(c + d + pDigit);
+                        if (kAsal.length === 3) {
+                            set3D.set(kAsal, (set3D.get(kAsal) || 0) + (11.0 - idx - pIdx * 0.5));
+                        }
+                        if (kBayang.length === 3) {
+                            set3D.set(kBayang, (set3D.get(kBayang) || 0) + (10.5 - idx - pIdx * 0.5));
+                        }
+                    });
+                }
             });
 
-            for (let r = 0; r < 3; r++) {
-                let gdMainRow = this.sortCombo(this.GD_MAIN_MATRIX[r].join(''));
-                let gdShadowRow = this.sortCombo(this.GD_SHADOW_MATRIX[r].join(''));
-                set3D.set(gdMainRow, (set3D.get(gdMainRow) || 2.0) + 5.5);
-                set3D.set(gdShadowRow, (set3D.get(gdShadowRow) || 2.0) + 6.0);
+            if (vektorGD) {
+                let vAsal = vektorGD.pasanganAsal;
+                let vBayang = vektorGD.pasanganBayang;
+                let vSilang1 = this.sortCombo(vAsal + vBayang[0]);
+                let vSilang2 = this.sortCombo(vAsal + vBayang[1]);
+                let vSilang3 = this.sortCombo(vBayang + vAsal[0]);
+                let vSilang4 = this.sortCombo(vBayang + vAsal[1]);
+
+                [vSilang1, vSilang2, vSilang3, vSilang4].forEach(vk => {
+                    if (vk.length === 3) {
+                        set3D.set(vk, (set3D.get(vk) || 0) + 14.0);
+                    }
+                });
             }
-        }
 
-        let lockStr = kunciLock.length > 0 ? kunciLock[0].toString() : '';
-        if (lockStr) {
-            let top2D = objek2D.slice(0, 8);
-            top2D.forEach(item2D => {
-                let kombo = this.sortCombo(item2D.kombo + lockStr);
-                if (kombo.length === 3) {
-                    let markah = set3D.get(kombo) || 1.0;
-                    set3D.set(kombo, markah + 4.0);
-                }
-            });
-        }
-
-        if (missingDigits.length > 0) {
-            let missingStrList = missingDigits.map(d => d.toString());
-            let bonusMissing = (operatorMode === "GDLOTTO" || isRabu) ? 4.5 : 3.0;
-            set3D.forEach((skor, kombo) => {
-                let jumlahMissing = 0;
-                missingStrList.forEach(mDigit => {
-                    if (kombo.includes(mDigit)) jumlahMissing++;
+            if (missingDigits.length > 0) {
+                let missingStrList = missingDigits.map(d => d.toString());
+                set3D.forEach((skor, kombo) => {
+                    let jumlahMissing = 0;
+                    missingStrList.forEach(mDigit => {
+                        if (kombo.includes(mDigit)) jumlahMissing++;
+                    });
+                    if (jumlahMissing > 0) {
+                        set3D.set(kombo, skor + (jumlahMissing * 4.5));
+                    }
                 });
-                if (jumlahMissing > 0) {
-                    set3D.set(kombo, skor + (jumlahMissing * bonusMissing));
-                }
+            }
+        } else {
+            let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
+            rantaian4x4.forEach(c3d => set3D.set(c3d, 3.5));
+
+            let rantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
+            rantaianBayangan.forEach(c3d => {
+                let markah = set3D.get(c3d) || 0;
+                set3D.set(c3d, markah + 4.5);
             });
-        }
 
-        if (isHujungMinggu) {
-            let terasMatriks = new Set();
-            m3x3.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
-            m3x3Bayangan.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
-            
-            let terasStrList = Array.from(terasMatriks);
+            for (let i = 0; i < 3; i++) {
+                let barisBayang = this.sortCombo(m3x3Bayangan[i].join(''));
+                let lajurBayang = this.sortCombo(`${m3x3Bayangan[0][i]}${m3x3Bayangan[1][i]}${m3x3Bayangan[2][i]}`);
+                set3D.set(barisBayang, (set3D.get(barisBayang) || 2.0) + 6.5);
+                set3D.set(lajurBayang, (set3D.get(lajurBayang) || 2.0) + 5.0);
+            }
 
-            set3D.forEach((skor, kombo) => {
-                let jumlahTeras = 0;
-                terasStrList.forEach(tDigit => {
-                    if (kombo.includes(tDigit)) jumlahTeras++;
+            let cornerData = this.ekstraksiCornerLock4x4(m4x4);
+            cornerData.sub3D.forEach(c3d => {
+                let markah = set3D.get(c3d) || 1.0;
+                set3D.set(c3d, markah + 4.5);
+            });
+
+            let lockStr = kunciLock.length > 0 ? kunciLock[0].toString() : '';
+            if (lockStr) {
+                let top2D = objek2D.slice(0, 8);
+                top2D.forEach(item2D => {
+                    let kombo = this.sortCombo(item2D.kombo + lockStr);
+                    if (kombo.length === 3) {
+                        let markah = set3D.get(kombo) || 1.0;
+                        set3D.set(kombo, markah + 4.0);
+                    }
                 });
-                if (jumlahTeras === 3) {
-                    set3D.set(kombo, skor + 5.0);
-                } else if (jumlahTeras === 2) {
-                    set3D.set(kombo, skor + 2.5);
-                }
-            });
+            }
+
+            if (missingDigits.length > 0) {
+                let missingStrList = missingDigits.map(d => d.toString());
+                let bonusMissing = isRabu ? 4.5 : 3.0;
+                set3D.forEach((skor, kombo) => {
+                    let jumlahMissing = 0;
+                    missingStrList.forEach(mDigit => {
+                        if (kombo.includes(mDigit)) jumlahMissing++;
+                    });
+                    if (jumlahMissing > 0) {
+                        set3D.set(kombo, skor + (jumlahMissing * bonusMissing));
+                    }
+                });
+            }
+
+            if (isHujungMinggu) {
+                let terasMatriks = new Set();
+                m3x3.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
+                m3x3Bayangan.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
+                
+                let terasStrList = Array.from(terasMatriks);
+
+                set3D.forEach((skor, kombo) => {
+                    let jumlahTeras = 0;
+                    terasStrList.forEach(tDigit => {
+                        if (kombo.includes(tDigit)) jumlahTeras++;
+                    });
+                    if (jumlahTeras === 3) {
+                        set3D.set(kombo, skor + 5.0);
+                    } else if (jumlahTeras === 2) {
+                        set3D.set(kombo, skor + 2.5);
+                    }
+                });
+            }
         }
 
         let hasilSusunan = [];
@@ -615,23 +641,24 @@ class EnjinDwiCartaToto {
     }
 
     jana(nombor4D, tarikhInput, sejarahResult, statusCermin, operatorMode = "GDLOTTO") {
-        let m4x4Asal = this.binaMatrix4x4Asal(nombor4D);
-        let m4x4 = this.binaMatrix4x4Tolak1(nombor4D);
-        let dataJawa = this.dapatkanKalendarJawa(tarikhInput);
-        let dataBazi = this.dapatkanElemenBazi(tarikhInput);
+        let tarikhObj = this.parseTarikh(tarikhInput);
+        let dataJawa = this.dapatkanKalendarJawa(tarikhObj);
+        let dataBazi = this.dapatkanElemenBazi(tarikhObj);
         let vektorGD = this.kiraVektorKoordinatGD(nombor4D);
 
-        let m3x3 = operatorMode === "GDLOTTO" 
-            ? this.binaMatrix3x3GDLotto(tarikhInput) 
-            : this.binaMatrix3x3LebahNaga(tarikhInput);
-        let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
-        let tarikhObj = this.parseTarikh(tarikhInput);
+        let senaraiObjekSkor = this.kiraTrajektori(sejarahResult, operatorMode);
+        let m4x4 = this.binaMatrix4x4Dinamik(nombor4D, dataJawa, dataBazi, senaraiObjekSkor);
 
-        let dataKunci = this.kesanNomborKunciLock(m4x4, m3x3, m3x3Bayangan, m4x4Asal, operatorMode);
+        let m3x3 = operatorMode === "GDLOTTO" 
+            ? this.binaMatrix3x3GDLotto(tarikhObj) 
+            : this.binaMatrix3x3LebahNaga(tarikhObj);
+        let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
+
+        let dataKunci = this.kesanNomborKunciLock(
+            m4x4, m3x3, m3x3Bayangan, operatorMode, dataJawa, dataBazi, senaraiObjekSkor
+        );
         let missingDigits = dataKunci.digitHilang;
         let kunciLock = dataKunci.kunciLock;
-
-        let senaraiObjekSkor = this.kiraTrajektori(sejarahResult, operatorMode);
 
         let objek2D = this.janaSenarai2DUnjuranVektor(
             m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin, vektorGD, dataJawa, dataBazi, operatorMode
@@ -834,8 +861,11 @@ function resetBorang() {
 
     const elDate = document.getElementById('drawDate');
     if (elDate) {
-        const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-        elDate.value = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+        const sekarang = new Date();
+        const yyyy = sekarang.getFullYear();
+        const mm = String(sekarang.getMonth() + 1).padStart(2, '0');
+        const dd = String(sekarang.getDate()).padStart(2, '0');
+        elDate.value = `${yyyy}-${mm}-${dd}`;
     }
 
     const elHist = document.getElementById('history');
@@ -862,15 +892,13 @@ function salin(idElement) {
     }
 }
 
-try {
+document.addEventListener('DOMContentLoaded', () => {
     const elDate = document.getElementById('drawDate');
-    if (elDate) {
-        if (!elDate.value) {
-            const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-            const waktuLokal = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
-            elDate.value = waktuLokal;
-        }
+    if (elDate && !elDate.value) {
+        const sekarang = new Date();
+        const yyyy = sekarang.getFullYear();
+        const mm = String(sekarang.getMonth() + 1).padStart(2, '0');
+        const dd = String(sekarang.getDate()).padStart(2, '0');
+        elDate.value = `${yyyy}-${mm}-${dd}`;
     }
-} catch (e) {
-    console.log("Tetapan tarikh dilewati secara selamat.");
-}
+});
