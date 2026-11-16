@@ -267,10 +267,28 @@ class EnjinDwiCartaToto {
 
         skorKunci.sort((a, b) => b.skor - a.skor);
 
-        let semuaSejarah = sejarahCabutan.join('');
+    let teksSejarah = Array.isArray(sejarahCabutan) ? sejarahCabutan.join('\n') : String(sejarahCabutan || '');
+    let senaraiBaris = teksSejarah.split('\n');
+    let nomborPodium = [];
+
+    for (let b of senaraiBaris) {
+        let bLower = b.toLowerCase();
+        if (bLower.includes('1st') || bLower.includes('2nd') || bLower.includes('3rd') || 
+            bLower.includes('头') || bLower.includes('二') || bLower.includes('三')) {
+            let jumpa = b.match(/\d{4}/g);
+            if (jumpa) nomborPodium.push(...jumpa);
+        }
+    }
+
+    if (nomborPodium.length === 0) {
+        let fallback = teksSejarah.match(/\d{4}/g) || [];
+        nomborPodium = fallback.slice(0, 3);
+    }
+
+    let gabungNombor = nomborPodium.join('');
     let digitHilangUtama = [];
     for (let i = 0; i <= 9; i++) {
-        if (!semuaSejarah.includes(i.toString())) {
+        if (!gabungNombor.includes(i.toString())) {
             digitHilangUtama.push(i);
         }
     }
