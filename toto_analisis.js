@@ -267,18 +267,25 @@ class EnjinDwiCartaToto {
 
         skorKunci.sort((a, b) => b.skor - a.skor);
 
-        let digitHilangUtama = skorKunci.map(item => item.digit).slice(0, 4);
-        let lockDominan = skorKunci.map(item => item.digit).slice(0, 2);
-
-        if (lockDominan.length === 0) {
-            lockDominan = [m3x3Bayangan[1][1]];
+        let semuaSejarah = sejarahCabutan.join('');
+    let digitHilangUtama = [];
+    for (let i = 0; i <= 9; i++) {
+        if (!semuaSejarah.includes(i.toString())) {
+            digitHilangUtama.push(i);
         }
-
-        return {
-            digitHilang: digitHilangUtama,
-            kunciLock: lockDominan
-        };
     }
+
+    let lockDominan = skorKunci.map(item => item.digit).slice(0, 2);
+
+    if (lockDominan.length === 0) {
+        lockDominan = [m3x3Bayangan[1][1]];
+    }
+
+    return {
+        digitHilang: digitHilangUtama,
+        kunciLock: lockDominan
+    };
+}
 
     kiraTrajektori(sejarahCabutan, operatorMode = "TOTO") {
         let senaraiSkor = [];
