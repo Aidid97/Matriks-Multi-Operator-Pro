@@ -11,7 +11,7 @@
         p.subtitle { text-align: center; color: #718096; font-size: 12px; margin-bottom: 20px; }
         .input-group { margin-bottom: 12px; text-align: left; }
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
-        input[type="text"], input[type="date"], textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; font-family: monospace; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; font-family: monospace; }
         textarea { outline: none; border-color: #3182ce; resize: vertical; }
         .checkbox-group { text-align: left; margin: 10px 0; font-size: 13px; font-weight: 600; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
@@ -54,12 +54,20 @@
     <h2>Mesin Matriks Dwi-Carta Toto Pro</h2>
     <p class="subtitle">Carta Matriks 4x4 (Tolak 1), Carta Teras 3x3 Lebah Naga & Matriks Bayangan (+5)</p>
 
+    <!-- TAMBAHAN SUIS OPERATOR DI SINI -->
+    <div class="input-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+        <label for="operatorMode" style="color: #1a365d; font-size: 14px;">Pilih Mod Enjin Operator:</label>
+        <select id="operatorMode">
+            <option value="GDLOTTO">GD Lotto (Vektor Koordinat + Jawa/Bazi + Formula 582)</option>
+            <option value="TOTO">Sports Toto (Teras Lebah Naga + Multi-Anchor)</option>
+        </select>
+    </div>
+
     <div class="input-group">
         <label for="num1">Nombor Induk / Dasar 4D (Contoh: 0000) :</label>
         <input type="text" id="num1" maxlength="4" placeholder="0000" onclick="this.select()">
     </div>
-
-    <div class="input-group">
+    div class="input-group">
         <label for="drawDate">Tarikh Cabutan Seterusnya (Automatik Hari Ini) :</label>
         <input type="text" id="drawDate" placeholder="YYYY-MM-DD">
     </div>
@@ -76,10 +84,10 @@
         </label>
     </div>
 
-   <div class="btn-group">
-    <button class="btn-jana" type="button" onclick="janaKeputusan()">Bina 3 Carta & Analisa</button>
-    <button class="btn-reset" type="button" onclick="hardResetEnjin()">Clear Cache & Reset</button>
-</div>
+    <div class="btn-group">
+        <button class="btn-jana" type="button" onclick="janaKeputusan()">Bina 3 Carta & Analisa</button>
+        <button class="btn-reset" type="button" onclick="resetBorang()">Clear Cache & Reset</button>
+    </div>
 
     <div id="hasil" style="display: none;">
         <!-- PAPARAN 3 CARTA BERSAMA -->
