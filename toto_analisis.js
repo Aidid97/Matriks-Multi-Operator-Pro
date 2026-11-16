@@ -267,7 +267,7 @@ class EnjinDwiCartaToto {
 
         skorKunci.sort((a, b) => b.skor - a.skor);
 
-    let teksSejarah = Array.isArray(sejarahCabutan) ? sejarahCabutan.join('\n') : String(sejarahCabutan || '');
+   let teksSejarah = Array.isArray(sejarah) ? sejarah.join('\n') : String(sejarah || '');
     let senaraiBaris = teksSejarah.split('\n');
     let nomborPodium = [];
 
@@ -277,6 +277,19 @@ class EnjinDwiCartaToto {
             bLower.includes('头') || bLower.includes('二') || bLower.includes('三')) {
             let jumpa = b.match(/\d{4}/g);
             if (jumpa) nomborPodium.push(...jumpa);
+        }
+    }
+
+    if (nomborPodium.length === 0) {
+        let fallback = teksSejarah.match(/\d{4}/g) || [];
+        nomborPodium = fallback.slice(0, 3);
+    }
+
+    let gabungNombor = nomborPodium.join('');
+    let digitHilangUtama = [];
+    for (let i = 0; i <= 9; i++) {
+        if (!gabungNombor.includes(i.toString())) {
+            digitHilangUtama.push(i);
         }
     }
 
