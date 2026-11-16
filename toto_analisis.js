@@ -136,6 +136,7 @@ class EnjinDwiCartaToto {
         ];
 
         let baris3 = senaraiObjekSkor.slice(0, 4).map(item => parseInt(item.digitSasaran, 10));
+
         let baris4 = senaraiObjekSkor.slice(-4).reverse().map(item => parseInt(item.digitSasaran, 10));
 
         return [baris1, baris2, baris3, baris4];
@@ -638,28 +639,6 @@ class EnjinDwiCartaToto {
         return hasilSusunan.sort((a, b) => b.skor - a.skor);
     }
 
-    // Jana pasangan pembayang (+5) untuk 4D sasaran utama
-    janaPembayang4D(kombo4D, lockStr) {
-        let digits = kombo4D.split('');
-        let ditukar = false;
-        // Tukar digit bukan kunci (lockStr) kepada bayangannya (+5)
-        let bayang1Arr = digits.map(d => {
-            if (!ditukar && d !== lockStr && this.MIRROR_MAP[d]) {
-                ditukar = true;
-                return this.MIRROR_MAP[d];
-            }
-            return d;
-        });
-        let bayang1 = this.sortCombo(bayang1Arr.join(''));
-
-        // Variasi kedua: tukar kunci utama (lockStr) kepada bayangannya (+5)
-        let bayang2Arr = digits.map(d => (d === lockStr && this.MIRROR_MAP[d]) ? this.MIRROR_MAP[d] : d);
-        let bayang2 = this.sortCombo(bayang2Arr.join(''));
-
-        let hasilUnik = [bayang1, bayang2].filter(b => b && b !== kombo4D);
-        return [...new Set(hasilUnik)];
-    }
-
     jana(nombor4D, tarikhInput, sejarahResult, statusCermin, operatorMode = "GDLOTTO") {
         let tarikhObj = this.parseTarikh(tarikhInput);
         let dataJawa = this.dapatkanKalendarJawa(tarikhObj);
@@ -705,14 +684,9 @@ class EnjinDwiCartaToto {
                 }
             });
 
-            // 1. Gabungan 3D teratas dengan Nombor Kunci & Digit Hilang + Pembayang (+5)
-            list3DText.slice(0, 3).forEach(t3d => {
+            list3DText.slice(0, 4).forEach(t3d => {
                 senaraiPengikat4D.slice(0, 3).forEach(kDigit => {
-                    let komboAsal = this.sortCombo(t3d + kDigit);
-                    list4D.push(komboAsal);
-                    // Selitkan terus versi pembayang (+5) supaya terperangkap macam 0255 -> 2557 / 2555
-                    let pembayangList = this.janaPembayang4D(komboAsal, lockDigitDominan);
-                    pembayangList.forEach(pb => list4D.push(pb));
+                    list4D.push(this.sortCombo(t3d + kDigit));
                 });
             });
 
@@ -742,9 +716,7 @@ class EnjinDwiCartaToto {
         let isHujungMinggu = (tarikhObj.getDay() === 0 || tarikhObj.getDay() === 6);
 
         list3DText.slice(0, 5).forEach(t3d => {
-            let kUtama = this.sortCombo(t3d + lockDigitDominan);
-            list4D.push(kUtama);
-            this.janaPembayang4D(kUtama, lockDigitDominan).forEach(pb => list4D.push(pb));
+            list4D.push(this.sortCombo(t3d + lockDigitDominan));
             
             if (isRabu && missingDigits.length > 0) {
                  list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
@@ -765,11 +737,7 @@ class EnjinDwiCartaToto {
         });
 
         let unik4D = [...new Set(list4D)].slice(0, 10);
-        let target4DUtama = unik4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
-        let senaraiBayangTarget = this.janaPembayang4D(target4DUtama, lockDigitDominan);
-        let paparanPod4D = senaraiBayangTarget.length > 0 
-            ? `${target4DUtama} (Bayang: ${senaraiBayangTarget.join(' / ')})`
-            : target4DUtama;
+        let target4D = unik4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
 
         return {
             matrix4x4: m4x4,
@@ -783,7 +751,7 @@ class EnjinDwiCartaToto {
             pod: {
                 top2D: list2DText.slice(0, 3).join(', '),
                 top3D: list3DText.slice(0, 3).join(', '),
-                top4D: paparanPod4D,
+                top4D: target4D,
                 lockDominan: lockDigitDominan
             }
         };
