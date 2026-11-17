@@ -348,7 +348,7 @@ class EnjinDwiCartaToto {
                     pengikat.add(md.toString());
                     pengikat.add(((parseInt(md) + 5) % 10).toString());
                 });
-    
+            }
             this.GD_KEY_NUMBERS.forEach(kn => pengikat.add(kn.toString()));
 
             let gabungan3D = [];
