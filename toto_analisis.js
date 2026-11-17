@@ -330,16 +330,46 @@ class EnjinDwiCartaToto {
             return senaraiGD;
         }
         
-        // --- LOGIK ASAL TOTO (KEKAL TANPA GANGGUAN) ---
-        let petaSkor = {};
-        senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
-        let petaKoordinat4x4 = {};
-        for (let r = 0; r < 4; r++) {
-            for (let c = 0; c < 4; c++) {
-                let val = m4x4[r][c].toString();
-                if (!petaKoordinat4x4[val]) petaKoordinat4x4[val] = [];
-                petaKoordinat4x4[val].push({ r, c });
-            }
+       // FORMULA EUCLIDEAN SHARP UNTUK TOTO KINI AKTIF
+        if (vektorGD) {
+            let vAsal = vektorGD.pasanganAsal; 
+            let vBayang = vektorGD.pasanganBayang;
+            let k1 = vAsal[0], k2 = vAsal[1];
+            let b1 = vBayang[0], b2 = vBayang[1];
+
+            let asas2D = [
+                this.sortCombo(vAsal), this.sortCombo(vBayang),
+                this.sortCombo(k1 + b1), this.sortCombo(k2 + b2)
+            ];
+
+            let pengikat = new Set();
+            if (missingDigits.length > 0) {
+                missingDigits.forEach(md => {
+                    pengikat.add(md.toString());
+                    pengikat.add(((parseInt(md) + 5) % 10).toString());
+                });
+    
+            this.GD_KEY_NUMBERS.forEach(kn => pengikat.add(kn.toString()));
+
+            let gabungan3D = [];
+            asas2D.forEach(duaD => {
+                pengikat.forEach(p => {
+                    let tigaD = this.sortCombo(duaD + p);
+                    if (tigaD.length === 3) gabungan3D.push(tigaD);
+                });
+                gabungan3D.push(this.sortCombo(duaD + b1)); 
+                gabungan3D.push(this.sortCombo(duaD + k2)); 
+            });
+
+            let unik3D = [...new Set(gabungan3D)];
+            let primaryMissing = missingDigits.length > 0 ? missingDigits[0].toString() : null;
+
+            unik3D.forEach((k3d, idx) => {
+                let skor = 100 - idx;
+                if (primaryMissing && k3d.includes(primaryMissing)) skor += 50; 
+                set3D.set(k3d, skor);
+            });
+        }
         }
         let kiraanCarta = {};
         for (let d = 0; d <= 9; d++) kiraanCarta[d.toString()] = 0;
