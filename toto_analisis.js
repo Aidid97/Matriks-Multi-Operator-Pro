@@ -416,16 +416,17 @@ class EnjinDwiCartaToto {
         return { raw4D, bridge4D, sub3D };
     }
 
-    janaSenarai2DUnjuranVektor(m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin, vektorGD = null, dataJawa = null, dataBazi = null, operatorMode = "TOTO") {
-        if (operatorMode === "GDLOTTO" && vektorGD) {
-            let senaraiGD = [];
-            let vAsal = vektorGD.pasanganAsal;
-            let vBayang = vektorGD.pasanganBayang;
-            senaraiGD.push({ kombo: this.sortCombo(vAsal), skor: 99, jarak: 1.0 });
-            senaraiGD.push({ kombo: this.sortCombo(vBayang), skor: 98, jarak: 1.0 });
-            senaraiGD.push({ kombo: this.sortCombo(vAsal[0] + vBayang[0]), skor: 97, jarak: 1.0 });
-            senaraiGD.push({ kombo: this.sortCombo(vAsal[1] + vBayang[1]), skor: 96, jarak: 1.0 });
-            return senaraiGD;
+    janaSenarai2DUnjuranVektor(m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin, senaraiVektorGD = [], dataJawa = null, dataBazi = null, operatorMode = "TOTO") {
+        if (operatorMode === "GDLOTTO" && Array.isArray(senaraiVektorGD) && senaraiVektorGD.length > 0) {
+            let petaGD = new Map();
+            senaraiVektorGD.forEach((v, idx) => {
+                let skorAsas = 99 - (idx * 2);
+                if (!petaGD.has(v.pasanganAsal)) petaGD.set(v.pasanganAsal, skorAsas);
+                if (!petaGD.has(v.pasanganBayang)) petaGD.set(v.pasanganBayang, skorAsas - 1);
+            });
+            return Array.from(petaGD.entries())
+                .map(([kombo, skor]) => ({ kombo, skor, jarak: 1.0 }))
+                .sort((a, b) => b.skor - a.skor);
         }
 
         let petaSkor = {};
@@ -518,7 +519,7 @@ class EnjinDwiCartaToto {
             .slice(0, 12);
     }
 
-    janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, vektorGD = null, dataJawa = null, dataBazi = null, operatorMode = "TOTO") {
+    janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, senaraiVektorGD = [], dataJawa = null, dataBazi = null, operatorMode = "TOTO") {
         let petaSkor = {};
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
 
@@ -527,26 +528,39 @@ class EnjinDwiCartaToto {
         let isRabu = (hari === 3);
         let isHujungMinggu = (hari === 0 || hari === 6);
 
-        if (operatorMode === "GDLOTTO" && vektorGD) {
-            let vAsal = vektorGD.pasanganAsal;
-            let vBayang = vektorGD.pasanganBayang;
-            let gabunganGD = [
-                this.sortCombo(vAsal + vBayang[0]),
-                this.sortCombo(vAsal + vBayang[1]),
-                this.sortCombo(vBayang + vAsal[0]),
-                this.sortCombo(vBayang + vAsal[1])
-            ];
+        if (operatorMode === "GDLOTTO" && Array.isArray(senaraiVektorGD) && senaraiVektorGD.length > 0) {
+            senaraiVektorGD.forEach((v, idx) => {
+                let vAsal = v.pasanganAsal;
+                let vBayang = v.pasanganBayang;
+                let skorPodium = 100 - (idx * 3);
 
-            if (missingDigits.length > 0) {
-                let m1 = missingDigits[0].toString();
-                gabunganGD.push(this.sortCombo(vAsal + m1));
-                gabunganGD.push(this.sortCombo(vBayang + m1));
-            }
+                // 1. Cantum Teras Bayangan & Teras Asal dengan SEMUA digit hilang
+                missingDigits.forEach((mDigit, mIdx) => {
+                    let mStr = mDigit.toString();
+                    let kBayang = this.sortCombo(vBayang + mStr);
+                    let kAsal = this.sortCombo(vAsal + mStr);
 
-            gabunganGD.forEach((k3d, idx) => {
-                if (k3d.length === 3) set3D.set(k3d, 100 - idx);
+                    if (kBayang.length === 3) {
+                        set3D.set(kBayang, (set3D.get(kBayang) || 0) + skorPodium - mIdx);
+                    }
+                    if (kAsal.length === 3) {
+                        set3D.set(kAsal, (set3D.get(kAsal) || 0) + (skorPodium - 5) - mIdx);
+                    }
+                });
+
+                // 2. Silangan sesama Teras Asal & Bayangan
+                let silang = [
+                    this.sortCombo(vBayang + vAsal[0]),
+                    this.sortCombo(vBayang + vAsal[1]),
+                    this.sortCombo(vAsal + vBayang[0]),
+                    this.sortCombo(vAsal + vBayang[1])
+                ];
+                silang.forEach(k3d => {
+                    if (k3d.length === 3) {
+                        set3D.set(k3d, (set3D.get(k3d) || 0) + (skorPodium - 15));
+                    }
+                });
             });
-
         } else {
             let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
             rantaian4x4.forEach(c3d => set3D.set(c3d, 3.5));
@@ -632,7 +646,22 @@ class EnjinDwiCartaToto {
         let tarikhObj = this.parseTarikh(tarikhInput);
         let dataJawa = this.dapatkanKalendarJawa(tarikhObj);
         let dataBazi = this.dapatkanElemenBazi(tarikhObj);
-        let vektorGD = this.kiraVektorKoordinatGD(nombor4D);
+
+        // Kumpul 3 result podium (num1 + sejarah teratas) untuk Master Euclidean
+        let senaraiPodium = [];
+        if (nombor4D && /^\d{4}$/.test(nombor4D.trim())) {
+            senaraiPodium.push(nombor4D.trim());
+        }
+        if (sejarahResult && sejarahResult.length > 0) {
+            sejarahResult.forEach(r => {
+                if (!senaraiPodium.includes(r) && senaraiPodium.length < 3) {
+                    senaraiPodium.push(r);
+                }
+            });
+        }
+        if (senaraiPodium.length === 0) senaraiPodium = ['0000'];
+
+        let senaraiVektorGD = senaraiPodium.map(num => this.kiraVektorKoordinatGD(num));
 
         let senaraiObjekSkor = this.kiraTrajektori(sejarahResult, operatorMode);
         let m4x4 = this.binaMatrix4x4Dinamik(nombor4D, dataJawa, dataBazi, senaraiObjekSkor);
@@ -649,8 +678,8 @@ class EnjinDwiCartaToto {
         let missingDigits = dataKunci.digitHilang;
         let kunciLock = dataKunci.kunciLock;
 
-        if (sejarahResult && sejarahResult.length > 0) {
-            let gabungPodium = sejarahResult.slice(0, 3).join('');
+        if (senaraiPodium.length > 0) {
+            let gabungPodium = senaraiPodium.join('');
             let cariHilang = [];
             for (let i = 0; i <= 9; i++) {
                 if (!gabungPodium.includes(i.toString())) {
@@ -663,14 +692,14 @@ class EnjinDwiCartaToto {
         }
 
         let objek2D = this.janaSenarai2DUnjuranVektor(
-            m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin, vektorGD, dataJawa, dataBazi, operatorMode
+            m4x4, m3x3, m3x3Bayangan, senaraiObjekSkor, statusCermin, senaraiVektorGD, dataJawa, dataBazi, operatorMode
         );
         let list2DText = objek2D.map(item => item.kombo);
 
         let objek3D = this.janaSenarai3DTriangulasi(
-            m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, vektorGD, dataJawa, dataBazi, operatorMode
+            m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, senaraiVektorGD, dataJawa, dataBazi, operatorMode
         );
-        let list3DText = objek3D.map(item => item.kombo).slice(0, 10);
+        let list3DText = objek3D.map(item => item.kombo).slice(0, 24);
 
         let list3DTarikh = this.ekstrak3DMatriksTarikh(m3x3Tarikh);
         let hasil3DHot = [];
