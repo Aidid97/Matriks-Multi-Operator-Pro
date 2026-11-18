@@ -97,7 +97,7 @@
         }
         .charts-wrapper {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -110,7 +110,7 @@
         }
         .chart-title {
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 10px;
             color: #1a365d;
         }
@@ -150,6 +150,12 @@
             color: #c53030;
             border-color: #fc8181;
         }
+        /* CSS Tambahan: Untuk Highlight Matriks Tarikh */
+        .cell-date-core {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeeba;
+        }
         .pod-box {
             background: #ebf8ff;
             border: 1px solid #90cdf4;
@@ -172,6 +178,15 @@
             border: 1px solid #e2e8f0;
             border-radius: 8px;
         }
+        /* Kotak Khas Untuk 3D Bertindan (Hot Match) */
+        .hot-match-box {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+        }
+        .hot-match-header span {
+            color: #c53030;
+            font-weight: 800;
+        }
         .result-header {
             display: flex;
             justify-content: space-between;
@@ -190,6 +205,8 @@
             background: #edf2f7;
             color: #2d3748;
             border-radius: 6px;
+            border: none;
+            cursor: pointer;
         }
         .tags-container {
             display: flex;
@@ -204,6 +221,9 @@
             font-weight: 700;
             font-size: 15px;
             letter-spacing: 1px;
+        }
+        .tag-hot {
+            background: #e53e3e; /* Warna merah untuk matching */
         }
     </style>
 </head>
@@ -248,19 +268,28 @@
 
     <div id="hasil" style="display: none;">
         <div class="charts-wrapper">
+            <!-- 1. Matriks 4x4 -->
             <div class="chart-card">
-                <div class="chart-title">1️⃣ Matriks 4x4 Dinamik (Sejarah & Kalendar)</div>
+                <div class="chart-title">1️⃣ Matriks 4x4 (Sejarah)</div>
                 <table class="matrix-4x4" id="matrixTable4x4"></table>
             </div>
 
+            <!-- 2. Matriks 3x3 Lama -->
             <div class="chart-card">
                 <div class="chart-title">2️⃣ Teras 3x3 Utama</div>
                 <div class="grid-3x3" id="matrixGrid3x3"></div>
             </div>
 
+            <!-- 3. Matriks Bayangan -->
             <div class="chart-card">
-                <div class="chart-title">3️⃣ Matriks Bayangan (+5)</div>
+                <div class="chart-title">3️⃣ Bayangan (+5)</div>
                 <div class="grid-3x3" id="matrixGrid3x3Bayangan"></div>
+            </div>
+
+            <!-- 4. TAMBAHAN BARU: Carta Matriks Tarikh -->
+            <div class="chart-card">
+                <div class="chart-title">4️⃣ Matriks Tarikh Baru</div>
+                <div class="grid-3x3" id="matrixGrid3x3Tarikh"></div>
             </div>
         </div>
 
@@ -273,6 +302,16 @@
             <div class="pod-item"><strong>POD 4D Sasaran:</strong> <span id="pod-4d" style="color:#2b6cb0; font-weight:bold;">-</span></div>
         </div>
 
+        <!-- TAMBAHAN BARU: Kotak Khas 3D Bertindan -->
+        <div class="result-section hot-match-box">
+            <div class="result-header hot-match-header">
+                <span>🔥 3D BERTINDAN (HOT MATCH!)</span>
+                <button class="btn-copy" onclick="salin('out-3d-hot')">Salin Hot 3D</button>
+            </div>
+            <p style="font-size: 12px; margin-top:0; color:#e53e3e;">*3D yang muncul dalam Carta Lama & Carta Tarikh</p>
+            <div class="tags-container" id="out-3d-hot"></div>
+        </div>
+
         <div class="result-section">
             <div class="result-header">
                 <span>📌 Pilihan 2D Terkuat (Top 12)</span>
@@ -283,7 +322,7 @@
 
         <div class="result-section">
             <div class="result-header">
-                <span>🔥 Pilihan 3D Solid (Top 6)</span>
+                <span>🔥 Pilihan 3D Solid (Lain-lain)</span>
                 <button class="btn-copy" onclick="salin('out-3d')">Salin 3D</button>
             </div>
             <div class="tags-container" id="out-3d"></div>
@@ -299,6 +338,6 @@
     </div>
 </div>
 
-<script src="toto_analisis.js?v=7.0"></script>
+<script src="toto_analisis.js?v=8.0"></script>
 </body>
 </html>
