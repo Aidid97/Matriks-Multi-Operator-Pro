@@ -59,41 +59,22 @@ class EnjinDwiCartaToto {
         return new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate(), 12, 0, 0);
     }
 
-    binaMatriksTarikh(tarikhInput) {
+    // [DIKEMASKINI] Paksi Dinamik berubah setiap hari & berbeza antara GD dan Toto
+    binaMatriksTarikh(tarikhInput, operatorMode = "GDLOTTO") {
         let tarikhObj = this.parseTarikh(tarikhInput);
-        let d = String(tarikhObj.getDate()).padStart(2, '0');
-        let m = String(tarikhObj.getMonth() + 1).padStart(2, '0');
-        let y = String(tarikhObj.getFullYear());
-        let tarikhString = d + m + y;
+        let hari = tarikhObj.getDate();
+        let bulan = tarikhObj.getMonth() + 1;
+        let tahun2Digit = tarikhObj.getFullYear() % 100;
 
-        let semuaDigitTarikh = tarikhString.split('').map(Number);
-        let digitUnik = Array.from(new Set(semuaDigitTarikh)).sort((a, b) => a - b);
+        let paksiGD = (hari + bulan + tahun2Digit) % 10;
+        let paksi = operatorMode === "GDLOTTO" ? paksiGD : (paksiGD + 5) % 10;
 
-        while (digitUnik.length < 5) {
-            let nextDigit = (digitUnik[digitUnik.length - 1] + 1) % 10;
-            if (!digitUnik.includes(nextDigit)) digitUnik.push(nextDigit);
-        }
-
-        let missingDigits = [];
-        for (let i = 0; i <= 9; i++) {
-            if (!digitUnik.includes(i)) missingDigits.push(i);
-        }
-
-        let center = digitUnik[0];
-        let bottom = digitUnik[1];
-        let left   = digitUnik[2];
-        let top    = digitUnik[3];
-        let right  = digitUnik[4];
-
-        let br = missingDigits[0] !== undefined ? missingDigits[0] : 0;
-        let tl = missingDigits[1] !== undefined ? missingDigits[1] : 0;
-        let bl = missingDigits[2] !== undefined ? missingDigits[2] : 0;
-        let tr = missingDigits[3] !== undefined ? missingDigits[3] : 0;
+        const d = (offset) => (paksi + offset) % 10;
 
         return [
-            [tl, top, tr],
-            [left, center, right],
-            [bl, bottom, br]
+            [d(2), d(7), d(6)],
+            [d(4), paksi, d(5)],
+            [d(8), d(3), d(1)]
         ];
     }
 
@@ -327,6 +308,7 @@ class EnjinDwiCartaToto {
         };
     }
 
+    // [DIKEMASKINI] Pemberat diseimbangkan supaya 3D delay tak kena tendang awal
     kiraTrajektori(sejarahCabutan, operatorMode = "TOTO") {
         let senaraiSkor = [];
         let panjang = sejarahCabutan.length;
@@ -337,9 +319,9 @@ class EnjinDwiCartaToto {
         let str5 = sejarahCabutan.slice(0, p5).join('');
         let strSemua = sejarahCabutan.join('');
 
-        let beratTerkini = operatorMode === "GDLOTTO" ? 0.95 : 0.80;
-        let beratSederhana = operatorMode === "GDLOTTO" ? 0.35 : 0.45;
-        let beratKeseluruhan = 0.15;
+        let beratTerkini = operatorMode === "GDLOTTO" ? 0.65 : 0.70;
+        let beratSederhana = operatorMode === "GDLOTTO" ? 0.55 : 0.50;
+        let beratKeseluruhan = 0.20;
 
         for (let d = 0; d <= 9; d++) {
             let digitStr = d.toString();
@@ -670,7 +652,8 @@ class EnjinDwiCartaToto {
             ? this.binaMatrix3x3GDLotto(tarikhObj)
             : this.binaMatrix3x3LebahNaga(tarikhObj);
         let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
-        let m3x3Tarikh = this.binaMatriksTarikh(tarikhInput);
+        // [DIKEMASKINI] Hantar operatorMode ke binaMatriksTarikh
+        let m3x3Tarikh = this.binaMatriksTarikh(tarikhInput, operatorMode);
 
         let dataKunci = this.kesanNomborKunciLock(
             m4x4, m3x3, m3x3Bayangan, operatorMode, dataJawa, dataBazi, senaraiObjekSkor
