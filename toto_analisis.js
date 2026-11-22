@@ -59,7 +59,7 @@ class EnjinDwiCartaToto {
         return new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate(), 12, 0, 0);
     }
 
-    // [DIKEMASKINI] Paksi Dinamik berubah setiap hari & berbeza antara GD dan Toto
+    // Paksi Dinamik berubah setiap hari & berbeza antara GD dan Toto
     binaMatriksTarikh(tarikhInput, operatorMode = "GDLOTTO") {
         let tarikhObj = this.parseTarikh(tarikhInput);
         let hari = tarikhObj.getDate();
@@ -99,6 +99,124 @@ class EnjinDwiCartaToto {
         tambah(carta[2][0], carta[1][1], carta[2][2]);
 
         return [...new Set(senarai3D)].filter(x => x.length === 3);
+    }
+
+    // [BARU] Ekstrak bentuk-T & paksi 4D terus daripada Matriks Tarikh Baru (cth: 8-4-9 + 7 -> 4789)
+    ekstrak4DBentukTMatriks(carta) {
+        let senarai = [
+            this.sortCombo(`${carta[1][0]}${carta[1][1]}${carta[1][2]}${carta[2][1]}`), // Baris tengah + bawah tengah
+            this.sortCombo(`${carta[1][0]}${carta[1][1]}${carta[1][2]}${carta[0][1]}`), // Baris tengah + atas tengah
+            this.sortCombo(`${carta[0][1]}${carta[1][1]}${carta[2][1]}${carta[1][0]}`), // Lajur tengah + kiri tengah
+            this.sortCombo(`${carta[0][1]}${carta[1][1]}${carta[2][1]}${carta[1][2]}`)  // Lajur tengah + kanan tengah
+        ];
+        return [...new Set(senarai)].filter(x => x.length === 4);
+    }
+
+    // [BARU] Ekstrak bentuk-L 4D terus daripada Carta Bayangan (+5) (cth: 9-4-6 + 3 -> 3469)
+    ekstrak4DBentukLBayangan(carta) {
+        let senarai = [
+            this.sortCombo(`${carta[1][0]}${carta[1][1]}${carta[1][2]}${carta[2][2]}`), // Baris tengah + kanan bawah
+            this.sortCombo(`${carta[1][0]}${carta[1][1]}${carta[1][2]}${carta[2][0]}`), // Baris tengah + kiri bawah
+            this.sortCombo(`${carta[1][0]}${carta[1][1]}${carta[1][2]}${carta[0][2]}`), // Baris tengah + kanan atas
+            this.sortCombo(`${carta[1][0]}${carta[1][1]}${carta[1][2]}${carta[0][0]}`), // Baris tengah + kiri atas
+            this.sortCombo(`${carta[2][0]}${carta[2][1]}${carta[2][2]}${carta[1][2]}`), // Baris bawah + kanan tengah
+            this.sortCombo(`${carta[2][0]}${carta[2][1]}${carta[2][2]}${carta[1][0]}`)  // Baris bawah + kiri tengah
+        ];
+        return [...new Set(senarai)].filter(x => x.length === 4);
+    }
+
+    // [BARU] Semak nisbah Ganjil/Genap mengikut hari cabutan Toto
+    semakNisbahHariToto(nombor4D, dayIdx) {
+        let arr = nombor4D.toString().split('');
+        if (arr.length !== 4) return false;
+        let ganjil = arr.filter(d => parseInt(d, 10) % 2 !== 0).length;
+        let genap = 4 - ganjil;
+
+        if (dayIdx === 3) {
+            // Rabu: kunci 2G 2E
+            return ganjil === 2 && genap === 2;
+        }
+        if (dayIdx === 6) {
+            // Sabtu: 3G 1E atau 2G 2E
+            return (ganjil === 3 && genap === 1) || (ganjil === 2 && genap === 2);
+        }
+        if (dayIdx === 0) {
+            // Ahad: 2G 2E atau 1G 3E
+            return (ganjil === 2 && genap === 2) || (ganjil === 1 && genap === 3);
+        }
+        return ganjil === 2 && genap === 2;
+    }
+
+    // [BARU] Modul Peta 10 Pasangan (0-9) 3D Panas <-> Shadow (+5) + Penapis Hari
+    janaPetaPasangan3D(teras3D, hariCabutan = "RABU", podiumTerkini = []) {
+        const semuaDigit = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        const hari = hariCabutan.toUpperCase();
+        const petaHari = { "AHAD": 0, "RABU": 3, "SABTU": 6 };
+        const dayIdx = petaHari[hari] !== undefined ? petaHari[hari] : 3;
+
+        const bersih3D = teras3D.toString().replace(/\D/g, '').slice(0, 3);
+        const blokAsal = bersih3D.split('').sort().join('');
+        const blokShadow = bersih3D
+            .split('')
+            .map(d => ((parseInt(d, 10) + 5) % 10).toString())
+            .sort()
+            .join('');
+
+        const digitAda = new Set(podiumTerkini.join('').split(''));
+        const digitHilang = podiumTerkini.length > 0
+            ? semuaDigit.filter(d => !digitAda.has(d))
+            : [];
+
+        const semakStruktur = (nombor4D) => {
+            const arr = nombor4D.split('');
+            const ganjil = arr.filter(d => parseInt(d, 10) % 2 !== 0).length;
+            const genap = 4 - ganjil;
+            const adaTwin = new Set(arr).size < 4;
+            const skorHilang = [...new Set(arr)].filter(d => digitHilang.includes(d)).length;
+            return {
+                nombor: nombor4D,
+                nisbah: `${ganjil}G ${genap}E`,
+                ganjil,
+                genap,
+                adaTwin,
+                skorHilang,
+                lulusHari: this.semakNisbahHariToto(nombor4D, dayIdx)
+            };
+        };
+
+        const petaPenuh = [];
+        const senaraiTapis = [];
+
+        for (let d = 0; d <= 9; d++) {
+            const dAsal = d.toString();
+            const dShadow = ((d + 5) % 10).toString();
+
+            const setAsal = this.sortCombo(blokAsal + dAsal);
+            const setShadow = this.sortCombo(blokShadow + dShadow);
+
+            const infoAsal = semakStruktur(setAsal);
+            const infoShadow = semakStruktur(setShadow);
+
+            petaPenuh.push({
+                pasanganDigit: `${dAsal} ↔ ${dShadow}`,
+                asal: infoAsal,
+                shadow: infoShadow
+            });
+
+            if (infoAsal.lulusHari) senaraiTapis.push({ laluan: blokAsal, ...infoAsal });
+            if (infoShadow.lulusHari) senaraiTapis.push({ laluan: blokShadow, ...infoShadow });
+        }
+
+        const susunTapis = senaraiTapis.sort((a, b) => b.skorHilang - a.skorHilang);
+
+        return {
+            hari,
+            blokAsal,
+            blokShadow,
+            digitHilang,
+            petaPenuh,
+            hasilTapis: susunTapis
+        };
     }
 
     dapatkanKalendarJawa(tarikhStr) {
@@ -308,7 +426,7 @@ class EnjinDwiCartaToto {
         };
     }
 
-    // [DIKEMASKINI] Pemberat diseimbangkan supaya 3D delay tak kena tendang awal
+    // [DIKEMASKINI] Kekalkan pemberat lama Toto 0.70 / 0.35 (GD kekal 0.65 / 0.55)
     kiraTrajektori(sejarahCabutan, operatorMode = "TOTO") {
         let senaraiSkor = [];
         let panjang = sejarahCabutan.length;
@@ -320,7 +438,7 @@ class EnjinDwiCartaToto {
         let strSemua = sejarahCabutan.join('');
 
         let beratTerkini = operatorMode === "GDLOTTO" ? 0.65 : 0.70;
-        let beratSederhana = operatorMode === "GDLOTTO" ? 0.55 : 0.50;
+        let beratSederhana = operatorMode === "GDLOTTO" ? 0.55 : 0.35;
         let beratKeseluruhan = 0.20;
 
         for (let d = 0; d <= 9; d++) {
@@ -501,7 +619,7 @@ class EnjinDwiCartaToto {
             .slice(0, 12);
     }
 
-    janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, senaraiVektorGD = [], dataJawa = null, dataBazi = null, operatorMode = "TOTO") {
+    janaSenarai3DTriangulasi(m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, senaraiVektorGD = [], dataJawa = null, dataBazi = null, operatorMode = "TOTO", m3x3Tarikh = null) {
         let petaSkor = {};
         senaraiObjekSkor.forEach(item => { petaSkor[item.digitSasaran] = item.markahAkhir; });
 
@@ -544,80 +662,90 @@ class EnjinDwiCartaToto {
                 });
             });
         } else {
+            // [DIPERBAIKI - TOTO] Utamakan laluan Bayangan (+5), Matriks Tarikh Baru & Digit Hilang
             let rantaian4x4 = this.janaLaluanRantaianGrid(m4x4);
-            rantaian4x4.forEach(c3d => set3D.set(c3d, 3.5));
+            rantaian4x4.forEach(c3d => set3D.set(c3d, 3.0));
 
             let rantaianBayangan = this.janaLaluanRantaianGrid(m3x3Bayangan);
             rantaianBayangan.forEach(c3d => {
                 let markah = set3D.get(c3d) || 0;
-                set3D.set(c3d, markah + 4.5);
+                set3D.set(c3d, markah + 5.5);
             });
 
+            // Baris, Lajur & Pepenjuru Carta Bayangan (+5)
             for (let i = 0; i < 3; i++) {
                 let barisBayang = this.sortCombo(m3x3Bayangan[i].join(''));
                 let lajurBayang = this.sortCombo(`${m3x3Bayangan[0][i]}${m3x3Bayangan[1][i]}${m3x3Bayangan[2][i]}`);
-                set3D.set(barisBayang, (set3D.get(barisBayang) || 2.0) + 6.5);
-                set3D.set(lajurBayang, (set3D.get(lajurBayang) || 2.0) + 5.0);
+                set3D.set(barisBayang, (set3D.get(barisBayang) || 2.0) + 7.5);
+                set3D.set(lajurBayang, (set3D.get(lajurBayang) || 2.0) + 5.5);
+            }
+
+            // Masukkan terus semua garis Matriks Tarikh Baru (supaya baris seperti 8-4-9 tak terlepas)
+            if (m3x3Tarikh) {
+                let garisTarikh = this.ekstrak3DMatriksTarikh(m3x3Tarikh);
+                garisTarikh.forEach(c3d => {
+                    let markah = set3D.get(c3d) || 2.0;
+                    set3D.set(c3d, markah + 4.5);
+                });
+                // Bonus khas baris tengah Matriks Tarikh yang lalu Paksi Tarikh
+                let barisTengahTarikh = this.sortCombo(m3x3Tarikh[1].join(''));
+                set3D.set(barisTengahTarikh, (set3D.get(barisTengahTarikh) || 2.0) + 4.0);
             }
 
             let cornerData = this.ekstraksiCornerLock4x4(m4x4);
             cornerData.sub3D.forEach(c3d => {
                 let markah = set3D.get(c3d) || 1.0;
-                set3D.set(c3d, markah + 4.5);
+                set3D.set(c3d, markah + 3.0);
             });
 
             let lockStr = kunciLock.length > 0 ? kunciLock[0].toString() : '';
             if (lockStr) {
-                let top2D = objek2D.slice(0, 8);
+                let top2D = objek2D.slice(0, 6);
                 top2D.forEach(item2D => {
                     let kombo = this.sortCombo(item2D.kombo + lockStr);
                     if (kombo.length === 3) {
                         let markah = set3D.get(kombo) || 1.0;
-                        set3D.set(kombo, markah + 4.0);
+                        set3D.set(kombo, markah + 2.5);
                     }
                 });
             }
 
+            // Bonus pantulan Digit Hilang (kuat untuk atasi dominasi digit semalam)
             if (missingDigits.length > 0) {
                 let missingStrList = missingDigits.map(d => d.toString());
-                let bonusMissing = isRabu ? 4.5 : 3.0;
+                let bonusMissing = isRabu ? 6.5 : 6.0;
                 set3D.forEach((skor, kombo) => {
-                    let jumlahMissing = 0;
-                    missingStrList.forEach(mDigit => {
-                        if (kombo.includes(mDigit)) jumlahMissing++;
-                    });
+                    let unikKombo = [...new Set(kombo.split(''))];
+                    let jumlahMissing = unikKombo.filter(d => missingStrList.includes(d)).length;
                     if (jumlahMissing > 0) {
                         set3D.set(kombo, skor + (jumlahMissing * bonusMissing));
                     }
                 });
             }
 
+            // [DIPERBAIKI] Bonus hujung minggu guna teras Bayangan (+5) sahaja (elak bug 10/10 digit)
             if (isHujungMinggu) {
-                let terasMatriks = new Set();
-                m3x3.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
-                m3x3Bayangan.forEach(row => row.forEach(val => terasMatriks.add(val.toString())));
-
-                let terasStrList = Array.from(terasMatriks);
+                let terasBayang = new Set();
+                m3x3Bayangan.forEach(row => row.forEach(val => terasBayang.add(val.toString())));
+                let terasStrList = Array.from(terasBayang);
 
                 set3D.forEach((skor, kombo) => {
-                    let jumlahTeras = 0;
-                    terasStrList.forEach(tDigit => {
-                        if (kombo.includes(tDigit)) jumlahTeras++;
-                    });
+                    let unikKombo = [...new Set(kombo.split(''))];
+                    let jumlahTeras = unikKombo.filter(d => terasStrList.includes(d)).length;
                     if (jumlahTeras === 3) {
-                        set3D.set(kombo, skor + 5.0);
-                    } else if (jumlahTeras === 2) {
-                        set3D.set(kombo, skor + 2.5);
+                        set3D.set(kombo, skor + 3.5);
                     }
                 });
             }
         }
 
+        // Kawal kesan trajektori sejarah pada Toto supaya 3D yang bawa Digit Hilang tak kena tendang
+        let pekaliTrajektori = operatorMode === "GDLOTTO" ? 0.5 : 0.20;
         let hasilSusunan = [];
         set3D.forEach((skorAsas, kombo) => {
             let d1 = kombo[0], d2 = kombo[1], d3 = kombo[2];
             let skorTrajektori = (petaSkor[d1] || 0) + (petaSkor[d2] || 0) + (petaSkor[d3] || 0);
-            let skorAkhir = skorAsas + (skorTrajektori * 0.5);
+            let skorAkhir = skorAsas + (skorTrajektori * pekaliTrajektori);
             hasilSusunan.push({ kombo: kombo, skor: skorAkhir });
         });
 
@@ -652,7 +780,6 @@ class EnjinDwiCartaToto {
             ? this.binaMatrix3x3GDLotto(tarikhObj)
             : this.binaMatrix3x3LebahNaga(tarikhObj);
         let m3x3Bayangan = this.binaMatrixBayangan3x3(m3x3);
-        // [DIKEMASKINI] Hantar operatorMode ke binaMatriksTarikh
         let m3x3Tarikh = this.binaMatriksTarikh(tarikhInput, operatorMode);
 
         let dataKunci = this.kesanNomborKunciLock(
@@ -661,6 +788,7 @@ class EnjinDwiCartaToto {
         let missingDigits = dataKunci.digitHilang;
         let kunciLock = dataKunci.kunciLock;
 
+        // Simpan sehingga 5 digit hilang supaya digit ke-5 tidak terpotong
         if (senaraiPodium.length > 0) {
             let gabungPodium = senaraiPodium.join('');
             let cariHilang = [];
@@ -670,7 +798,7 @@ class EnjinDwiCartaToto {
                 }
             }
             if (cariHilang.length > 0) {
-                missingDigits = cariHilang.slice(0, 4);
+                missingDigits = cariHilang.slice(0, 5);
             }
         }
 
@@ -680,20 +808,56 @@ class EnjinDwiCartaToto {
         let list2DText = objek2D.map(item => item.kombo);
 
         let objek3D = this.janaSenarai3DTriangulasi(
-            m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, senaraiVektorGD, dataJawa, dataBazi, operatorMode
+            m4x4, m3x3Bayangan, m3x3, objek2D, kunciLock, senaraiObjekSkor, missingDigits, tarikhObj, senaraiVektorGD, dataJawa, dataBazi, operatorMode, m3x3Tarikh
         );
-        let list3DText = objek3D.map(item => item.kombo).slice(0, 24);
 
         let list3DTarikh = this.ekstrak3DMatriksTarikh(m3x3Tarikh);
         let hasil3DHot = [];
+        let list3DText = [];
 
-        list3DText.forEach(k3d => {
-            if (list3DTarikh.includes(k3d)) {
-                hasil3DHot.push(k3d);
+        if (operatorMode === "GDLOTTO") {
+            // Kekalkan logik GD Lotto asal 100%
+            list3DText = objek3D.map(item => item.kombo).slice(0, 24);
+            list3DText.forEach(k3d => {
+                if (list3DTarikh.includes(k3d)) {
+                    hasil3DHot.push(k3d);
+                }
+            });
+            hasil3DHot = [...new Set(hasil3DHot)].slice(0, 6);
+        } else {
+            // [DIPERBAIKI - TOTO] Hot 3D gabungkan laluan Matriks Tarikh + Bayangan (+5) yang ada Digit Hilang
+            list3DText = objek3D.map(item => item.kombo).slice(0, 36);
+            let missingStrList = missingDigits.map(String);
+            let list3DBayangan = this.ekstrak3DMatriksTarikh(m3x3Bayangan);
+            let rantaianBayang3D = this.janaLaluanRantaianGrid(m3x3Bayangan);
+
+            list3DText.forEach(k3d => {
+                let unikDigit = [...new Set(k3d.split(''))];
+                let bilHilang = unikDigit.filter(d => missingStrList.includes(d)).length;
+                let dalamTarikh = list3DTarikh.includes(k3d);
+                let dalamBayang = list3DBayangan.includes(k3d) || rantaianBayang3D.includes(k3d);
+
+                if (missingStrList.length > 0) {
+                    if ((dalamTarikh && bilHilang >= 1) || (dalamBayang && bilHilang >= 2)) {
+                        hasil3DHot.push(k3d);
+                    }
+                } else if (dalamTarikh || dalamBayang) {
+                    hasil3DHot.push(k3d);
+                }
+            });
+
+            // Sandaran jika terlalu ketat
+            if (hasil3DHot.length < 3) {
+                list3DText.forEach(k3d => {
+                    if (list3DTarikh.includes(k3d) && !hasil3DHot.includes(k3d)) {
+                        hasil3DHot.push(k3d);
+                    }
+                });
             }
-        });
 
-        hasil3DHot = [...new Set(hasil3DHot)].slice(0, 6);
+            hasil3DHot = [...new Set(hasil3DHot)].slice(0, 6);
+        }
+
         let hasil3DNormal = list3DText.filter(x => !hasil3DHot.includes(x)).slice(0, 6);
 
         let lockDigitDominan = kunciLock.length > 0
@@ -702,8 +866,12 @@ class EnjinDwiCartaToto {
         let top3DCore = hasil3DHot.length > 0 ? hasil3DHot[0] : (hasil3DNormal[0] || this.sortCombo(m3x3Bayangan[0].join('')));
 
         let list4D = [];
+        let hariIdx = tarikhObj.getDay();
+        let isRabu = hariIdx === 3;
+        let isHujungMinggu = (hariIdx === 0 || hariIdx === 6);
 
         if (operatorMode === "GDLOTTO") {
+            // Kekalkan logik 4D GD Lotto asal 100%
             let senaraiPengikat4D = [...missingDigits.map(String)];
             this.GD_KEY_NUMBERS.forEach(k => {
                 if (!senaraiPengikat4D.includes(k.toString())) {
@@ -722,51 +890,123 @@ class EnjinDwiCartaToto {
                 `${dataBazi.digit[0]}${dataBazi.digit[1]}${dataJawa.digitJawa1}${lockDigitDominan}`
             );
             list4D.push(setJawaBazi);
-        }
 
-        for (let r = 0; r < 3; r++) {
-            let barisBayangStr = m3x3Bayangan[r].join('');
-            list4D.push(this.sortCombo(barisBayangStr + lockDigitDominan));
-        }
-
-        let cornerData = this.ekstraksiCornerLock4x4(m4x4);
-        if (cornerData.bridge4D && cornerData.bridge4D.length === 4) {
-            list4D.push(cornerData.bridge4D);
-        }
-        let ekorBaris1 = `${m4x4[0][1]}${m4x4[0][2]}${m4x4[0][3]}`;
-        list4D.push(this.sortCombo(ekorBaris1 + m3x3Bayangan[0][0].toString()));
-
-        if (cornerData.raw4D.length === 4) {
-            list4D.push(cornerData.raw4D);
-        }
-
-        let isRabu = tarikhObj.getDay() === 3;
-        let isHujungMinggu = (tarikhObj.getDay() === 0 || tarikhObj.getDay() === 6);
-
-        let sumber4DGabung = [...hasil3DHot, ...hasil3DNormal];
-        sumber4DGabung.slice(0, 5).forEach(t3d => {
-            list4D.push(this.sortCombo(t3d + lockDigitDominan));
-
-            if (isRabu && missingDigits.length > 0) {
-                list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
-                if (missingDigits.length > 1) {
-                    list4D.push(this.sortCombo(t3d + missingDigits[1].toString()));
-                }
-            } else if (isHujungMinggu) {
-                let terasRaw = m3x3[1][1].toString();
-                list4D.push(this.sortCombo(t3d + terasRaw));
-                if (missingDigits.length > 0) {
-                    list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
-                }
-            } else {
-                if (missingDigits.length > 0) {
-                    list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
-                }
+            for (let r = 0; r < 3; r++) {
+                let barisBayangStr = m3x3Bayangan[r].join('');
+                list4D.push(this.sortCombo(barisBayangStr + lockDigitDominan));
             }
-        });
+
+            let cornerData = this.ekstraksiCornerLock4x4(m4x4);
+            if (cornerData.bridge4D && cornerData.bridge4D.length === 4) {
+                list4D.push(cornerData.bridge4D);
+            }
+            let ekorBaris1 = `${m4x4[0][1]}${m4x4[0][2]}${m4x4[0][3]}`;
+            list4D.push(this.sortCombo(ekorBaris1 + m3x3Bayangan[0][0].toString()));
+
+            if (cornerData.raw4D.length === 4) {
+                list4D.push(cornerData.raw4D);
+            }
+
+            let sumber4DGabung = [...hasil3DHot, ...hasil3DNormal];
+            sumber4DGabung.slice(0, 5).forEach(t3d => {
+                list4D.push(this.sortCombo(t3d + lockDigitDominan));
+
+                if (isRabu && missingDigits.length > 0) {
+                    list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                    if (missingDigits.length > 1) {
+                        list4D.push(this.sortCombo(t3d + missingDigits[1].toString()));
+                    }
+                } else if (isHujungMinggu) {
+                    let terasRaw = m3x3[1][1].toString();
+                    list4D.push(this.sortCombo(t3d + terasRaw));
+                    if (missingDigits.length > 0) {
+                        list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                    }
+                } else {
+                    if (missingDigits.length > 0) {
+                        list4D.push(this.sortCombo(t3d + missingDigits[0].toString()));
+                    }
+                }
+            });
+        } else {
+            // [DIPERBAIKI - TOTO] Bina 4D terus daripada Bayangan (+5), Matriks Tarikh & Digit Hilang + Tapisan Hari
+            let calonSkor = new Map();
+            let tambahCalon = (nombor4D, bonusSumber = 0) => {
+                let bersih = this.sortCombo(nombor4D);
+                if (bersih.length !== 4) return;
+                let sediaAda = calonSkor.get(bersih) || 0;
+                if (bonusSumber > sediaAda) calonSkor.set(bersih, bonusSumber);
+            };
+
+            // 1. Baris Bayangan (+5) diikat terus dengan Digit Hilang (cth: 9-4-6 + 3 -> 3469)
+            for (let r = 0; r < 3; r++) {
+                let barisBayangStr = m3x3Bayangan[r].join('');
+                missingDigits.slice(0, 3).forEach((mDigit, idx) => {
+                    tambahCalon(barisBayangStr + mDigit.toString(), 12 - idx);
+                });
+                tambahCalon(barisBayangStr + lockDigitDominan, 5);
+            }
+
+            // 2. Bentuk-L terus daripada Carta Bayangan (+5) (cth: 9-4-6-3 -> 3469)
+            let bentukLBayangan = this.ekstrak4DBentukLBayangan(m3x3Bayangan);
+            bentukLBayangan.forEach(num => tambahCalon(num, 13));
+
+            // 3. Bentuk-T terus daripada Matriks Tarikh Baru (cth: 8-4-9-7 -> 4789)
+            let bentukTTarikh = this.ekstrak4DBentukTMatriks(m3x3Tarikh);
+            bentukTTarikh.forEach(num => tambahCalon(num, 13));
+
+            // 4. Cantuman hasil3DHot dengan Digit Hilang & Paksi Tarikh
+            let paksiTarikhStr = m3x3Tarikh[1][1].toString();
+            hasil3DHot.slice(0, 5).forEach(t3d => {
+                missingDigits.slice(0, 3).forEach((mDigit, idx) => {
+                    tambahCalon(t3d + mDigit.toString(), 11 - idx);
+                });
+                tambahCalon(t3d + paksiTarikhStr, 9);
+                tambahCalon(t3d + lockDigitDominan, 6);
+            });
+
+            // 5. Sokongan daripada Corner 4x4 & hasil3DNormal
+            let cornerData = this.ekstraksiCornerLock4x4(m4x4);
+            if (cornerData.bridge4D && cornerData.bridge4D.length === 4) tambahCalon(cornerData.bridge4D, 5);
+            if (cornerData.raw4D && cornerData.raw4D.length === 4) tambahCalon(cornerData.raw4D, 5);
+
+            hasil3DNormal.slice(0, 4).forEach(t3d => {
+                if (missingDigits.length > 0) tambahCalon(t3d + missingDigits[0].toString(), 8);
+                tambahCalon(t3d + lockDigitDominan, 4);
+            });
+
+            // Pemarkahan akhir: Penapis Nisbah Ganjil/Genap Hari + Kekuatan Digit Hilang + Hot 3D
+            let missingStrList = missingDigits.map(String);
+            let susunToto4D = Array.from(calonSkor.entries()).map(([nombor, skorSumber]) => {
+                let unikDigit = [...new Set(nombor.split(''))];
+                let bilHilang = unikDigit.filter(d => missingStrList.includes(d)).length;
+                let lulusHari = this.semakNisbahHariToto(nombor, hariIdx);
+                let adaTwin = unikDigit.length < 4;
+
+                let skorAkhir = skorSumber + (bilHilang * 6.5) + (lulusHari ? 15 : 0);
+
+                // Elak nombor berulang 3 digit sama (triple) naik terlalu tinggi
+                let kiraDigit = {};
+                nombor.split('').forEach(d => { kiraDigit[d] = (kiraDigit[d] || 0) + 1; });
+                if (Object.values(kiraDigit).some(v => v >= 3)) {
+                    skorAkhir -= 12;
+                }
+
+                // Ahad & Rabu utamakan single 4 digit berbeza, kecuali twin yang lulus nisbah hari
+                if (!adaTwin) skorAkhir += 2.5;
+
+                return { nombor, skorAkhir };
+            });
+
+            susunToto4D.sort((a, b) => b.skorAkhir - a.skorAkhir);
+            list4D = susunToto4D.map(item => item.nombor);
+        }
 
         let unik4D = [...new Set(list4D)].slice(0, 10);
         let target4D = unik4D[0] || this.sortCombo(top3DCore + lockDigitDominan);
+
+        // Jana juga peta pasangan 0-9 automatik daripada top3DCore untuk rujukan modul Toto
+        let petaPasangan3D = this.janaPetaPasangan3D(top3DCore, dataJawa.hari, senaraiPodium);
 
         return {
             matrix4x4: m4x4,
@@ -779,6 +1019,7 @@ class EnjinDwiCartaToto {
             hasil3DHot: hasil3DHot,
             hasil3DNormal: hasil3DNormal,
             hasil4D: unik4D,
+            petaPasangan3D: petaPasangan3D,
             pod: {
                 top2D: list2DText.slice(0, 3).join(', '),
                 top3D: hasil3DHot.length > 0 ? hasil3DHot.join(', ') : hasil3DNormal.slice(0, 3).join(', '),
