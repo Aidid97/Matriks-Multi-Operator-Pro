@@ -434,9 +434,9 @@ class EnjinDwiCartaToto {
         let str5 = sejarahCabutan.slice(0, p5).join('');
         let strSemua = sejarahCabutan.join('');
 
-        let beratTerkini = operatorMode === "GDLOTTO" ? 0.70 : 0.25;
+        let beratTerkini = operatorMode === "GDLOTTO" ? 0.65 : 0.15;
         let beratSederhana = operatorMode === "GDLOTTO" ? 0.55 : 0.35;
-        let beratKeseluruhan = 0.25;
+        let beratKeseluruhan = 0.30;
 
         for (let d = 0; d <= 9; d++) {
             let digitStr = d.toString();
