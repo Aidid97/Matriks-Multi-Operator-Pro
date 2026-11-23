@@ -425,14 +425,18 @@ class EnjinDwiCartaToto {
 
     // Kekalkan pemberat lama Toto 0.70 / 0.35 (GD kekal 0.65 / 0.55)
     kiraTrajektori(sejarahCabutan, operatorMode = "TOTO") {
+        // Had automatik: GD maks 21 nombor (7 draw), Toto maks 12 nombor (4 draw)
+        let hadMaks = operatorMode === "GDLOTTO" ? 21 : 12;
+        let sejarahHad = sejarahCabutan.slice(0, hadMaks);
+
         let senaraiSkor = [];
-        let panjang = sejarahCabutan.length;
+        let panjang = sejarahHad.length;
         let p3 = Math.min(3, panjang);
         let p5 = Math.min(9, panjang);
 
-        let str3 = sejarahCabutan.slice(0, p3).join('');
-        let str5 = sejarahCabutan.slice(0, p5).join('');
-        let strSemua = sejarahCabutan.join('');
+        let str3 = sejarahHad.slice(0, p3).join('');
+        let str5 = sejarahHad.slice(0, p5).join('');
+        let strSemua = sejarahHad.join('');
 
         let beratTerkini = operatorMode === "GDLOTTO" ? 0.65 : 0.15;
         let beratSederhana = operatorMode === "GDLOTTO" ? 0.55 : 0.35;
