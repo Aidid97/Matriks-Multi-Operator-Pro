@@ -428,15 +428,15 @@ class EnjinDwiCartaToto {
         let senaraiSkor = [];
         let panjang = sejarahCabutan.length;
         let p3 = Math.min(3, panjang);
-        let p5 = Math.min(8, panjang);
+        let p5 = Math.min(9, panjang);
 
         let str3 = sejarahCabutan.slice(0, p3).join('');
         let str5 = sejarahCabutan.slice(0, p5).join('');
         let strSemua = sejarahCabutan.join('');
 
-        let beratTerkini = operatorMode === "GDLOTTO" ? 0.65 : 0.70;
+        let beratTerkini = operatorMode === "GDLOTTO" ? 0.70 : 0.25;
         let beratSederhana = operatorMode === "GDLOTTO" ? 0.55 : 0.35;
-        let beratKeseluruhan = 0.20;
+        let beratKeseluruhan = 0.25;
 
         for (let d = 0; d <= 9; d++) {
             let digitStr = d.toString();
